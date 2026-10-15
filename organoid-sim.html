@@ -729,7 +729,7 @@ function finale() {
   $("finLead").textContent = lead + (S.coreFrac > .15 ? " 다음엔 조금 작게 키우면 속까지 건강할 거예요." : "");
   const ph = (k, pic, t) => `<div class="ph"><span class="k">${k}</span>${pic}<span>${t}</span></div>`;
   $("album").innerHTML =
-    ph("탄생", PIC[S.cell], C.name) +
+    ph("탄생", PIC[S.cell], `${C.en}<br>줄기세포`) +
     ph("진로", `<span style="color:var(--navy)">${PIC[S.organ]}</span>`, `${ORGANS[S.organ]} 오가노이드`) +
     ph("성장", PIC.grow, `${fmtD(diam(S.day))}<br>생존 ${S.growLive}%`) +
     ph("처방", PIC.pill, `${d.name}<br>${S.vk === "good" ? "성공" : S.vk === "weak" ? "효과 약함" : "부작용 확인"}`);
