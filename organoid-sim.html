@@ -152,6 +152,19 @@ input[type=range] { width: 100%; accent-color: var(--blue); height: 28px; }
 .verdict small { font-family: var(--font-caption); color: #9fd6ff; font-size: 14px; }
 .report { background: var(--panel); border: 1.5px dashed var(--sky); border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; }
 .report h3 { margin: 0; font-family: var(--font-caption); font-weight: 400; font-size: 18px; color: var(--blue); }
+.what { background: linear-gradient(135deg, #ffffff, #dcefff); border: 1.5px solid var(--sky); border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+.what > b { font-family: var(--font-caption); font-weight: 400; font-size: 17px; color: var(--blue); }
+.bub b, .what p b, .learn b { color: var(--blue); }
+.finale { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 10px; padding: 22px 16px 18px; border-radius: 18px; background: radial-gradient(120% 100% at 50% 0%, #bfe5ff 0%, #ffffff 70%); border: 1.5px solid var(--sky); }
+.stamp { width: 112px; height: 112px; border-radius: 50%; display: grid; place-items: center; color: var(--blue); border: 4px solid var(--blue); box-shadow: inset 0 0 0 4px #fff, inset 0 0 0 6px var(--blue); transform: rotate(-12deg); font-family: var(--font-caption); font-size: 21px; line-height: 1.15; animation: stamp .5s cubic-bezier(.3, 1.6, .5, 1) both; }
+@keyframes stamp { from { transform: rotate(-12deg) scale(1.7); opacity: .3; } to { transform: rotate(-12deg) scale(1); opacity: 1; } }
+.fin-title { font-size: 27px; }
+.fin-lead { font-size: 15px; color: var(--fg); max-width: 34em; }
+.album, .learn { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 8px; font-size: 14px; }
+.album li::marker, .learn li::marker { color: var(--blue); font-family: var(--font-mono); font-weight: 600; }
+.album .k { font-family: var(--font-caption); color: var(--navy); font-size: 15px; margin-right: 4px; }
+.album .s { color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .stamp { animation: none; } }
 .summary { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-size: 13.5px; margin: 0; }
 .summary dt { color: var(--muted); }
 .summary dd { margin: 0; }
@@ -178,7 +191,7 @@ input[type=range] { width: 100%; accent-color: var(--blue); height: 28px; }
 <div class="wrap">
   <header class="top">
     <div class="brand"><small>배양 접시 육아 상담</small><h1>금쪽같은 내 <span>오가노이드</span></h1></div>
-    <div class="steps" aria-label="진행 단계"><b id="s1">1</b><b id="s2">2</b><b id="s3">3</b><b id="s4">4</b></div>
+    <div class="steps" aria-label="진행 단계"><b id="s1">1</b><b id="s2">2</b><b id="s3">3</b><b id="s4">4</b><b id="s5">5</b></div>
   </header>
 </div>
 
@@ -198,7 +211,8 @@ input[type=range] { width: 100%; accent-color: var(--blue); height: 28px; }
   <section class="step" id="step1">
     <span class="eyebrow">1화 · 금쪽이의 탄생</span>
     <h2>우리 금쪽이는 어떤 줄기세포인가요?</h2>
-    <div class="doc"><span class="av">박사</span><p class="bub"><small>세포 박사의 한마디</small>어떤 세포에서 태어났느냐에 따라 될 수 있는 장기가 달라요. 먼저 금쪽이의 출생 배경부터 볼게요.</p></div>
+    <div class="doc"><span class="av">박사</span><p class="bub"><small>세포 박사의 한마디</small>줄기세포는 <b>아직 진로를 정하지 않은 아이</b>예요. 어떤 세포에서 태어났느냐에 따라 될 수 있는 장기가 달라요.</p></div>
+    <div class="what"><b>오가노이드가 뭐예요?</b><p>줄기세포를 접시에서 키워 만든 <b>쌀알만 한 미니 장기</b>예요. 진짜 장기처럼 생겼고 하는 일도 일부 따라 해요. 오늘은 여러분이 부모가 되어 이 아이, ‘금쪽이’를 키워 봐요.</p></div>
     <div class="cards" id="cellCards"></div>
     <button class="cta" id="go1" disabled>이 아이로 상담 시작</button>
   </section>
@@ -207,7 +221,7 @@ input[type=range] { width: 100%; accent-color: var(--blue); height: 28px; }
   <section class="step" id="step2" hidden>
     <span class="eyebrow">2화 · 금쪽 처방</span>
     <h2>성장인자로 금쪽이를 키워 보세요</h2>
-    <div class="doc"><span class="av">박사</span><p class="bub"><small>세포 박사의 한마디</small>무엇이 되고 싶은지 정하고, 거기에 맞는 성장인자를 먹여야 해요. 아무거나 주면 엇나가요.</p></div>
+    <div class="doc"><span class="av">박사</span><p class="bub"><small>세포 박사의 한마디</small>성장인자는 <b>진로 지도 선생님</b>이에요. 세포에게 “너는 뇌가 돼”, “너는 장이 돼” 하고 신호를 줘요. 목표 장기를 고르고 맞는 선생님을 골라 주세요. 아무나 붙이면 엇나가요.</p></div>
     <div class="seg" id="organSeg">
       <button data-o="brain" aria-pressed="true">뇌</button>
       <button data-o="liver" aria-pressed="false">간</button>
@@ -225,7 +239,7 @@ input[type=range] { width: 100%; accent-color: var(--blue); height: 28px; }
   <section class="step" id="step3" hidden>
     <span class="eyebrow">3화 · 관찰 카메라</span>
     <h2>금쪽이, 계속 키우면 괜찮을까요?</h2>
-    <div class="doc"><span class="av">박사</span><p class="bub"><small>세포 박사의 한마디</small>금쪽이에겐 혈관이 없어요. 산소와 영양분이 겉에서 약 200&nbsp;µm까지만 스며들어요. 너무 크게 키우면 속이 곪아요. 슬라이더를 끝까지 밀어 보세요.</p></div>
+    <div class="doc"><span class="av">박사</span><p class="bub"><small>세포 박사의 한마디</small>금쪽이에겐 혈관이 없어서 산소가 겉에서 스며들어요. <b>두꺼운 빵 가운데가 잘 안 익는 것</b>처럼, 너무 크면 가운데까지 산소가 못 가요. 산소가 닿는 깊이는 약 200&nbsp;µm, 머리카락 두세 가닥 굵기예요. 슬라이더를 끝까지 밀어 보세요.</p></div>
     <div class="slider">
       <div class="row"><label for="day">배양 기간</label><output id="dayOut">20일</output></div>
       <input type="range" id="day" min="3" max="60" step="1" value="20">
@@ -259,12 +273,32 @@ input[type=range] { width: 100%; accent-color: var(--blue); height: 28px; }
     </div>
     <div class="chart">
       <svg id="chart" viewBox="0 0 340 190" role="img" aria-label="농도-반응 곡선"></svg>
-      <div class="cap"><span><i style="background:var(--blue)"></i>효과</span><span><i style="background:var(--bad)"></i>독성</span><span><i style="background:var(--ok);opacity:.35;height:8px"></i>치료 창</span></div>
+      <div class="cap"><span><i style="background:var(--blue)"></i>효과</span><span><i style="background:var(--bad)"></i>독성</span><span><i style="background:var(--ok);opacity:.35;height:8px"></i>치료 창(딱 좋은 양)</span></div>
     </div>
     <div class="verdict" id="verdict"></div>
     <div class="note warn" id="relNote" hidden></div>
-    <div class="report"><h3>오늘의 금쪽 리포트</h3><dl class="summary" id="summary"></dl></div>
-    <button class="ghost" id="restart">다른 금쪽이 상담하기</button>
+    <button class="cta" id="go4">최종화: 박사님 총평 듣기 →</button>
+  </section>
+
+  <!-- STEP 5 -->
+  <section class="step" id="step5" hidden>
+    <span class="eyebrow">최종화 · 박사님 총평</span>
+    <div class="finale">
+      <div class="stamp" aria-hidden="true"><span>참 잘<br>키웠어요</span></div>
+      <h2 class="fin-title">금쪽이, 참 잘 키웠어요!</h2>
+      <p class="fin-lead" id="finLead"></p>
+    </div>
+    <div class="report"><h3>우리 금쪽이 성장 앨범</h3><ol class="album" id="album"></ol></div>
+    <div class="report"><h3>오늘 배운 것, 딱 네 줄</h3>
+      <ol class="learn">
+        <li><b>오가노이드</b>는 줄기세포로 키운 쌀알만 한 <b>미니 장기</b>예요.</li>
+        <li><b>어떤 줄기세포</b>에 <b>어떤 성장인자</b>를 주느냐가 뇌·간·장 중 무엇이 될지 정해요.</li>
+        <li>혈관이 없어서 <b>너무 크면 가운데가 죽어요.</b> 그래서 오가노이드에 혈관을 넣는 연구가 한창이에요.</li>
+        <li>사람 세포로 <b>약의 효과와 부작용을 미리</b> 확인해요. 동물실험을 줄이고 환자 맞춤 치료로 이어져요.</li>
+      </ol>
+    </div>
+    <div class="doc"><span class="av">박사</span><p class="bub"><small>세포 박사의 마지막 한마디</small>세포도 아이처럼 <b>타고난 기질(줄기세포)</b>과 <b>환경(성장인자·산소)</b>이 함께 키워요. 알맞은 관심과 처방을 받으면, 금쪽이는 언젠가 진짜 환자를 살리는 미니 장기가 됩니다.</p></div>
+    <button class="cta" id="restart">다른 금쪽이 키우러 가기</button>
     <p class="fine">TV 예능을 패러디한 과학 교육용 시뮬레이터예요. 농도·효율 수치는 실제 연구 경향을 바탕으로 단순화한 값이고, ‘가상’ 표시가 없는 약은 실제 약이지만 반응 곡선은 근사치입니다.</p>
   </section>
 </main>
@@ -374,7 +408,7 @@ function draw() {
   ctx.fillStyle = "#05070b"; ctx.fillRect(0, 0, W, W);
   const rpx = v.kind === "stem" ? 40 : radiusPx(v.d), ppu = rpx / (v.d / 2);
   const L = O2(), necro = S.step >= 3;
-  const drug = S.step === 4 && S.drug ? S.drug : null;
+  const drug = S.step >= 4 && S.drug ? S.drug : null;
   const c = Math.pow(10, S.dose);
   const eff = drug ? hill(c, drug.ec, drug.n) : 0, tox = drug ? hill(c, drug.tc, drug.n) : 0;
   let live = 0, total = 0, coreDead = 0;
@@ -435,7 +469,7 @@ function draw() {
   const rl = document.getElementById("rdLive");
   rl.textContent = lp + "%";
   rl.style.color = lp < 70 ? "var(--bad)" : lp < 90 ? "var(--warn)" : "var(--navy)";
-  S.coreFrac = total ? coreDead / total : 0;
+  S.coreFrac = total ? coreDead / total : 0; S.lp = lp;
   legend(v.kind, drug);
 }
 function legend(kind, drug) {
@@ -450,12 +484,13 @@ function legend(kind, drug) {
 // ---------- 단계 전환 ----------
 function goto(n) {
   S.step = n;
-  for (let i = 1; i <= 4; i++) {
+  for (let i = 1; i <= 5; i++) {
     document.getElementById("step" + i).hidden = i !== n;
     document.getElementById("s" + i).className = i === n ? "on" : i < n ? "done" : "";
   }
   if (n === 3) syncGrow();
   if (n === 4) setupDrugs();
+  if (n === 5) finale();
   draw();
   window.scrollTo({ top: 0 });
 }
@@ -556,7 +591,7 @@ function syncGrow() {
 function setupDrugs() {
   const D = DRUGS[S.organ];
   document.getElementById("drugTitle").textContent = `${ORGANS[S.organ]} 금쪽이에게 약을 줘 보세요`;
-  document.getElementById("drugSub").innerHTML = `<small>세포 박사의 한마디</small>${D.disease} 약을 고르고 농도를 올려 보세요. 암세포만 잡고 금쪽이는 지켜야 해요.`;
+  document.getElementById("drugSub").innerHTML = `<small>세포 박사의 한마디</small>${D.disease} 좋은 약은 <b>나쁜 세포만 골라 잡고 착한 세포는 지키는</b> 약이에요. 농도를 조금씩 올리며 파란 선(효과)은 높고 빨간 선(부작용)은 낮은 <b>‘딱 좋은 양’</b>을 찾아보세요.`;
   const wrap = document.getElementById("drugCards");
   wrap.innerHTML = D.list.map(x => `<button class="card" data-d="${x.id}" aria-pressed="false"><span class="t">${x.name}<small>${x.tag}</small></span><span class="d">${x.d}</span></button>`).join("");
   wrap.onclick = e => {
@@ -606,21 +641,39 @@ function chart(d) {
 }
 function verdict(d, e, t) {
   const w = windowRange(d); let big, txt, col;
-  if (t >= .3 && e < .5) { big = "처방 실패 · 금쪽이만 다쳤어요"; col = "#ff8f87"; txt = d.ec === Infinity ? "이 약은 암세포를 죽이지 못하고 정상 간세포만 죽였어요. 고용량 아세트아미노펜은 실제로 급성 간부전의 대표 원인이에요." : "암세포보다 정상세포가 먼저 죽어요. 이 용량은 환자에게 쓸 수 없어요."; }
-  else if (t >= .3) { big = "효과는 있지만 부작용이 커요"; col = "#ffd36b"; txt = w ? "농도를 조금 낮춰 초록색 치료 창 안으로 들어가 보세요." : "치료 창이 없어요. 효과가 나는 농도에서 정상세포도 같이 죽어요. 이런 후보는 임상시험 전에 걸러져요."; }
-  else if (e >= .5) { big = "금쪽 처방 성공! 효과 ↑ 독성 ↓"; col = "#7ff0b8"; txt = "암세포는 죽고 정상세포는 대부분 살아 있어요. 사람에게 쓸 용량을 정할 근거가 돼요."; }
-  else if (e > .1) { big = "아직 효과가 약해요"; col = "#ffffff"; txt = "농도를 더 올려 보세요."; }
-  else { big = "반응 없음"; col = "#9fd6ff"; txt = d.ec === Infinity ? "진통제라 암세포엔 효과가 없어요. 농도를 계속 올리면 무슨 일이 생기는지 보세요." : "농도를 올려 보세요."; }
+  if (t >= .3 && e < .5) { S.vk = "toxic"; big = "처방 실패 · 금쪽이만 다쳤어요"; col = "#ff8f87"; txt = d.ec === Infinity ? "이 약은 암세포를 죽이지 못하고 정상 간세포만 죽였어요. 고용량 아세트아미노펜은 실제로 급성 간부전의 대표 원인이에요." : "암세포보다 정상세포가 먼저 죽어요. 이 용량은 환자에게 쓸 수 없어요."; }
+  else if (t >= .3) { S.vk = "side"; big = "효과는 있지만 부작용이 커요"; col = "#ffd36b"; txt = w ? "농도를 조금 낮춰 초록색 치료 창 안으로 들어가 보세요." : "치료 창이 없어요. 효과가 나는 농도에서 정상세포도 같이 죽어요. 이런 후보는 임상시험 전에 걸러져요."; }
+  else if (e >= .5) { S.vk = "good"; big = "금쪽 처방 성공! 효과 ↑ 독성 ↓"; col = "#7ff0b8"; txt = "암세포는 죽고 정상세포는 대부분 살아 있어요. 사람에게 쓸 용량을 정할 근거가 돼요."; }
+  else if (e > .1) { S.vk = "weak"; big = "아직 효과가 약해요"; col = "#ffffff"; txt = "농도를 더 올려 보세요."; }
+  else { S.vk = "weak"; big = "반응 없음"; col = "#9fd6ff"; txt = d.ec === Infinity ? "진통제라 암세포엔 효과가 없어요. 농도를 계속 올리면 무슨 일이 생기는지 보세요." : "농도를 올려 보세요."; }
   if (d.id === "nx7" && !w) txt += " 동물에서 잘 듣던 약이 사람 세포에서 실패하는 일은 흔해요. 오가노이드가 이걸 미리 잡아내요.";
   if (d.id === "iri" && t >= .3) txt += " 실제 환자에게서 보이는 설사 부작용을 장 오가노이드가 재현한 거예요.";
+  S.vbig = big;
   document.getElementById("verdict").innerHTML = `<small>세포 박사의 판정</small><div class="big" style="color:${col}">${big}</div><p>${txt}</p>`;
   const rel = document.getElementById("relNote");
   if (S.coreFrac > .15) { rel.hidden = false; rel.innerHTML = `<b class="h">이 결과, 믿어도 될까요?</b><p>세포의 ${Math.round(S.coreFrac * 100)}%가 이미 산소 부족으로 죽어 있어요. 약 때문에 죽은 건지 구분하기 어려워요. 3화로 돌아가 크기를 줄이거나 솔루션을 켜면 더 깨끗한 결과가 나와요.</p><button class="ghost" id="back3" style="align-self:flex-start">3화로 돌아가기</button>`; document.getElementById("back3").onclick = () => goto(3); }
   else rel.hidden = true;
-  const C = CELLS[S.cell];
-  document.getElementById("summary").innerHTML = `<dt>출생 배경</dt><dd>${C.name} (${C.en})</dd><dt>자란 모습</dt><dd>${ORGANS[S.organ]} 오가노이드 · 분화 효율 ${S.eff}%</dd><dt>키</dt><dd>${Math.round(diam(S.day))} µm · ${S.day}일 배양</dd><dt>처방한 약</dt><dd>${d.name} ${fmtDose(S.dose)}</dd>${S.cell === "ips" ? `<dt>의미</dt><dd>환자 본인 세포로 만든 금쪽이라, 이 결과가 곧 그 환자 맞춤 처방의 근거가 돼요.</dd>` : ""}`;
 }
-document.getElementById("go3").onclick = () => goto(4);
+document.getElementById("go3").onclick = () => { S.growLive = S.lp; goto(4); };
+document.getElementById("go4").onclick = () => goto(5);
+function finale() {
+  const C = CELLS[S.cell], d = S.drug, org = ORGANS[S.organ];
+  const lead = {
+    good: "암세포는 잡고 금쪽이는 지켜 낸 ‘딱 좋은 양’까지 찾았어요. 과학자 부모로서 100점이에요.",
+    side: "효과는 찾았지만 부작용도 같이 왔어요. 괜찮아요. 금쪽이가 대신 겪어 준 덕분에 진짜 환자가 다칠 일을 미리 막았어요.",
+    toxic: "약은 실패했지만 괜찮아요. 금쪽이가 대신 아파 준 덕분에 진짜 환자가 이 약 때문에 다칠 일을 막았어요. 이게 바로 오가노이드가 하는 일이에요.",
+    weak: "약의 효과는 아직 약했지만, 줄기세포 하나에서 미니 장기까지 키워 낸 것만으로도 대단해요.",
+  }[S.vk] || "";
+  document.getElementById("finLead").textContent = lead + (S.coreFrac > .15 ? " 다음엔 크기를 조금 줄이면 속까지 건강한 금쪽이가 될 거예요." : "");
+  const fs = [...S.factors].map(f => FACTORS[f][0]).join(" · ");
+  const sol = [S.spin && "회전 배양기", S.vessel && "혈관 세포 친구"].filter(Boolean).join(", ");
+  document.getElementById("album").innerHTML = [
+    `<span class="k">탄생</span>${C.name}(${C.en}), “${C.nick}”`,
+    `<span class="k">진로</span>${fs} 처방 → <b>${org} 오가노이드</b> <span class="s">(분화 효율 ${S.eff}%)</span>`,
+    `<span class="k">성장</span>${S.day}일 동안 ${diam(S.day) >= 1000 ? (diam(S.day) / 1000).toFixed(1) + " mm" : Math.round(diam(S.day)) + " µm"}까지 키움 · 살아있는 세포 ${S.growLive}% <span class="s">${sol ? "(솔루션: " + sol + ")" : ""}</span>`,
+    `<span class="k">약 처방</span>${d.name} ${fmtDose(S.dose)} → ${S.vbig}`,
+  ].map(x => `<li>${x}</li>`).join("") + (S.cell === "ips" ? `<li><span class="k">보너스</span>환자 본인 세포로 만든 금쪽이라, 이 결과가 곧 그 환자 맞춤 처방의 근거가 돼요.</li>` : "");
+}
 document.getElementById("restart").onclick = () => {
   S.cell = null; S.organ = "brain"; S.day = 20; S.spin = S.vessel = false; S.drug = null; day.value = 20;
   ["tgSpin", "tgVessel"].forEach(id => document.getElementById(id).setAttribute("aria-pressed", "false"));
