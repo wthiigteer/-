@@ -1,0 +1,586 @@
+<title>오가노이드 키우기</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: 형광 현미경 시야(상단 고정) + 아래로 스크롤되는 실험 노트 단계. 의도적으로 어두운 단일 테마(형광 이미징 화면). */
+:root {
+  --bg: #0a0e14;          /* 암실 */
+  --panel: #121923;       /* 실험대 */
+  --line: #233042;
+  --fg: #e3e9f1;
+  --muted: #8b9ab0;
+  --dapi: #7ea8ff;        /* 핵 염색(DAPI) = UI 강조색 */
+  --gfp: #5df29a;         /* 장 · LGR5-GFP */
+  --sox2: #ff6ad5;        /* 뇌 · SOX2 */
+  --alb: #ffc457;         /* 간 · 알부민 */
+  --pi: #ff5446;          /* 죽은 세포(PI 염색) */
+  --ok: #5df29a;
+  --warn: #ffc457;
+  --font-display: "Black Han Sans", "IBM Plex Sans KR", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans KR", system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--bg); color: var(--fg); }
+body { font-family: var(--font-body); font-size: 15px; line-height: 1.6; -webkit-tap-highlight-color: transparent; }
+.wrap { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+
+header.top { padding-block: 14px 6px; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+h1 { font-family: var(--font-display); font-weight: 400; font-size: 26px; letter-spacing: .01em; margin: 0; line-height: 1.15; }
+h1 span { color: var(--dapi); }
+.steps { display: flex; gap: 6px; font-family: var(--font-mono); font-size: 12px; }
+.steps b { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--line); color: var(--muted); font-weight: 600; }
+.steps b.on { background: var(--dapi); color: var(--bg); border-color: var(--dapi); }
+.steps b.done { color: var(--dapi); border-color: var(--dapi); }
+
+/* 현미경 시야 */
+.scope { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 6px 10px; border-bottom: 1px solid var(--line); }
+.scope-inner { display: flex; gap: 12px; align-items: stretch; }
+.field { position: relative; width: min(56vw, 36vh, 300px); aspect-ratio: 1; flex: none; max-width: 100%; }
+canvas { width: 100%; height: 100%; display: block; border-radius: 50%; background: #05070b; box-shadow: 0 0 0 1px var(--line), 0 0 0 6px #0d131b, 0 0 0 7px var(--line); }
+.readout { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 6px; font-size: 12px; }
+.readout .lbl { color: var(--muted); font-size: 11px; letter-spacing: .06em; }
+.readout .val { font-family: var(--font-mono); font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.2; }
+.legend { display: flex; flex-direction: column; gap: 3px; color: var(--muted); font-size: 11.5px; margin-top: 2px; }
+.legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+
+main { padding-block: 18px 40px; }
+section.step { display: flex; flex-direction: column; gap: 14px; }
+.eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; color: var(--dapi); text-transform: uppercase; }
+h2 { font-family: var(--font-display); font-weight: 400; font-size: 22px; margin: 0; line-height: 1.25; text-wrap: balance; }
+p { margin: 0; }
+.sub { color: var(--muted); font-size: 14px; }
+
+.cards { display: flex; flex-direction: column; gap: 10px; }
+.card { text-align: left; font: inherit; color: inherit; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; cursor: pointer; display: flex; flex-direction: column; gap: 6px; }
+.card[aria-pressed="true"] { border-color: var(--dapi); box-shadow: inset 0 0 0 1px var(--dapi); }
+.card .t { font-weight: 700; font-size: 16px; display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.card .t small { font-family: var(--font-mono); font-weight: 400; color: var(--muted); font-size: 12px; }
+.card .d { font-size: 13.5px; color: var(--muted); }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-size: 11.5px; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--fg); }
+.tag.no { color: var(--pi); border-color: color-mix(in srgb, var(--pi) 50%, transparent); }
+
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 4px; }
+.seg button { font: inherit; font-weight: 700; color: var(--muted); background: none; border: 0; border-radius: 9px; padding: 10px 4px; cursor: pointer; }
+.seg button[aria-pressed="true"] { color: var(--bg); }
+.seg button[data-o="brain"][aria-pressed="true"] { background: var(--sox2); }
+.seg button[data-o="liver"][aria-pressed="true"] { background: var(--alb); }
+.seg button[data-o="gut"][aria-pressed="true"] { background: var(--gfp); }
+
+.chips { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.chip { font: inherit; text-align: left; color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 9px 11px; cursor: pointer; display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.chip b { font-size: 14px; }
+.chip span { font-size: 11.5px; color: var(--muted); line-height: 1.35; }
+.chip[aria-pressed="true"] { border-color: var(--dapi); background: color-mix(in srgb, var(--dapi) 14%, var(--panel)); }
+.chip[aria-pressed="true"] b::before { content: "✓ "; color: var(--dapi); }
+
+.cta { font: inherit; font-weight: 700; font-size: 16px; color: var(--bg); background: var(--dapi); border: 0; border-radius: 14px; padding: 14px; cursor: pointer; width: 100%; }
+.cta:disabled { opacity: .35; cursor: default; }
+.ghost { font: inherit; font-size: 14px; color: var(--dapi); background: none; border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--dapi); outline-offset: 2px; }
+
+.note { border-left: 3px solid var(--line); padding: 2px 0 2px 12px; font-size: 14px; display: flex; flex-direction: column; gap: 4px; }
+.note.ok { border-color: var(--ok); }
+.note.bad { border-color: var(--pi); }
+.note.warn { border-color: var(--warn); }
+.note b.h { font-size: 15px; }
+.note ul { margin: 0; padding-left: 18px; color: var(--muted); }
+
+.slider { display: flex; flex-direction: column; gap: 6px; }
+.slider .row { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.slider .row output { font-family: var(--font-mono); font-weight: 600; font-variant-numeric: tabular-nums; }
+input[type=range] { width: 100%; accent-color: var(--dapi); height: 28px; }
+.ticks { display: flex; justify-content: space-between; font-family: var(--font-mono); font-size: 10.5px; color: var(--muted); }
+
+.toggles { display: flex; flex-wrap: wrap; gap: 8px; }
+.toggle { font: inherit; font-size: 13px; color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 999px; padding: 7px 12px; cursor: pointer; }
+.toggle[aria-pressed="true"] { border-color: var(--dapi); color: var(--dapi); }
+
+.meter { display: flex; flex-direction: column; gap: 4px; }
+.meter .bar { height: 10px; border-radius: 5px; background: var(--panel); border: 1px solid var(--line); overflow: hidden; }
+.meter .bar i { display: block; height: 100%; width: 0; transition: width .25s; }
+.meter .row { display: flex; justify-content: space-between; font-size: 13px; }
+.meter .row output { font-family: var(--font-mono); font-weight: 600; font-variant-numeric: tabular-nums; }
+.meters { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+.chart { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 10px 8px 6px; }
+.chart svg { width: 100%; height: auto; display: block; }
+.chart .cap { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11.5px; color: var(--muted); padding: 2px 6px 4px; }
+.chart .cap i { display: inline-block; width: 14px; height: 3px; border-radius: 2px; vertical-align: 3px; margin-right: 5px; }
+
+.verdict { border-radius: 14px; padding: 14px; background: var(--panel); border: 1px solid var(--line); display: flex; flex-direction: column; gap: 6px; }
+.verdict .big { font-family: var(--font-display); font-size: 21px; line-height: 1.25; }
+.summary { display: grid; grid-template-columns: auto 1fr; gap: 4px 14px; font-size: 13.5px; }
+.summary dt { color: var(--muted); }
+.summary dd { margin: 0; }
+.fine { font-size: 11.5px; color: var(--muted); }
+@media (prefers-reduced-motion: reduce) { .meter .bar i { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <h1>오가노이드 <span>키우기</span></h1>
+    <div class="steps" aria-label="진행 단계"><b id="s1">1</b><b id="s2">2</b><b id="s3">3</b><b id="s4">4</b></div>
+  </header>
+</div>
+
+<div class="scope">
+  <div class="wrap scope-inner">
+    <div class="field"><canvas id="cv" width="600" height="600" aria-label="현미경으로 본 오가노이드 단면"></canvas></div>
+    <div class="readout">
+      <div><div class="lbl">지름</div><div class="val" id="rdD">—</div></div>
+      <div><div class="lbl">살아있는 세포</div><div class="val" id="rdLive">—</div></div>
+      <div class="legend" id="legend"></div>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <!-- STEP 1 -->
+  <section class="step" id="step1">
+    <div class="eyebrow">Step 1 · 출발 세포</div>
+    <h2>어떤 줄기세포로 시작할까요?</h2>
+    <p class="sub">고르는 세포에 따라 만들 수 있는 장기가 달라져요.</p>
+    <div class="cards" id="cellCards"></div>
+    <button class="cta" id="go1" disabled>이 세포로 시작</button>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="step" id="step2" hidden>
+    <div class="eyebrow">Step 2 · 분화 레시피</div>
+    <h2>성장인자를 골라 장기를 만들어요</h2>
+    <p class="sub">목표 장기를 고르고, 배양액에 넣을 성장인자를 골라 보세요. 맞는 조합이어야 원하는 장기가 돼요.</p>
+    <div class="seg" id="organSeg">
+      <button data-o="brain" aria-pressed="true">뇌</button>
+      <button data-o="liver" aria-pressed="false">간</button>
+      <button data-o="gut" aria-pressed="false">장</button>
+    </div>
+    <div class="chips" id="factorChips"></div>
+    <button class="cta" id="culture">배양 시작</button>
+    <div id="cultResult"></div>
+    <button class="ghost" id="hintBtn" hidden>레시피 힌트 보기</button>
+    <div id="hint"></div>
+    <button class="cta" id="go2" hidden>더 크게 키워 보기 →</button>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="step" id="step3" hidden>
+    <div class="eyebrow">Step 3 · 키우기</div>
+    <h2>계속 키우면 어떻게 될까요?</h2>
+    <p class="sub">오가노이드엔 혈관이 없어요. 산소와 영양분은 바깥에서 스며들어 약 200&nbsp;µm 깊이까지만 닿아요. 슬라이더를 끝까지 밀어 보세요.</p>
+    <div class="slider">
+      <div class="row"><label for="day">배양 기간</label><output id="dayOut">20일</output></div>
+      <input type="range" id="day" min="3" max="60" step="1" value="20">
+      <div class="ticks"><span>3일</span><span>1개월</span><span>2개월</span></div>
+    </div>
+    <div class="note" id="growNote"></div>
+    <div>
+      <p class="sub" style="margin-bottom:8px">과학자들이 쓰는 해결책을 켜 보세요.</p>
+      <div class="toggles">
+        <button class="toggle" id="tgSpin" aria-pressed="false">회전 배양기</button>
+        <button class="toggle" id="tgVessel" aria-pressed="false">혈관 세포 같이 키우기</button>
+      </div>
+    </div>
+    <button class="cta" id="go3">이 크기로 약물 시험 →</button>
+  </section>
+
+  <!-- STEP 4 -->
+  <section class="step" id="step4" hidden>
+    <div class="eyebrow">Step 4 · 약물 시험</div>
+    <h2 id="drugTitle">약을 넣어 보세요</h2>
+    <p class="sub" id="drugSub"></p>
+    <div class="cards" id="drugCards"></div>
+    <div class="slider">
+      <div class="row"><label for="dose">농도</label><output id="doseOut">—</output></div>
+      <input type="range" id="dose" min="-2" max="4" step="0.05" value="-1">
+      <div class="ticks"><span>0.01 µM</span><span>1 µM</span><span>100 µM</span><span>10 mM</span></div>
+    </div>
+    <div class="meters">
+      <div class="meter"><div class="row"><span>효과 · 암세포 사멸</span><output id="effOut">0%</output></div><div class="bar"><i id="effBar" style="background:var(--dapi)"></i></div></div>
+      <div class="meter"><div class="row"><span>독성 · 정상세포 사멸</span><output id="toxOut">0%</output></div><div class="bar"><i id="toxBar" style="background:var(--pi)"></i></div></div>
+    </div>
+    <div class="chart">
+      <svg id="chart" viewBox="0 0 340 190" role="img" aria-label="농도-반응 곡선"></svg>
+      <div class="cap"><span><i style="background:var(--dapi)"></i>효과</span><span><i style="background:var(--pi)"></i>독성</span><span><i style="background:var(--ok);opacity:.35;height:8px"></i>치료 창</span></div>
+    </div>
+    <div class="verdict" id="verdict"></div>
+    <div class="note warn" id="relNote" hidden></div>
+    <dl class="summary" id="summary"></dl>
+    <button class="ghost" id="restart">처음부터 다시</button>
+    <p class="fine">농도·효율 수치는 실제 연구 경향을 바탕으로 교육용으로 단순화한 값이에요. ‘가상’ 표시가 없는 약은 실제 약이지만 반응 곡선은 근사치입니다.</p>
+  </section>
+</main>
+
+<script>
+(() => {
+// ---------- 데이터 ----------
+const CELLS = {
+  esc: { name: "배아줄기세포", en: "ESC", pluri: true, eff: 85, color: [126, 200, 255],
+    d: "수정 후 5~6일 된 배반포 안쪽 세포에서 얻어요. 몸의 거의 모든 세포로 변할 수 있어요(전분화능). 배아를 써야 해서 윤리 논쟁이 있어요.",
+    tags: [["전분화능"], ["뇌·간·장 모두 가능"], ["윤리 쟁점", 1]] },
+  asc: { name: "성체줄기세포", en: "ASC", pluri: false, eff: 92, color: [93, 242, 154],
+    d: "장의 움(crypt) 바닥에 있는 LGR5+ 줄기세포처럼, 다 자란 몸속 조직에 숨어 있어요. 자기 조직 쪽으로만 분화해요.",
+    tags: [["조직 특이적"], ["장·간 가능"], ["뇌는 불가", 1]] },
+  ips: { name: "유도만능줄기세포", en: "iPS", pluri: true, eff: 75, color: [190, 150, 255],
+    d: "환자의 피부·혈액 세포에 OCT4·SOX2·KLF4·c-MYC 네 유전자를 넣어 줄기세포로 되돌린 세포예요(2012 노벨상). 환자와 유전자가 같아요.",
+    tags: [["전분화능"], ["환자 맞춤"], ["배아 불필요"]] },
+};
+const FACTORS = {
+  A: ["Activin A", "내배엽 유도"],
+  W: ["Wnt3a", "뒤쪽(장) 패턴 · 줄기세포 유지"],
+  F: ["FGF", "증식 · 간/장 방향"],
+  R: ["R-spondin", "LGR5+ 줄기세포 유지"],
+  E: ["EGF", "상피세포 증식"],
+  N: ["Noggin", "BMP 신호 차단"],
+  S: ["SB431542", "TGF-β/Activin 차단"],
+  H: ["HGF", "간세포 성숙"],
+};
+const ORGANS = { brain: "뇌", liver: "간", gut: "장" };
+// 레시피: req 필수, bad 넣으면 실패(이유)
+const RECIPES = {
+  pluri: {
+    brain: { req: { N: "신경으로 가려면 BMP 신호를 막아야 해요 → Noggin", S: "TGF-β 신호도 같이 막아야 해요 → SB431542 (Noggin과 합쳐 ‘이중 SMAD 억제’)" },
+             bad: { A: "Activin A는 내배엽(간·장) 쪽으로 끌고 가요. 뇌는 외배엽에서 나와요.", W: "Wnt가 강하면 뒤쪽(척수 쪽) 정체성이 돼서 대뇌가 생기지 않아요." } },
+    liver: { req: { A: "먼저 Activin A로 내배엽을 만들어야 간이 될 수 있어요.", F: "FGF가 내배엽을 간 쪽으로 방향 잡아 줘요.", H: "HGF가 있어야 간세포가 성숙해요." },
+             bad: { S: "SB431542가 Activin A 신호를 막아서 내배엽이 안 생겨요.", W: "Wnt를 많이 주면 간 대신 장(후장) 쪽으로 가요." } },
+    gut:   { req: { A: "먼저 Activin A로 내배엽을 만들어야 장이 될 수 있어요.", W: "Wnt3a가 내배엽을 뒤쪽(장)으로 패턴화해요.", F: "FGF가 Wnt와 함께 장 싹(spheroid)을 틔워요.", R: "장 줄기세포를 유지하려면 R-spondin이 필요해요.", E: "EGF가 장 상피를 증식시켜요.", N: "Noggin이 BMP를 막아야 움(crypt)이 생겨요." },
+             bad: { S: "SB431542가 Activin A 신호를 막아서 내배엽이 안 생겨요." } },
+  },
+  asc: {
+    brain: null,
+    liver: { req: { R: "간 줄기세포를 유지하려면 R-spondin이 필요해요.", E: "EGF가 간 전구세포를 증식시켜요.", H: "HGF가 있어야 간세포가 성숙해요." }, bad: {} },
+    gut:   { req: { R: "LGR5+ 장 줄기세포는 R-spondin 없이는 사라져요.", E: "EGF가 장 상피를 증식시켜요.", N: "Noggin이 BMP를 막아야 움(crypt)이 유지돼요." }, bad: {} },
+  },
+};
+const SUCCESS = {
+  brain: "대뇌 오가노이드 완성! 분홍색 고리는 뇌실 주변의 신경 전구세포(SOX2+) ‘로제트’예요. 실제 태아 뇌의 피질처럼 층이 생겨요.",
+  liver: "간 오가노이드 완성! 노란색은 알부민을 만드는 간세포예요. 약물을 분해하는 효소(CYP)도 일부 갖고 있어요.",
+  gut: "장 오가노이드 완성! 바깥으로 튀어나온 싹이 움(crypt)이고, 그 끝의 초록 세포가 LGR5+ 장 줄기세포예요.",
+};
+const DRUGS = {
+  brain: { disease: "환자의 교모세포종(뇌종양) 세포를 오가노이드에 심었어요.", list: [
+    { id: "tmz", name: "테모졸로마이드", tag: "실제 항암제", ec: 120, tc: 2500, n: 1.6, d: "교모세포종 표준 치료제. DNA를 손상시켜 빨리 분열하는 종양세포를 죽여요." },
+    { id: "nx7", name: "NX-7", tag: "가상 신약", ec: 2, tc: 3, n: 2, d: "동물실험에선 종양을 잘 줄였던 후보 물질. 사람 뉴런에도 안전할까요?" },
+  ]},
+  liver: { disease: "간암 세포가 섞인 간 오가노이드예요.", list: [
+    { id: "sora", name: "소라페닙", tag: "실제 항암제", ec: 4, tc: 30, n: 1.8, d: "간암 표적치료제. 종양의 성장·혈관 신호를 막아요." },
+    { id: "apap", name: "아세트아미노펜", tag: "실제 진통제", ec: Infinity, tc: 6000, n: 2.5, d: "흔한 해열진통제(타이레놀 성분). 간에서 분해되며 독성 대사물(NAPQI)이 생겨요." },
+  ]},
+  gut: { disease: "대장암 환자의 종양에서 떼어 낸 세포로 만든 ‘환자 유래 오가노이드’예요.", list: [
+    { id: "fu", name: "5-FU", tag: "실제 항암제", ec: 3, tc: 45, n: 1.6, d: "대장암 1차 치료제(5-플루오로우라실). DNA 합성을 막아요." },
+    { id: "iri", name: "이리노테칸", tag: "실제 항암제", ec: 9, tc: 14, n: 2, d: "대장암 치료제. 실제로 장 점막 손상으로 심한 설사를 일으키기로 유명해요." },
+  ]},
+};
+
+// ---------- 상태 ----------
+const S = { step: 1, cell: null, organ: "brain", factors: new Set(), ok: false, eff: 0, day: 20, spin: false, vessel: false, drug: null, dose: -1 };
+
+// ---------- 세포 점 생성 ----------
+function mulberry32(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const rnd = mulberry32(20261015);
+const SP = 11, RMAX = 290, cells = [];
+for (let y = -RMAX, row = 0; y <= RMAX; y += SP * 0.866, row++) {
+  for (let x = -RMAX + (row % 2) * SP / 2; x <= RMAX; x += SP) {
+    const jx = x + (rnd() - .5) * 4, jy = y + (rnd() - .5) * 4, r = Math.hypot(jx, jy);
+    if (r < RMAX) cells.push({ x: jx, y: jy, r, a: Math.atan2(jy, jx), n: rnd(), k: rnd(), u: rnd() });
+  }
+}
+const ROSETTES = [[0.42, 0.5], [0.48, 2.6], [0.4, 4.4], [0.0, 0]].map(([d, a]) => [d * Math.cos(a), d * Math.sin(a)]);
+
+function shape(kind, a) {
+  if (kind === "brain") return 1 + .06 * Math.sin(3 * a + 1) + .04 * Math.sin(5 * a + 2);
+  if (kind === "gut") return .9 + .2 * Math.pow(Math.max(0, Math.sin(6 * a)), 3);
+  if (kind === "liver") return 1 + .03 * Math.sin(4 * a + .5);
+  if (kind === "fail") return 1 + .14 * Math.sin(2 * a) + .09 * Math.sin(7 * a + 1);
+  return 1 + .05 * Math.sin(5 * a);
+}
+const diam = day => Math.min(3000, 100 * Math.exp(day / 17.6));
+const radiusPx = d => 34 + 236 * Math.sqrt((d - 100) / 2900);
+const O2 = () => 200 + (S.spin ? 100 : 0) + (S.vessel ? 300 : 0);
+const hill = (c, ec, n) => ec === Infinity ? 0 : 1 / (1 + Math.pow(ec / c, n));
+
+// ---------- 그리기 ----------
+const cv = document.getElementById("cv"), ctx = cv.getContext("2d");
+function view() {
+  if (S.step === 1) return { kind: "stem", d: 120 };
+  if (S.step === 2) return { kind: S.ok ? S.organ : (S.tried ? "fail" : "stem"), d: S.tried ? diam(20) : 120 };
+  return { kind: S.organ, d: diam(S.day) };
+}
+function draw() {
+  const W = cv.width, C = W / 2, v = view();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.globalCompositeOperation = "source-over";
+  ctx.fillStyle = "#05070b"; ctx.fillRect(0, 0, W, W);
+  const rpx = v.kind === "stem" ? 40 : radiusPx(v.d), ppu = rpx / (v.d / 2);
+  const L = O2(), necro = S.step >= 3;
+  const drug = S.step === 4 && S.drug ? S.drug : null;
+  const c = Math.pow(10, S.dose);
+  const eff = drug ? hill(c, drug.ec, drug.n) : 0, tox = drug ? hill(c, drug.tc, drug.n) : 0;
+  let live = 0, total = 0, coreDead = 0;
+  ctx.globalCompositeOperation = "lighter";
+  const cellCol = S.cell ? CELLS[S.cell].color : [126, 168, 255];
+  for (const p of cells) {
+    const edge = rpx * shape(v.kind, p.a);
+    if (p.r > edge) continue;
+    const rel = p.r / edge, rx = p.x / rpx, ry = p.y / rpx;
+    let col = null, rad = 4.2, alpha = .85;
+    // 구조
+    if (v.kind === "stem") col = cellCol;
+    else if (v.kind === "fail") col = p.u < .15 ? [255, 196, 87] : p.u < .3 ? [255, 106, 213] : [110, 125, 150];
+    else if (v.kind === "brain") {
+      let dr = 9; for (const [cx, cy] of ROSETTES) dr = Math.min(dr, Math.hypot(rx - cx, ry - cy));
+      if (dr < .07) continue;                      // 뇌실(빈 공간)
+      col = dr < .2 ? [255, 106, 213] : rel > .82 ? [240, 190, 255] : [126, 168, 255];
+    } else if (v.kind === "gut") {
+      if (rel < .3) continue;                       // 장 내강
+      const bud = Math.pow(Math.max(0, Math.sin(6 * p.a)), 3);
+      col = bud > .5 && rel > .82 ? [93, 242, 154] : rel > .55 ? [70, 190, 140] : [126, 168, 255];
+    } else if (v.kind === "liver") {
+      col = p.u < .18 ? [126, 168, 255] : [255, 196, 87];
+    }
+    total++;
+    // 산소 부족 → 괴사
+    let dead = false, hyp = false;
+    if (necro) {
+      const depth = (edge - p.r) / ppu, lim = L * (.85 + .3 * p.n);
+      if (depth > lim) { dead = true; coreDead++; } else if (depth > lim * .72) hyp = true;
+    }
+    // 약물
+    let tumor = false;
+    if (drug && !dead) {
+      tumor = Math.hypot(rx - .28, ry + .3) < .34 + .05 * Math.sin(p.a * 5);
+      if (tumor) { if (p.k < eff) dead = true; else col = [215, 250, 255]; }
+      else if (p.k < tox) dead = true;
+    }
+    if (dead) { col = [255, 84, 70]; rad = 3; alpha = .7; }
+    else { live++; if (hyp) alpha = .38; }
+    ctx.fillStyle = `rgba(${col[0]},${col[1]},${col[2]},${alpha * .25})`;
+    ctx.beginPath(); ctx.arc(C + p.x * (rpx / rpx), C + p.y, rad * 1.9, 0, 6.2832); ctx.fill();
+    ctx.fillStyle = `rgba(${col[0]},${col[1]},${col[2]},${alpha})`;
+    ctx.beginPath(); ctx.arc(C + p.x, C + p.y, rad, 0, 6.2832); ctx.fill();
+  }
+  ctx.globalCompositeOperation = "source-over";
+  // 혈관
+  if (necro && S.vessel) {
+    ctx.strokeStyle = "rgba(255,120,150,.75)"; ctx.lineWidth = 3; ctx.lineCap = "round";
+    for (let i = 0; i < 5; i++) {
+      const a = i * 1.26 + .3; ctx.beginPath();
+      ctx.moveTo(C + Math.cos(a) * rpx * 1.02, C + Math.sin(a) * rpx * 1.02);
+      ctx.quadraticCurveTo(C + Math.cos(a + .5) * rpx * .6, C + Math.sin(a + .5) * rpx * .6, C + Math.cos(a + 1.1) * rpx * .12, C + Math.sin(a + 1.1) * rpx * .12);
+      ctx.stroke();
+    }
+  }
+  // 스케일바
+  const umBar = v.d > 1200 ? 500 : v.d > 400 ? 200 : 50, bar = umBar * ppu;
+  ctx.fillStyle = "#e3e9f1"; ctx.fillRect(W - 60 - bar, W - 80, bar, 6);
+  ctx.font = "600 26px 'IBM Plex Mono', monospace"; ctx.textAlign = "right";
+  ctx.fillText(umBar + " µm", W - 60, W - 92);
+  // 판독
+  document.getElementById("rdD").textContent = v.kind === "stem" ? "세포 덩어리" : (v.d >= 1000 ? (v.d / 1000).toFixed(1) + " mm" : Math.round(v.d) + " µm");
+  const lp = total ? Math.round(100 * live / total) : 100;
+  document.getElementById("rdLive").textContent = lp + "%";
+  document.getElementById("rdLive").style.color = lp < 70 ? "var(--pi)" : lp < 90 ? "var(--warn)" : "var(--fg)";
+  S.coreFrac = total ? coreDead / total : 0;
+  legend(v.kind, drug);
+}
+function legend(kind, drug) {
+  const items = [];
+  const m = { stem: [S.cell ? `rgb(${CELLS[S.cell].color})` : "var(--dapi)", "줄기세포"], brain: ["var(--sox2)", "신경 전구세포(SOX2)"], liver: ["var(--alb)", "간세포(알부민)"], gut: ["var(--gfp)", "장 줄기세포(LGR5)"], fail: ["#6e7d96", "엉뚱한 세포 뒤죽박죽"] };
+  items.push(m[kind]);
+  if (kind !== "stem" && kind !== "fail") items.push(["var(--dapi)", "세포핵(DAPI)"]);
+  if (drug) items.push(["#d7faff", "암세포"]);
+  if (S.step >= 3) items.push(["var(--pi)", "죽은 세포(PI)"]);
+  document.getElementById("legend").innerHTML = items.map(([c, t]) => `<span><i style="background:${c}"></i>${t}</span>`).join("");
+}
+
+// ---------- 단계 전환 ----------
+function goto(n) {
+  S.step = n;
+  for (let i = 1; i <= 4; i++) {
+    document.getElementById("step" + i).hidden = i !== n;
+    const b = document.getElementById("s" + i); b.className = i === n ? "on" : i < n ? "done" : "";
+  }
+  if (n === 3) syncGrow();
+  if (n === 4) setupDrugs();
+  draw();
+  document.querySelector("main").scrollIntoView({ block: "start" });
+  window.scrollTo({ top: 0 });
+}
+
+// STEP 1
+const cellCards = document.getElementById("cellCards");
+cellCards.innerHTML = Object.entries(CELLS).map(([k, c]) => `
+  <button class="card" data-c="${k}" aria-pressed="false">
+    <span class="t">${c.name}<small>${c.en}</small></span>
+    <span class="d">${c.d}</span>
+    <span class="tags">${c.tags.map(([t, no]) => `<span class="tag${no ? " no" : ""}">${t}</span>`).join("")}</span>
+  </button>`).join("");
+cellCards.addEventListener("click", e => {
+  const b = e.target.closest(".card"); if (!b) return;
+  S.cell = b.dataset.c;
+  cellCards.querySelectorAll(".card").forEach(x => x.setAttribute("aria-pressed", x === b));
+  document.getElementById("go1").disabled = false; draw();
+});
+document.getElementById("go1").onclick = () => { resetCulture(); goto(2); };
+
+// STEP 2
+const chips = document.getElementById("factorChips");
+chips.innerHTML = Object.entries(FACTORS).map(([k, [n, d]]) => `<button class="chip" data-f="${k}" aria-pressed="false"><b>${n}</b><span>${d}</span></button>`).join("");
+chips.addEventListener("click", e => {
+  const b = e.target.closest(".chip"); if (!b) return;
+  const f = b.dataset.f; S.factors.has(f) ? S.factors.delete(f) : S.factors.add(f);
+  b.setAttribute("aria-pressed", S.factors.has(f));
+  softReset();
+});
+document.getElementById("organSeg").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  S.organ = b.dataset.o;
+  document.querySelectorAll("#organSeg button").forEach(x => x.setAttribute("aria-pressed", x === b));
+  softReset();
+});
+function softReset() {
+  S.ok = false; S.tried = false;
+  document.getElementById("cultResult").innerHTML = ""; document.getElementById("hint").innerHTML = "";
+  document.getElementById("hintBtn").hidden = true; document.getElementById("go2").hidden = true; draw();
+}
+function resetCulture() {
+  S.factors.clear(); chips.querySelectorAll(".chip").forEach(x => x.setAttribute("aria-pressed", "false")); softReset();
+}
+function recipe() { return RECIPES[CELLS[S.cell].pluri ? "pluri" : "asc"][S.organ]; }
+document.getElementById("culture").onclick = () => {
+  const out = document.getElementById("cultResult"), rec = recipe(), F = S.factors, org = ORGANS[S.organ];
+  S.tried = true;
+  if (!rec) {
+    S.ok = false;
+    out.innerHTML = `<div class="note bad"><b class="h">${org} 오가노이드 실패</b><p>성체줄기세포는 원래 있던 조직 쪽으로만 분화해요. 장·간 줄기세포로는 뇌를 만들 수 없어요. 뇌는 배아줄기세포나 iPS로 만들어요.</p></div>`;
+    document.getElementById("hintBtn").hidden = true; document.getElementById("go2").hidden = true; draw(); return;
+  }
+  const bad = Object.keys(rec.bad).filter(f => F.has(f)), miss = Object.keys(rec.req).filter(f => !F.has(f));
+  const extra = [...F].filter(f => !(f in rec.req) && !(f in rec.bad));
+  if (bad.length || miss.length) {
+    S.ok = false;
+    const reasons = [...bad.map(f => `<li><b>${FACTORS[f][0]}</b> 때문에: ${rec.bad[f]}</li>`), ...(miss.length ? [`<li>빠진 성장인자가 ${miss.length}개 있어요.</li>`] : [])];
+    out.innerHTML = `<div class="note bad"><b class="h">분화 실패 · 엉뚱한 세포 덩어리가 됐어요</b><ul>${reasons.join("")}</ul></div>`;
+    document.getElementById("hintBtn").hidden = !miss.length; document.getElementById("go2").hidden = true;
+  } else {
+    S.ok = true;
+    S.eff = Math.max(40, CELLS[S.cell].eff - 8 * extra.length);
+    out.innerHTML = `<div class="note ok"><b class="h">${org} 오가노이드 성공 · 분화 효율 약 ${S.eff}%</b><p>${SUCCESS[S.organ]}</p>${extra.length ? `<p class="sub">필요 없었던 인자: ${extra.map(f => FACTORS[f][0]).join(", ")} (비싼 배양액 낭비, 효율 −${8 * extra.length}%)</p>` : ""}${S.cell === "ips" ? `<p class="sub">iPS는 세포주마다 효율이 들쭉날쭉해요. 대신 환자 본인의 유전자를 그대로 가져요.</p>` : ""}</div>`;
+    document.getElementById("hintBtn").hidden = true; document.getElementById("go2").hidden = false;
+  }
+  document.getElementById("hint").innerHTML = "";
+  draw();
+};
+document.getElementById("hintBtn").onclick = () => {
+  const rec = recipe(), miss = Object.keys(rec.req).filter(f => !S.factors.has(f));
+  document.getElementById("hint").innerHTML = `<div class="note warn"><b class="h">빠진 것</b><ul>${miss.map(f => `<li>${rec.req[f]}</li>`).join("")}</ul></div>`;
+};
+document.getElementById("go2").onclick = () => goto(3);
+
+// STEP 3
+const day = document.getElementById("day");
+day.oninput = () => { S.day = +day.value; syncGrow(); draw(); };
+function toggle(id, key) {
+  const b = document.getElementById(id);
+  b.onclick = () => { S[key] = !S[key]; b.setAttribute("aria-pressed", S[key]); syncGrow(); draw(); };
+}
+toggle("tgSpin", "spin"); toggle("tgVessel", "vessel");
+function syncGrow() {
+  const d = diam(S.day), L = O2(), core = Math.max(0, d - 2 * L);
+  document.getElementById("dayOut").textContent = S.day + "일";
+  const n = document.getElementById("growNote");
+  if (core <= 0) {
+    n.className = "note ok";
+    n.innerHTML = `<b class="h">건강해요</b><p>지름 ${Math.round(d)} µm. 가장 깊은 세포도 표면에서 ${Math.round(d / 2)} µm 안쪽이라 산소가 닿아요(한계 약 ${L} µm).</p>`;
+  } else {
+    n.className = "note bad";
+    n.innerHTML = `<b class="h">가운데가 죽고 있어요 · 괴사 코어 약 ${core >= 1000 ? (core / 1000).toFixed(1) + " mm" : Math.round(core) + " µm"}</b><p>표면에서 ${L} µm보다 깊은 곳은 산소·영양분이 닿지 않아요. 빨간 점이 죽은 세포예요. 진짜 몸에선 혈관이 이 문제를 해결해요.</p>`;
+  }
+}
+
+// STEP 4
+function setupDrugs() {
+  const D = DRUGS[S.organ];
+  document.getElementById("drugTitle").textContent = `${ORGANS[S.organ]} 오가노이드에 약을 넣어 보세요`;
+  document.getElementById("drugSub").textContent = D.disease + " 약을 고르고 농도를 올려 보세요.";
+  const wrap = document.getElementById("drugCards");
+  wrap.innerHTML = D.list.map(x => `<button class="card" data-d="${x.id}" aria-pressed="false"><span class="t">${x.name}<small>${x.tag}</small></span><span class="d">${x.d}</span></button>`).join("");
+  wrap.onclick = e => {
+    const b = e.target.closest(".card"); if (!b) return;
+    S.drug = D.list.find(x => x.id === b.dataset.d);
+    wrap.querySelectorAll(".card").forEach(x => x.setAttribute("aria-pressed", x === b));
+    updateDrug();
+  };
+  S.drug = D.list[0]; wrap.firstElementChild.setAttribute("aria-pressed", "true");
+  S.dose = -1; document.getElementById("dose").value = -1;
+  updateDrug();
+}
+document.getElementById("dose").oninput = e => { S.dose = +e.target.value; updateDrug(); };
+const fmtDose = lg => { const c = Math.pow(10, lg); const r = v => String(Number(v.toPrecision(2))); return c >= 1000 ? r(c / 1000) + " mM" : r(c) + " µM"; };
+function updateDrug() {
+  const d = S.drug, c = Math.pow(10, S.dose), e = hill(c, d.ec, d.n), t = hill(c, d.tc, d.n);
+  document.getElementById("doseOut").textContent = fmtDose(S.dose);
+  document.getElementById("effOut").textContent = Math.round(e * 100) + "%";
+  document.getElementById("toxOut").textContent = Math.round(t * 100) + "%";
+  document.getElementById("effBar").style.width = e * 100 + "%";
+  document.getElementById("toxBar").style.width = t * 100 + "%";
+  draw(); chart(d); verdict(d, e, t);
+}
+function windowRange(d) {
+  let lo = null, hi = null;
+  for (let x = -2; x <= 4.0001; x += .01) {
+    const c = Math.pow(10, x); if (hill(c, d.ec, d.n) >= .5 && hill(c, d.tc, d.n) <= .2) { if (lo === null) lo = x; hi = x; }
+  }
+  return lo === null ? null : [lo, hi];
+}
+function chart(d) {
+  const X0 = 40, X1 = 328, Y0 = 156, Y1 = 12, sx = x => X0 + (x + 2) / 6 * (X1 - X0), sy = y => Y0 - y * (Y0 - Y1);
+  let s = "";
+  for (let i = 0; i <= 4; i++) { const y = sy(i / 4); s += `<line x1="${X0}" x2="${X1}" y1="${y}" y2="${y}" stroke="var(--line)" stroke-width="1"/><text x="${X0 - 6}" y="${y + 4}" text-anchor="end" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono, monospace">${i * 25}%</text>`; }
+  [[-2, "0.01"], [0, "1"], [2, "100"], [4, "10k"]].forEach(([x, l]) => s += `<text x="${sx(x)}" y="${Y0 + 16}" text-anchor="middle" font-size="10" fill="var(--muted)" font-family="IBM Plex Mono, monospace">${l}</text>`);
+  s += `<text x="${X1}" y="${Y0 + 30}" text-anchor="end" font-size="10" fill="var(--muted)">농도 (µM, 로그)</text>`;
+  const w = windowRange(d);
+  if (w) s += `<rect x="${sx(w[0])}" y="${Y1}" width="${Math.max(2, sx(w[1]) - sx(w[0]))}" height="${Y0 - Y1}" fill="var(--ok)" opacity=".16"/>`;
+  const path = ec => { let p = ""; for (let x = -2; x <= 4.0001; x += .05) p += (p ? "L" : "M") + sx(x).toFixed(1) + "," + sy(hill(Math.pow(10, x), ec, d.n)).toFixed(1); return p; };
+  s += `<path d="${path(d.ec)}" fill="none" stroke="var(--dapi)" stroke-width="2.5"/>`;
+  s += `<path d="${path(d.tc)}" fill="none" stroke="var(--pi)" stroke-width="2.5"/>`;
+  const cx = sx(S.dose);
+  s += `<line x1="${cx}" x2="${cx}" y1="${Y1 - 4}" y2="${Y0}" stroke="var(--fg)" stroke-width="1.5" stroke-dasharray="3 3"/>`;
+  const c = Math.pow(10, S.dose);
+  s += `<circle cx="${cx}" cy="${sy(hill(c, d.ec, d.n))}" r="5" fill="var(--dapi)" stroke="var(--panel)" stroke-width="2"/>`;
+  s += `<circle cx="${cx}" cy="${sy(hill(c, d.tc, d.n))}" r="5" fill="var(--pi)" stroke="var(--panel)" stroke-width="2"/>`;
+  document.getElementById("chart").innerHTML = s;
+}
+function verdict(d, e, t) {
+  const w = windowRange(d); let big, txt, col;
+  if (t >= .3 && e < .5) { big = "독성 우세"; col = "var(--pi)"; txt = d.ec === Infinity ? "이 약은 암세포를 죽이지 못하고 정상 간세포만 죽였어요. 고용량 아세트아미노펜은 실제로 급성 간부전의 대표 원인이에요." : "암세포보다 정상세포가 먼저 죽어요. 이 용량은 환자에게 쓸 수 없어요."; }
+  else if (t >= .3) { big = "효과는 있지만 독성도 커요"; col = "var(--warn)"; txt = w ? "농도를 조금 낮춰 초록색 치료 창 안으로 들어가 보세요." : "치료 창이 없어요. 효과가 나는 농도에서 정상세포도 같이 죽어요. 이런 후보는 임상시험 전에 걸러져요."; }
+  else if (e >= .5) { big = "치료 창 안 · 효과 ↑ 독성 ↓"; col = "var(--ok)"; txt = "암세포는 죽고 정상세포는 대부분 살아 있어요. 사람에게 쓸 용량을 정할 근거가 돼요."; }
+  else if (e > .1) { big = "효과가 아직 약해요"; col = "var(--fg)"; txt = "농도를 더 올려 보세요."; }
+  else { big = "반응 없음"; col = "var(--muted)"; txt = d.ec === Infinity ? "진통제라 암세포엔 효과가 없어요. 농도를 계속 올리면 무슨 일이 생기는지 보세요." : "농도를 올려 보세요."; }
+  if (d.id === "nx7" && !w) txt += " 동물에서 잘 듣던 약이 사람 세포에서 실패하는 일은 흔해요. 오가노이드가 이걸 미리 잡아내요.";
+  if (d.id === "iri" && t >= .3) txt += " 실제 환자에게서 보이는 설사 부작용을 장 오가노이드가 재현한 거예요.";
+  document.getElementById("verdict").innerHTML = `<div class="big" style="color:${col}">${big}</div><p>${txt}</p>`;
+  const rel = document.getElementById("relNote");
+  if (S.coreFrac > .15) { rel.hidden = false; rel.innerHTML = `<b class="h">결과를 믿을 수 있을까요?</b><p>세포의 ${Math.round(S.coreFrac * 100)}%가 이미 산소 부족으로 죽어 있어요. 약 때문에 죽은 건지 구분하기 어려워요. 3단계로 돌아가 크기를 줄이거나 회전 배양기·혈관을 켜면 더 깨끗한 결과가 나와요.</p><button class="ghost" id="back3" style="align-self:flex-start">3단계로 돌아가기</button>`; document.getElementById("back3").onclick = () => goto(3); }
+  else rel.hidden = true;
+  const C = CELLS[S.cell];
+  document.getElementById("summary").innerHTML = `<dt>출발 세포</dt><dd>${C.name} (${C.en})</dd><dt>만든 장기</dt><dd>${ORGANS[S.organ]} · 분화 효율 ${S.eff}%</dd><dt>크기</dt><dd>${Math.round(diam(S.day))} µm · ${S.day}일 배양</dd><dt>시험한 약</dt><dd>${d.name} ${fmtDose(S.dose)}</dd>${S.cell === "ips" ? `<dt>의미</dt><dd>환자 본인 세포로 만든 오가노이드라, 이 결과가 곧 그 환자 맞춤 처방의 근거가 돼요.</dd>` : ""}`;
+}
+document.getElementById("go3").onclick = () => goto(4);
+document.getElementById("restart").onclick = () => {
+  S.cell = null; S.organ = "brain"; S.day = 20; S.spin = S.vessel = false; S.drug = null; day.value = 20;
+  ["tgSpin", "tgVessel"].forEach(id => document.getElementById(id).setAttribute("aria-pressed", "false"));
+  document.querySelectorAll("#organSeg button").forEach((x, i) => x.setAttribute("aria-pressed", i === 0));
+  cellCards.querySelectorAll(".card").forEach(x => x.setAttribute("aria-pressed", "false"));
+  document.getElementById("go1").disabled = true; resetCulture(); goto(1);
+};
+
+goto(1);
+})();
+</script>
