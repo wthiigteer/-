@@ -1,0 +1,353 @@
+<title>Dreamy Dress Up</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Gaegu:wght@700&family=Gowun+Dodum&family=Jua&display=swap">
+<style>
+/* Layout: 왼쪽은 방 배경 속 캐릭터(스테이지), 오른쪽은 흰 카드형 옷장 패널(코디 고르기 → 탭 → 아이템 그리드 → 상세 카드 → 버튼).
+   폰에서는 스테이지가 위, 옷장이 아래. 의도적으로 밝은 핑크 단일 테마. */
+:root {
+  --bg: #fbeef3;
+  --paper: #fffafc;
+  --card: #ffffff;
+  --line: #f6d5e1;
+  --pink: #ef7fa5;
+  --pink-deep: #d9577f;
+  --pink-soft: #fde4ed;
+  --ink: #5a3a4a;
+  --muted: #a07f8e;
+  --scrim: rgba(90, 58, 74, .55);
+  --font-logo: "Dancing Script", "Gowun Dodum", cursive;
+  --font-hand: "Gaegu", "Gowun Dodum", cursive;
+  --font-ui: "Jua", "Gowun Dodum", system-ui, sans-serif;
+  --font-body: "Gowun Dodum", system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--bg); color: var(--ink); }
+body { font-family: var(--font-body); font-size: 15px; line-height: 1.5; -webkit-tap-highlight-color: transparent;
+  background-image: radial-gradient(circle at 12% 8%, #fff 0, transparent 38%), radial-gradient(circle at 90% 90%, #fff4f8 0, transparent 40%); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--pink); outline-offset: 2px; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 18px 40px; }
+.app { display: grid; grid-template-columns: minmax(300px, 440px) minmax(0, 1fr); gap: 22px; align-items: start; }
+
+/* ---------- 스테이지 ---------- */
+.stage-col { display: flex; flex-direction: column; gap: 12px; position: sticky; top: 16px; }
+.stage { position: relative; border-radius: 28px; overflow: hidden; aspect-ratio: 455 / 1100; width: min(100%, calc((100vh - 190px) * 455 / 1100)); max-width: 100%; margin-inline: auto;
+  box-shadow: 0 0 0 6px #fff, 0 0 0 7px var(--line), 0 24px 40px -22px rgba(160, 70, 110, .55); background: var(--pink-soft); }
+.stage img.look { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 100%; transition: opacity .45s ease; }
+.stage .tint { position: absolute; inset: 0; mix-blend-mode: soft-light; pointer-events: none; transition: background .4s; }
+.logo { text-align: center; }
+.logo h1 { margin: 0; font-family: var(--font-logo); font-weight: 700; font-size: clamp(34px, 4vw, 44px); line-height: 1; color: var(--pink); text-shadow: 0 2px 0 #fff, 0 0 12px #fff; }
+.logo p { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+.note { position: absolute; left: 16px; bottom: 16px; font-family: var(--font-hand); font-size: 22px; line-height: 1.05; color: var(--pink-deep); transform: rotate(-8deg); text-shadow: 0 0 8px #fff, 0 0 4px #fff; pointer-events: none; }
+.stage-tools { position: absolute; right: 12px; bottom: 12px; display: flex; flex-direction: column; gap: 8px; }
+.round { width: 48px; height: 48px; border-radius: 16px; border: 1px solid var(--line); background: rgba(255, 255, 255, .88); display: grid; place-items: center; gap: 0; font-size: 10px; color: var(--muted); backdrop-filter: blur(4px); padding: 4px 0 2px; }
+.round svg { width: 20px; height: 20px; stroke: var(--pink-deep); }
+.name-row { display: flex; align-items: center; justify-content: center; gap: 8px; }
+.name-row label { font-family: var(--font-ui); color: var(--muted); font-size: 14px; }
+.name-row input { width: 10em; text-align: center; font-family: var(--font-ui); font-size: 17px; color: var(--ink); background: #fff; border: 1.5px solid var(--line); border-radius: 999px; padding: 5px 14px; }
+
+/* ---------- 옷장 패널 ---------- */
+.panel { background: var(--paper); border: 1px solid var(--line); border-radius: 28px; padding: 18px; display: flex; flex-direction: column; gap: 16px; min-width: 0; box-shadow: 0 20px 40px -30px rgba(160, 70, 110, .45); }
+.row-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.row-head h2 { margin: 0; font-family: var(--font-ui); font-weight: 400; font-size: 17px; color: var(--ink); display: flex; align-items: center; gap: 6px; }
+.row-head h2::before { content: "♡"; color: var(--pink); }
+.pill { font-family: var(--font-ui); font-size: 13px; color: var(--pink-deep); background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; font-variant-numeric: tabular-nums; }
+.looks { display: flex; gap: 10px; flex-wrap: wrap; }
+.look-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 0; border: 0; background: none; font-family: var(--font-ui); font-size: 13px; color: var(--muted); }
+.look-btn img { width: 64px; height: 64px; border-radius: 18px; object-fit: cover; border: 3px solid #fff; box-shadow: 0 0 0 1px var(--line); transition: box-shadow .15s, transform .15s; }
+.look-btn[aria-pressed="true"] img { box-shadow: 0 0 0 3px var(--pink); }
+.look-btn[aria-pressed="true"] { color: var(--pink-deep); }
+.look-btn:hover img { transform: translateY(-2px); }
+
+.tabs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 2px; }
+.tabs::-webkit-scrollbar { display: none; }
+.tab { flex: 1 0 auto; display: flex; align-items: center; justify-content: center; gap: 6px; min-width: 84px; font-family: var(--font-ui); font-size: 15px; color: var(--ink); background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 9px 12px; }
+.tab svg { width: 20px; height: 20px; stroke: currentColor; }
+.tab[aria-selected="true"] { background: var(--pink); border-color: var(--pink); color: #fff; box-shadow: 0 6px 14px -8px var(--pink-deep); }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 12px; }
+.item { position: relative; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0; border: 0; background: none; text-align: center; }
+.item .thumb { width: 100%; aspect-ratio: 1; border-radius: 18px; background: #fff; border: 1.5px solid var(--line); display: grid; place-items: center; overflow: hidden; transition: border-color .15s, transform .15s; }
+.item .thumb img { width: 88%; height: 88%; object-fit: contain; }
+.item:hover .thumb { transform: translateY(-2px); }
+.item[aria-pressed="true"] .thumb { border: 2.5px solid var(--pink); box-shadow: 0 0 0 4px var(--pink-soft); }
+.item .label { font-size: 13px; color: var(--ink); }
+.item[aria-pressed="true"] .label { color: var(--pink-deep); font-weight: 700; }
+.badge { position: absolute; top: 6px; left: 6px; font-family: var(--font-ui); font-size: 11px; color: #fff; background: var(--pink); border-radius: 999px; padding: 1px 8px; }
+.fav { position: absolute; top: 4px; right: 4px; width: 30px; height: 30px; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .9); display: grid; place-items: center; padding: 0; }
+.fav svg { width: 17px; height: 17px; fill: none; stroke: #c9a9b8; stroke-width: 2; }
+.fav[aria-pressed="true"] svg { fill: var(--pink); stroke: var(--pink); }
+.empty { grid-column: 1 / -1; text-align: center; color: var(--muted); padding: 28px 12px; background: #fff; border: 1.5px dashed var(--line); border-radius: 18px; }
+
+.tints { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 10px 14px; }
+.tints span { font-family: var(--font-ui); font-size: 14px; color: var(--muted); margin-right: 4px; }
+.sw { width: 28px; height: 28px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 1px var(--line); background: var(--c); padding: 0; }
+.sw[aria-pressed="true"] { box-shadow: 0 0 0 2.5px var(--pink); }
+
+.detail { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 14px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 12px; }
+.detail .dthumb { width: 96px; height: 96px; border-radius: 16px; border: 1px solid var(--line); display: grid; place-items: center; overflow: hidden; }
+.detail .dthumb img { width: 90%; height: 90%; object-fit: contain; }
+.detail h3 { margin: 0; font-family: var(--font-ui); font-weight: 400; font-size: 19px; color: var(--ink); }
+.detail p { margin: 2px 0 0; font-size: 14px; color: var(--muted); }
+.detail .state { display: inline-block; margin-top: 6px; font-family: var(--font-ui); font-size: 12px; border-radius: 999px; padding: 2px 10px; background: var(--pink-soft); color: var(--pink-deep); }
+.detail .state.off { background: #f3eef1; color: var(--muted); }
+
+.actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.btn { display: flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--font-ui); font-size: 16px; border-radius: 18px; padding: 13px 10px; border: 1px solid var(--line); background: #fff; color: var(--ink); transition: transform .12s; }
+.btn svg { width: 20px; height: 20px; stroke: currentColor; }
+.btn:hover { transform: translateY(-2px); }
+.btn.primary { background: linear-gradient(180deg, #f59bbb, var(--pink)); border-color: var(--pink); color: #fff; box-shadow: 0 8px 16px -10px var(--pink-deep); }
+
+.toast { position: fixed; left: 50%; bottom: max(24px, env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: #fff; font-family: var(--font-ui); padding: 10px 18px; border-radius: 999px; z-index: 40; box-shadow: 0 10px 24px -10px rgba(0, 0, 0, .4); }
+
+/* ---------- 사진 ---------- */
+#photo { position: fixed; inset: 0; z-index: 30; background: var(--scrim); display: grid; place-items: center; overflow-y: auto;
+  padding: max(20px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(20px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.photo-inner { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+.polaroid { margin: 0; width: min(300px, 80vw); background: #fff; padding: 12px 12px 16px; border-radius: 6px; transform: rotate(-2deg); box-shadow: 0 26px 40px -14px rgba(60, 20, 40, .6); animation: drop .5s cubic-bezier(.2, 1.4, .4, 1); }
+@keyframes drop { from { transform: translateY(-40px) rotate(6deg); opacity: 0; } }
+.polaroid .pimg { position: relative; aspect-ratio: 3 / 4; overflow: hidden; border-radius: 3px; }
+.polaroid .pimg img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%; }
+.polaroid .pimg .tint { position: absolute; inset: 0; mix-blend-mode: soft-light; }
+.polaroid figcaption { font-family: var(--font-hand); font-size: 26px; color: var(--pink-deep); margin-top: 8px; line-height: 1.1; }
+.polaroid small { display: block; font-family: var(--font-body); font-size: 12px; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+.photo-hint { margin: 0; color: #fff; font-size: 14px; text-align: center; }
+
+.spark { position: absolute; pointer-events: none; color: #fff; font-size: 20px; text-shadow: 0 0 8px var(--pink); animation: spark .9s ease-out forwards; z-index: 3; }
+@keyframes spark { from { opacity: 1; transform: translateY(0) scale(.6); } to { opacity: 0; transform: translateY(-40px) scale(1.2); } }
+
+@media (max-width: 820px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .stage-col { position: static; }
+  .stage { width: min(100%, calc(76vh * 455 / 1100)); }
+  .actions { grid-template-columns: 1fr 1fr; }
+  .actions .btn.primary { grid-column: 1 / -1; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spark, .polaroid { animation: none !important; }
+  .stage img.look, .btn, .item .thumb, .look-btn img { transition: none; }
+}
+</style>
+
+<div class="wrap">
+  <div class="app">
+    <section class="stage-col" aria-label="캐릭터">
+      <div class="logo"><h1>Dreamy Dress Up</h1><p>나만의 스타일을 완성해봐요 ♡</p></div>
+      <div class="stage" id="stage">
+        <img class="look" id="lookImg" src="img/look1.jpg" alt="핑크 리본 블라우스와 체크 스커트를 입은 소녀">
+        <div class="tint" id="tint"></div>
+        <div class="note">오늘도<br>예쁜 너 ♡</div>
+        <div class="stage-tools">
+          <button class="round" id="toolPhoto" type="button" aria-label="사진 찍기"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>사진</button>
+          <button class="round" id="toolRandom" type="button" aria-label="랜덤 코디"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 14-5.3L20 9M20 4v5h-5M20 12a8 8 0 0 1-14 5.3L4 15M4 20v-5h5"/></svg>랜덤</button>
+        </div>
+      </div>
+      <div class="name-row"><label for="dollName">이름</label><input id="dollName" maxlength="10" value="유리" autocomplete="off"></div>
+    </section>
+
+    <section class="panel" aria-label="옷장">
+      <div>
+        <div class="row-head"><h2>코디 고르기</h2><span class="pill" id="savedCount">코디함 0</span></div>
+        <div class="looks" id="looks" style="margin-top:10px"></div>
+      </div>
+
+      <div class="tabs" id="tabs" role="tablist"></div>
+      <div class="grid" id="grid"></div>
+
+      <div class="tints" id="tints"><span>조명</span></div>
+
+      <div class="detail" id="detail" aria-live="polite"></div>
+
+      <div class="actions">
+        <button class="btn" id="btnRandom" type="button"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="9" cy="9" r="1.2" fill="currentColor"/><circle cx="15" cy="15" r="1.2" fill="currentColor"/><circle cx="15" cy="9" r="1.2" fill="currentColor"/><circle cx="9" cy="15" r="1.2" fill="currentColor"/></svg>랜덤 코디</button>
+        <button class="btn" id="btnSave" type="button"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h10l3 3v13H5V4z"/><path d="M8 4v5h7V4M8 20v-6h8v6"/></svg>코디 저장하기</button>
+        <button class="btn primary" id="btnPhoto" type="button"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>완성하기</button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div id="photo" hidden>
+  <div class="photo-inner">
+    <figure class="polaroid">
+      <div class="pimg"><img id="pImg" src="img/look1.jpg" alt=""><div class="tint" id="pTint"></div></div>
+      <figcaption id="pCap">유리의 오늘 코디 ♡</figcaption>
+      <small id="pDate"></small>
+    </figure>
+    <p class="photo-hint">마음에 들면 화면을 캡처해서 간직하세요.</p>
+    <button class="btn primary" id="btnClose" type="button">옷장으로 돌아가기</button>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+(() => {
+const LOOKS = [
+  { id: 1, name: '코디 1', title: '러블리 리본', img: 'img/look1.jpg', face: 'img/face1.jpg', alt: '오프숄더 리본 블라우스, 핑크 체크 프릴 스커트, 블랙 메리제인을 신은 소녀', wear: ['반묶음', '리본 블라우스', '플리츠 스커트', '메리제인'] },
+  { id: 2, name: '코디 2', title: '핑크 피크닉', img: 'img/look2.jpg', face: 'img/face2.jpg', alt: '퍼프 소매 리본 블라우스, 핑크 체크 스커트, 핑크 메리제인을 신은 소녀', wear: ['긴 웨이브', '리본 블라우스', '플리츠 스커트', '메리제인'] },
+  { id: 3, name: '코디 3', title: '스윗 데이트', img: 'img/look3.jpg', face: 'img/face3.jpg', alt: '긴소매 리본 블라우스, 핑크 체크 스커트, 니삭스를 신은 소녀', wear: ['긴 웨이브', '리본 블라우스', '플리츠 스커트', '메리제인'] },
+];
+const RAW = [["리본 블라우스","top","top-1.jpg"],["오프숄더 니트","top","top-2.jpg"],["크롭 가디건","outer","outer-1.jpg"],["레이스 탑","top","top-3.jpg"],["셔츠","top","top-4.jpg"],["티셔츠","top","top-5.jpg"],["후드티","top","top-6.jpg"],["니트 가디건","outer","outer-2.jpg"],["뷔스티에","top","top-7.jpg"],["블라우스","top","top-8.jpg"],["카라 블라우스","top","top-9.jpg"],["나시","top","top-10.jpg"],["탑","top","top-11.jpg"],["스웨터","top","top-12.jpg"],["트위드 자켓","outer","outer-3.jpg"],["긴 웨이브","hair","hair-1.jpg"],["블랙 생머리","hair","hair-2.jpg"],["하이 포니테일","hair","hair-3.jpg"],["반묶음","hair","hair-4.jpg"],["단발 C컬","hair","hair-5.jpg"],["핑크 웨이브","hair","hair-6.jpg"],["금발 생머리","hair","hair-7.jpg"],["트윈테일","hair","hair-8.jpg"],["묶음 헤어","hair","hair-9.jpg"],["숏컷","hair","hair-10.jpg"],["크롭 자켓","outer","outer-4.jpg"],["맨투맨","top","top-13.jpg"],["플리츠 스커트","bottom","bottom-1.jpg"],["데님 팬츠","bottom","bottom-2.jpg"],["블랙 스커트","bottom","bottom-3.jpg"],["체크 스커트","bottom","bottom-4.jpg"],["와이드 팬츠","bottom","bottom-5.jpg"],["메리제인","shoes","shoes-1.jpg"],["스니커즈","shoes","shoes-2.jpg"],["롱부츠","shoes","shoes-3.jpg"],["리본 플랫슈즈","shoes","shoes-4.jpg"],["힐","shoes","shoes-5.jpg"]];
+const DESC = {
+  '리본 블라우스': '사랑스러운 리본이 포인트인 러블리한 블라우스예요.', '오프숄더 니트': '어깨가 살짝 드러나는 부드러운 핑크 니트예요.', '레이스 탑': '레이스가 하늘하늘한 여름 탑이에요.',
+  '셔츠': '어디에나 잘 어울리는 하늘색 셔츠예요.', '티셔츠': '하트 프린트가 들어간 블랙 티셔츠예요.', '후드티': '편하게 입기 좋은 그레이 후드티예요.', '뷔스티에': '레이스업 디테일이 있는 블랙 뷔스티에예요.',
+  '블라우스': '리본 타이가 달린 아이보리 블라우스예요.', '카라 블라우스': '동그란 카라가 귀여운 블라우스예요.', '나시': '레이스가 달린 화이트 나시예요.', '탑': '은은한 라벤더 컬러의 탑이에요.',
+  '스웨터': '포근한 파스텔 블루 스웨터예요.', '맨투맨': '리본 그래픽이 들어간 회색 맨투맨이에요.',
+  '크롭 가디건': '짧은 기장이 경쾌한 핑크 가디건이에요.', '니트 가디건': '단추가 귀여운 니트 가디건이에요.', '트위드 자켓': '단정한 트위드 자켓이에요.', '크롭 자켓': '시크한 블랙 크롭 자켓이에요.',
+  '긴 웨이브': '풍성하게 흐르는 긴 웨이브 헤어예요.', '블랙 생머리': '찰랑찰랑한 블랙 생머리예요.', '하이 포니테일': '높게 묶어 발랄한 포니테일이에요.', '반묶음': '리본으로 반만 묶은 웨이브 헤어예요.',
+  '단발 C컬': '안으로 말린 단정한 단발이에요.', '핑크 웨이브': '솜사탕 같은 핑크 웨이브예요.', '금발 생머리': '빛나는 금발 생머리예요.', '트윈테일': '양쪽으로 묶은 귀여운 트윈테일이에요.',
+  '묶음 헤어': '높게 올려 묶은 웨이브 헤어예요.', '숏컷': '볼륨감 있는 짧은 컷이에요.',
+  '플리츠 스커트': '핑크 체크 패턴의 플리츠 스커트예요.', '데님 팬츠': '와이드한 실루엣의 데님 팬츠예요.', '블랙 스커트': '어디에나 어울리는 블랙 플리츠 스커트예요.',
+  '체크 스커트': '레이어드 디테일이 있는 체크 스커트예요.', '와이드 팬츠': '편안한 연청 와이드 팬츠예요.',
+  '메리제인': '리본이 달린 핑크 메리제인이에요.', '스니커즈': '깔끔한 화이트 스니커즈예요.', '롱부츠': '무릎까지 오는 블랙 롱부츠예요.', '리본 플랫슈즈': '리본이 달린 핑크 굽 슈즈예요.', '힐': '우아한 화이트 힐이에요.',
+};
+const ITEMS = RAW.map(([name, cat, file]) => ({ name, cat, img: 'img/items/' + file, desc: DESC[name] || '' }));
+const TABS = [
+  { id: 'hair', name: '헤어', icon: '<path d="M6 20c-1-4-1-8 1-11a5 5 0 0 1 10 0c2 3 2 7 1 11"/><path d="M8 9c2 1 6 1 8-1"/>' },
+  { id: 'top', name: '상의', icon: '<path d="M8 4 4 7l2 4 2-1v10h8V10l2 1 2-4-4-3c-1 2-2.5 3-4 3S9 6 8 4z"/>' },
+  { id: 'bottom', name: '하의', icon: '<path d="M7 5h10l3 14H4z"/><path d="M10 5l-1 14M14 5l1 14"/>' },
+  { id: 'outer', name: '아우터', icon: '<path d="M8 4 4 7v13h5V10M16 4l4 3v13h-5V10M8 4l4 6 4-6"/>' },
+  { id: 'shoes', name: '신발', icon: '<path d="M4 15c3 0 5-1 7-5l3 1-1 4h6l1 4H4z"/>' },
+  { id: 'fav', name: '찜', icon: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>' },
+];
+const TINTS = [['기본', 'transparent'], ['로즈', '#ff8fb8'], ['피치', '#ffc49a'], ['선샤인', '#ffe58a'], ['스카이', '#9fd3ff'], ['라벤더', '#c9a8ff'], ['무드', '#4a3a5a']];
+
+const KEY = 'dreamy-dressup-v1';
+const DEFAULT = { look: 0, tab: 'top', item: '리본 블라우스', favs: ['리본 블라우스'], saved: [], tint: 0, name: '유리' };
+let state = JSON.parse(JSON.stringify(DEFAULT));
+const $ = id => document.getElementById(id);
+const heartSvg = '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>';
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+function load() { try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && typeof s.look === 'number') return s; } catch (e) {} return null; }
+const wearing = name => LOOKS[state.look].wear.includes(name);
+
+function renderStage(animate) {
+  const L = LOOKS[state.look], img = $('lookImg');
+  if (animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    img.style.opacity = 0;
+    setTimeout(() => { img.src = L.img; img.alt = L.alt; img.onload = () => { img.style.opacity = 1; }; }, 220);
+  } else { img.src = L.img; img.alt = L.alt; }
+  $('tint').style.background = TINTS[state.tint][1];
+}
+function renderLooks() {
+  $('looks').innerHTML = LOOKS.map((L, i) => `<button class="look-btn" type="button" data-look="${i}" aria-pressed="${i === state.look}"><img src="${L.face}" alt="">${L.name}</button>`).join('');
+  $('savedCount').textContent = `코디함 ${state.saved.length}`;
+}
+function renderTabs() {
+  $('tabs').innerHTML = TABS.map(t => `<button class="tab" type="button" role="tab" data-tab="${t.id}" aria-selected="${t.id === state.tab}"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${t.icon}</svg>${t.name}</button>`).join('');
+}
+function renderGrid() {
+  const list = state.tab === 'fav' ? ITEMS.filter(i => state.favs.includes(i.name)) : ITEMS.filter(i => i.cat === state.tab);
+  $('grid').innerHTML = list.length ? list.map(i => `
+    <div class="item" role="button" tabindex="0" data-item="${esc(i.name)}" aria-pressed="${i.name === state.item}">
+      <div class="thumb"><img src="${i.img}" alt="" loading="lazy"></div>
+      ${wearing(i.name) ? '<span class="badge">착용 중</span>' : ''}
+      <button class="fav" type="button" data-fav="${esc(i.name)}" aria-label="${esc(i.name)} 찜하기" aria-pressed="${state.favs.includes(i.name)}">${heartSvg}</button>
+      <span class="label">${esc(i.name)}</span>
+    </div>`).join('') : `<div class="empty">아직 찜한 아이템이 없어요. 마음에 드는 옷의 하트를 눌러 보세요 ♡</div>`;
+}
+function renderDetail() {
+  const i = ITEMS.find(x => x.name === state.item) || ITEMS[0];
+  const on = wearing(i.name);
+  const others = LOOKS.filter((L, k) => k !== state.look && L.wear.includes(i.name)).map(L => L.name);
+  const stateText = on ? `지금 ${LOOKS[state.look].name}에서 입고 있어요`
+    : others.length ? `${others.join(', ')}에서 입을 수 있어요`
+    : '아직 입혀 볼 수 없는 옷이에요. 옷 그림이 준비되면 입힐 수 있어요';
+  $('detail').innerHTML = `<div class="dthumb"><img src="${i.img}" alt=""></div><div><h3>${esc(i.name)}</h3><p>${esc(i.desc)}</p><span class="state${on ? '' : ' off'}">${stateText}</span></div>`;
+}
+function renderTints() {
+  $('tints').innerHTML = '<span>조명</span>' + TINTS.map(([n, c], k) => `<button class="sw" type="button" data-tint="${k}" style="--c:${c === 'transparent' ? '#fff' : c}" aria-label="${n} 조명" title="${n}" aria-pressed="${k === state.tint}"></button>`).join('');
+}
+function renderAll() { renderStage(); renderLooks(); renderTabs(); renderGrid(); renderTints(); renderDetail(); $('dollName').value = state.name; }
+
+function sparkle() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const st = $('stage');
+  for (let i = 0; i < 8; i++) {
+    const s = document.createElement('span');
+    s.className = 'spark'; s.textContent = i % 2 ? '✦' : '♡';
+    s.style.left = (15 + Math.random() * 70) + '%'; s.style.top = (20 + Math.random() * 60) + '%';
+    s.style.animationDelay = (i * 45) + 'ms';
+    st.appendChild(s); setTimeout(() => s.remove(), 1100);
+  }
+}
+let toastTimer;
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg; t.hidden = false;
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 1800);
+}
+function setLook(i) {
+  if (i === state.look) return;
+  state.look = i; renderStage(true); renderLooks(); renderGrid(); renderDetail(); save(); sparkle();
+}
+
+/* ---------- 이벤트 ---------- */
+$('looks').addEventListener('click', e => { const b = e.target.closest('[data-look]'); if (b) setLook(+b.dataset.look); });
+$('tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (!b) return; state.tab = b.dataset.tab; renderTabs(); renderGrid(); save(); });
+function pickItem(el) {
+  const name = el.dataset.item; state.item = name;
+  const idx = LOOKS.findIndex(L => L.wear.includes(name));
+  if (!wearing(name) && idx >= 0) setLook(idx);
+  renderGrid(); renderDetail(); save();
+}
+$('grid').addEventListener('click', e => {
+  const f = e.target.closest('[data-fav]');
+  if (f) {
+    const n = f.dataset.fav, k = state.favs.indexOf(n);
+    if (k >= 0) state.favs.splice(k, 1); else { state.favs.push(n); toast(`${n}을(를) 찜했어요 ♡`); }
+    renderGrid(); save(); return;
+  }
+  const it = e.target.closest('[data-item]'); if (it) pickItem(it);
+});
+$('grid').addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[data-item]')) { e.preventDefault(); pickItem(e.target); }
+});
+$('tints').addEventListener('click', e => { const b = e.target.closest('[data-tint]'); if (!b) return; state.tint = +b.dataset.tint; renderStage(); renderTints(); save(); });
+$('dollName').addEventListener('input', e => { state.name = e.target.value.trim(); save(); });
+
+function randomLook() {
+  let i; do { i = Math.floor(Math.random() * LOOKS.length); } while (i === state.look && LOOKS.length > 1);
+  state.tint = Math.floor(Math.random() * (TINTS.length - 1));
+  renderTints(); setLook(i); renderStage(); toast(`${LOOKS[i].title} 코디 완성!`);
+}
+$('btnRandom').addEventListener('click', randomLook);
+$('toolRandom').addEventListener('click', randomLook);
+$('btnSave').addEventListener('click', () => {
+  const L = LOOKS[state.look];
+  state.saved.push({ look: state.look, tint: state.tint, at: Date.now() });
+  save(); renderLooks(); toast(`${L.name}을(를) 코디함에 저장했어요`);
+});
+function openPhoto() {
+  const L = LOOKS[state.look];
+  $('pImg').src = L.img; $('pImg').alt = L.alt;
+  $('pTint').style.background = TINTS[state.tint][1];
+  $('pCap').textContent = `${state.name || '나'}의 ${L.title} 코디 ♡`;
+  const d = new Date();
+  $('pDate').textContent = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+  $('photo').hidden = false; $('btnClose').focus();
+}
+$('btnPhoto').addEventListener('click', openPhoto);
+$('toolPhoto').addEventListener('click', openPhoto);
+const closePhoto = () => { $('photo').hidden = true; $('btnPhoto').focus(); };
+$('btnClose').addEventListener('click', closePhoto);
+$('photo').addEventListener('click', e => { if (e.target.id === 'photo') closePhoto(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('photo').hidden) closePhoto(); });
+
+function start(data) {
+  const saved = (data && data.state) || load();
+  if (saved) state = { ...JSON.parse(JSON.stringify(DEFAULT)), ...saved };
+  if (!LOOKS[state.look]) state.look = 0;
+  if (!TABS.some(t => t.id === state.tab)) state.tab = 'top';
+  renderAll();
+}
+window.claude?.hot?.snapshot?.(() => ({ state }));
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+})();
+</script>
