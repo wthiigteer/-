@@ -244,7 +244,7 @@ const CATS = [
 const CAT = Object.fromEntries(CATS.map(c => [c.id, c]));
 
 const ITEMS = {
-  hair: [['long', '긴 생머리'], ['bob', '단발'], ['twin', '양갈래'], ['buns', '똥머리'], ['pony', '포니테일'], ['short', '바깥 뻗침'], ['curly', '뽀글 파마']],
+  hair: [['long', '긴 생머리'], ['bob', '단발'], ['twin', '양갈래'], ['buns', '똥머리'], ['pony', '포니테일'], ['short', '숏컷'], ['curly', '뽀글 파마']],
   face: [['smile', '방긋'], ['happy', '헤헤'], ['wink', '윙크'], ['sparkle', '별눈'], ['pout', '뾰로통'], ['sleepy', '졸려']],
   top: [['tee', '반팔 티'], ['blouse', '블라우스'], ['stripe', '줄무늬 티'], ['hoodie', '후드티'], ['sweater', '하트 니트'], ['crop', '크롭 탑']],
   bottom: [['skirt', '플리츠 스커트'], ['shorts', '반바지'], ['pants', '긴바지'], ['jeans', '청바지', '#4f7cf2'], ['overalls', '멜빵 반바지']],
@@ -259,52 +259,54 @@ for (const k in ITEMS) ITEMS[k] = ITEMS[k].map(([id, name, dc]) => ({ id, name, 
 const itemName = (cat, id) => (ITEMS[cat].find(i => i.id === id) || {}).name;
 const R = { hair: {}, face: {}, top: {}, bottom: {}, dress: {}, outer: {}, shoes: {}, headAcc: {}, prop: {}, bg: {} };
 
-/* ---------- 머리 ---------- */
-const TOP = 'M48 200 C36 118 90 82 150 82 C210 82 264 118 252 200';
-/* 앞머리 아랫선: 점 사이를 살짝 위로 휜 곡선으로 잇는다 */
-const edge = pts => pts.map((p, i) => {
-  const q = i ? pts[i - 1] : [252, 200];
-  return `Q${((q[0] + p[0]) / 2).toFixed(1)} ${((q[1] + p[1]) / 2 - 7).toFixed(1)} ${p[0]} ${p[1]}`;
-}).join(' ');
-const BLUNT = [[244, 156], [228, 132], [202, 140], [176, 130], [150, 139], [124, 130], [98, 140], [72, 132], [56, 156], [48, 200]];
-const SWEPT = [[246, 156], [228, 112], [204, 120], [172, 126], [140, 132], [108, 138], [80, 144], [62, 154], [48, 200]];
-const shine = ln('M86 124 Q110 100 146 94', 7, 'rgba(255,255,255,.55)');
-const side = (c, len) => { const d = `M58 160 Q46 ${210 + len * .4} 56 ${262 + len} Q70 ${220 + len * .4} 76 172Z`; return `<path d="${d}" ${st(c)}/><path d="${d}" ${MX} ${st(c)}/>`; };
-const bangs = (c, pts) => `<path d="${TOP} ${edge(pts)}Z" ${st(c, 4.5)}/>` + shine;
-const CAPB = 'M44 204 C32 112 90 76 150 76 C210 76 268 112 256 204 L250 236 L50 236Z';
-const tie = (x, y) => `<circle cx="${x}" cy="${y}" r="10" ${st('#ff5c93')}/><circle cx="${x - 3}" cy="${y - 3}" r="3" fill="#fff"/>`;
+/* ---------- 머리 ----------
+   머리는 두상을 따라 살짝만 크게, 앞머리는 이마 위에서 부드럽게 물결치고,
+   옆머리 한 가닥씩이 얼굴선을 감싼다. */
+const CROWN = 'M46 196 C40 124 92 94 150 94 C208 94 260 124 254 196';
+const BANGS = CROWN + ' C248 176 240 160 230 150 C214 136 198 150 184 144 C170 136 160 146 150 142 C138 146 128 136 116 144 C102 150 86 136 70 150 C60 160 52 176 46 196Z';
+const SWEPT = CROWN + ' C248 170 238 150 222 136 C196 128 160 136 130 150 C110 158 90 160 72 166 C60 172 52 182 46 196Z';
+const CAPB = CROWN + ' L252 232 L48 232Z';
+const darkC = c => shade(c, -.32);
+const strands = c => ln('M150 98 Q140 114 134 140 M150 98 Q162 114 168 140 M110 108 Q96 124 88 146 M190 108 Q204 124 212 146', 1.8, darkC(c));
+const shine = ln('M92 128 Q116 108 146 104', 6, 'rgba(255,255,255,.5)') + ln('M170 106 Q186 110 198 118', 4, 'rgba(255,255,255,.4)');
+const sideLocks = (c, len = 0) => {
+  const d = `M50 168 C42 ${212 + len * .5} 46 ${248 + len} 60 ${272 + len} C64 ${250 + len * .7} 66 ${222 + len * .3} 74 194 C70 182 62 174 50 168Z`;
+  return `<path d="${d}" ${st(c)}/><path d="${d}" ${MX} ${st(c)}/>`;
+};
+const front = (c, path = BANGS, locks = 0) => (locks === null ? '' : sideLocks(c, locks)) + `<path d="${path}" ${st(c)}/>` + strands(c) + shine;
+const tie = (x, y) => `<circle cx="${x}" cy="${y}" r="8" ${st('#ff5c93')}/><circle cx="${x - 2.5}" cy="${y - 2.5}" r="2.4" fill="#fff"/>`;
 
-R.hair.long = c => ({
-  hairBack: `<path d="M44 200 C32 112 90 76 150 76 C210 76 268 112 256 200 C266 270 268 330 258 392 Q150 408 42 392 C32 330 34 270 44 200Z" ${st(c, 4.5)}/>` +
-    ln('M70 280 Q64 330 72 380 M230 280 Q236 330 228 380', 3),
-  hairFront: side(c, 40) + bangs(c, BLUNT) });
 R.hair.bob = c => ({
-  hairBack: `<path d="M42 200 C32 112 90 76 150 76 C210 76 268 112 258 200 C262 238 266 264 252 282 Q150 296 48 282 C34 264 38 238 42 200Z" ${st(c, 4.5)}/>`,
-  hairFront: side(c, 0) + bangs(c, BLUNT) });
-const PIG = 'M66 128 C26 104 -2 140 10 182 C18 208 42 214 56 202 C42 190 38 168 52 158 C62 152 72 158 78 164Z';
+  hairBack: `<path d="M48 190 C44 120 90 94 150 94 C210 94 256 120 252 190 C252 230 256 256 246 274 C236 286 220 284 214 272 L86 272 C80 284 64 286 54 274 C44 256 48 230 48 190Z" ${st(c)}/>`,
+  hairFront: front(c) });
+R.hair.long = c => ({
+  hairBack: `<path d="M48 190 C44 120 90 94 150 94 C210 94 256 120 252 190 C258 260 262 320 254 372 C250 386 236 390 224 382 L76 382 C64 390 50 386 46 372 C38 320 42 260 48 190Z" ${st(c)}/>` +
+    ln('M64 290 Q60 330 66 368 M236 290 Q240 330 234 368', 1.8, darkC(c)),
+  hairFront: front(c, BANGS, 50) });
+const TAIL = 'M62 226 C32 250 28 300 40 342 C46 358 60 356 62 342 C64 300 74 264 80 236Z';
 R.hair.twin = c => ({
-  hairBack: `<path d="${PIG}" ${st(c, 4.5)}/><path d="${PIG}" ${MX} ${st(c, 4.5)}/><path d="${CAPB}" ${st(c, 4.5)}/>`,
-  hairFront: bangs(c, BLUNT) + tie(70, 136) + tie(230, 136) });
+  hairBack: `<path d="${TAIL}" ${st(c)}/><path d="${TAIL}" ${MX} ${st(c)}/><path d="${CAPB}" ${st(c)}/>`,
+  hairFront: front(c, BANGS, null) + tie(64, 232) + tie(236, 232) });
 R.hair.buns = c => ({
-  hairBack: `<circle cx="74" cy="100" r="36" ${st(c, 4.5)}/><circle cx="226" cy="100" r="36" ${st(c, 4.5)}/>` +
-    ln('M58 92 Q74 76 90 92 M242 92 Q226 76 210 92', 3) + `<path d="${CAPB}" ${st(c, 4.5)}/>`,
-  hairFront: bangs(c, BLUNT) });
+  hairBack: `<circle cx="90" cy="100" r="28" ${st(c)}/><circle cx="210" cy="100" r="28" ${st(c)}/>` +
+    ln('M78 96 Q90 84 102 96 M222 96 Q210 84 198 96', 1.8, darkC(c)) + `<path d="${CAPB}" ${st(c)}/>`,
+  hairFront: front(c, BANGS, null) });
 R.hair.pony = c => ({
-  hairBack: `<path d="M204 110 C270 92 292 172 276 244 C268 280 278 304 284 322 C250 314 234 280 240 238 C246 192 238 150 200 130Z" ${st(c, 4.5)}/><path d="${CAPB}" ${st(c, 4.5)}/>`,
-  hairFront: bangs(c, SWEPT) + tie(216, 112) });
+  hairBack: `<path d="M234 134 C276 148 282 220 264 282 C258 302 244 306 240 292 C252 242 250 192 226 160Z" ${st(c)}/><path d="${CAPB}" ${st(c)}/>`,
+  hairFront: front(c, SWEPT, null) + tie(236, 140) });
 R.hair.short = c => ({
-  hairBack: `<path d="M48 200 C38 114 92 80 150 80 C208 80 262 114 252 200 Q258 232 280 244 Q244 262 226 238 L74 238 Q56 262 20 244 Q42 232 48 200Z" ${st(c, 4.5)}/>`,
-  hairFront: bangs(c, SWEPT) });
+  hairBack: `<path d="M48 190 C44 120 90 94 150 94 C210 94 256 120 252 190 C252 212 248 228 238 238 L62 238 C52 228 48 212 48 190Z" ${st(c)}/>`,
+  hairFront: front(c, SWEPT, null) });
 R.hair.curly = c => {
   let back = '';
-  for (let d = -50; d <= 230; d += 20) {
+  for (let d = -40; d <= 220; d += 20) {
     const a = d * Math.PI / 180;
-    back += `<circle cx="${(150 + 104 * Math.cos(a)).toFixed(1)}" cy="${(180 - 92 * Math.sin(a)).toFixed(1)}" r="34" ${st(c, 4.5)}/>`;
+    back += `<circle cx="${(150 + 100 * Math.cos(a)).toFixed(1)}" cy="${(190 - 86 * Math.sin(a)).toFixed(1)}" r="28" ${st(c)}/>`;
   }
-  back += `<ellipse cx="150" cy="176" rx="110" ry="98" fill="${c}"/>`;
-  let fr = '';
-  [[62, 150], [88, 128], [118, 116], [150, 112], [182, 116], [212, 128], [238, 150]].forEach(([x, y]) => { fr += `<circle cx="${x}" cy="${y}" r="20" ${st(c, 4)}/>`; });
-  return { hairBack: back, hairFront: `<path d="${TOP} Q150 120 48 200Z" fill="${c}"/>` + ln(TOP, 4.5) + fr + shine };
+  back += `<ellipse cx="150" cy="186" rx="104" ry="90" fill="${c}"/>`;
+  let fr = `<path d="${CROWN} Q150 128 46 196Z" fill="${c}"/>`;
+  [[64, 166], [86, 146], [116, 134], [150, 130], [184, 134], [214, 146], [236, 166]].forEach(([x, y]) => { fr += `<circle cx="${x}" cy="${y}" r="17" ${st(c)}/>`; });
+  return { hairBack: back, hairFront: fr + shine };
 };
 
 /* ---------- 얼굴: 얼굴 절반을 차지하는 큰 눈 ---------- */
