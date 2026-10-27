@@ -38,6 +38,13 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pink); outl
 .stage { position: relative; border-radius: 28px; overflow: hidden; aspect-ratio: 455 / 1100; width: min(100%, calc((100vh - 190px) * 455 / 1100)); max-width: 100%; margin-inline: auto;
   box-shadow: 0 0 0 6px #fff, 0 0 0 7px var(--line), 0 24px 40px -22px rgba(160, 70, 110, .55); background: var(--pink-soft); }
 .stage img.look { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 100%; transition: opacity .45s ease; }
+.stage .doll { position: absolute; inset: 0; }
+.doll .dbg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.doll .dlayers { position: absolute; left: 50%; bottom: 2%; height: 94%; aspect-ratio: 687 / 1024; transform: translateX(-50%); }
+.doll .dlayers img { position: absolute; inset: 0; width: 100%; height: 100%; }
+.doll .dlayers img.nofeet { -webkit-mask-image: linear-gradient(to bottom, #000 84.4%, transparent 84.6%); mask-image: linear-gradient(to bottom, #000 84.4%, transparent 84.6%); }
+.doll .dlayers img.pop { animation: pop .35s ease-out; }
+@keyframes pop { from { opacity: 0; transform: translateY(-6px); } }
 .stage .tint { position: absolute; inset: 0; mix-blend-mode: soft-light; pointer-events: none; transition: background .4s; }
 .logo { text-align: center; }
 .logo h1 { margin: 0; font-family: var(--font-logo); font-weight: 700; font-size: clamp(34px, 4vw, 44px); line-height: 1; color: var(--pink); text-shadow: 0 2px 0 #fff, 0 0 12px #fff; }
@@ -112,6 +119,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pink); outl
 @keyframes drop { from { transform: translateY(-40px) rotate(6deg); opacity: 0; } }
 .polaroid .pimg { position: relative; aspect-ratio: 3 / 4; overflow: hidden; border-radius: 3px; }
 .polaroid .pimg img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 12%; }
+.polaroid .pimg .doll .dlayers { height: 118%; bottom: auto; top: 2%; }
 .polaroid .pimg .tint { position: absolute; inset: 0; mix-blend-mode: soft-light; }
 .polaroid figcaption { font-family: var(--font-hand); font-size: 26px; color: var(--pink-deep); margin-top: 8px; line-height: 1.1; }
 .polaroid small { display: block; font-family: var(--font-body); font-size: 12px; color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
@@ -129,7 +137,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pink); outl
   .grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .spark, .polaroid { animation: none !important; }
+  .spark, .polaroid, .doll .dlayers img.pop { animation: none !important; }
   .stage img.look, .btn, .item .thumb, .look-btn img { transition: none; }
 }
 </style>
@@ -140,6 +148,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pink); outl
       <div class="logo"><h1>Dreamy Dress Up</h1><p>나만의 스타일을 완성해봐요 ♡</p></div>
       <div class="stage" id="stage">
         <img class="look" id="lookImg" src="img/look1.jpg" alt="핑크 리본 블라우스와 체크 스커트를 입은 소녀">
+        <div class="doll" id="doll" hidden><img class="dbg" src="img/room-blur.jpg" alt=""><div class="dlayers" id="dlayers"></div></div>
         <div class="tint" id="tint"></div>
         <div class="note">오늘도<br>예쁜 너 ♡</div>
         <div class="stage-tools">
@@ -175,7 +184,7 @@ button:focus-visible, input:focus-visible { outline: 3px solid var(--pink); outl
 <div id="photo" hidden>
   <div class="photo-inner">
     <figure class="polaroid">
-      <div class="pimg"><img id="pImg" src="img/look1.jpg" alt=""><div class="tint" id="pTint"></div></div>
+      <div class="pimg" id="pBox"><img id="pImg" src="img/look1.jpg" alt=""><div class="tint" id="pTint"></div></div>
       <figcaption id="pCap">유리의 오늘 코디 ♡</figcaption>
       <small id="pDate"></small>
     </figure>
@@ -206,8 +215,17 @@ const DESC = {
   '체크 스커트': '레이어드 디테일이 있는 체크 스커트예요.', '와이드 팬츠': '편안한 연청 와이드 팬츠예요.',
   '메리제인': '리본이 달린 핑크 메리제인이에요.', '스니커즈': '깔끔한 화이트 스니커즈예요.', '롱부츠': '무릎까지 오는 블랙 롱부츠예요.', '리본 플랫슈즈': '리본이 달린 핑크 굽 슈즈예요.', '힐': '우아한 화이트 힐이에요.',
 };
-const ITEMS = RAW.map(([name, cat, file]) => ({ name, cat, img: 'img/items/' + file, desc: DESC[name] || '' }));
+/* 직접 입히기: 기본 캐릭터와 같은 크기(687×1024)로 맞춘 투명 PNG 옷 그림을 겹친다 */
+const WEAR = [
+  { name: '핑크 원피스', slot: 'dress', layer: 'img/layers/dress.png', img: 'img/layers/thumb-dress.jpg', desc: '허리 라인이 예쁜 연핑크 플레어 원피스예요.' },
+  { name: '글라스 힐', slot: 'shoes', layer: 'img/layers/shoes.png', img: 'img/layers/thumb-shoes.jpg', desc: '보석처럼 반짝이는 유리 구두예요.' },
+  { name: '화이트 머리띠', slot: 'headband', layer: 'img/layers/headband.png', img: 'img/layers/thumb-headband.jpg', desc: '깔끔하게 포인트 주는 화이트 머리띠예요.' },
+];
+const ITEMS = RAW.map(([name, cat, file]) => ({ name, cat, img: 'img/items/' + file, desc: DESC[name] || '' }))
+  .concat(WEAR.map(w => ({ ...w, cat: 'wear' })));
+const DOLL = LOOKS.length;
 const TABS = [
+  { id: 'wear', name: '입혀보기', icon: '<path d="M12 7a2 2 0 1 1 2-2"/><path d="M12 7v1L3 15c-1 1 0 2 1 2h16c1 0 2-1 1-2l-9-7"/>' },
   { id: 'hair', name: '헤어', icon: '<path d="M6 20c-1-4-1-8 1-11a5 5 0 0 1 10 0c2 3 2 7 1 11"/><path d="M8 9c2 1 6 1 8-1"/>' },
   { id: 'top', name: '상의', icon: '<path d="M8 4 4 7l2 4 2-1v10h8V10l2 1 2-4-4-3c-1 2-2.5 3-4 3S9 6 8 4z"/>' },
   { id: 'bottom', name: '하의', icon: '<path d="M7 5h10l3 14H4z"/><path d="M10 5l-1 14M14 5l1 14"/>' },
@@ -217,8 +235,8 @@ const TABS = [
 ];
 const TINTS = [['기본', 'transparent'], ['로즈', '#ff8fb8'], ['피치', '#ffc49a'], ['선샤인', '#ffe58a'], ['스카이', '#9fd3ff'], ['라벤더', '#c9a8ff'], ['무드', '#4a3a5a']];
 
-const KEY = 'dreamy-dressup-v1';
-const DEFAULT = { look: 0, tab: 'top', item: '리본 블라우스', favs: ['리본 블라우스'], saved: [], tint: 0, name: '유리' };
+const KEY = 'dreamy-dressup-v2';
+const DEFAULT = { look: DOLL, tab: 'wear', item: '핑크 원피스', favs: ['리본 블라우스'], saved: [], tint: 0, name: '유리', worn: ['핑크 원피스', '글라스 힐'] };
 let state = JSON.parse(JSON.stringify(DEFAULT));
 const $ = id => document.getElementById(id);
 const heartSvg = '<svg viewBox="0 0 24 24"><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/></svg>';
@@ -226,9 +244,26 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;',
 
 function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
 function load() { try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (s && typeof s.look === 'number') return s; } catch (e) {} return null; }
-const wearing = name => LOOKS[state.look].wear.includes(name);
+const isWear = name => WEAR.some(w => w.name === name);
+const wearing = name => state.look === DOLL ? state.worn.includes(name) : LOOKS[state.look].wear.includes(name);
+const lookTitle = () => state.look === DOLL ? '나만의' : LOOKS[state.look].title;
+const lookName = () => state.look === DOLL ? '옷 입히기' : LOOKS[state.look].name;
 
+function dollHTML(popName) {
+  const shoes = state.worn.includes('글라스 힐');
+  return `<img src="img/layers/base.png" alt="" class="${shoes ? 'nofeet' : ''}">` +
+    WEAR.filter(w => state.worn.includes(w.name)).map(w => `<img src="${w.layer}" alt="" class="${w.name === popName ? 'pop' : ''}">`).join('');
+}
+function renderDoll(popName) {
+  $('dlayers').innerHTML = dollHTML(popName);
+  const worn = WEAR.filter(w => state.worn.includes(w.name)).map(w => w.name);
+  $('doll').setAttribute('aria-label', `${state.name || '캐릭터'}: ${worn.join(', ') || '기본 옷'}`);
+}
 function renderStage(animate) {
+  const doll = state.look === DOLL;
+  $('doll').hidden = !doll; $('lookImg').hidden = doll;
+  $('tint').style.background = TINTS[state.tint][1];
+  if (doll) { renderDoll(); return; }
   const L = LOOKS[state.look], img = $('lookImg');
   if (animate && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     img.style.opacity = 0;
@@ -237,7 +272,8 @@ function renderStage(animate) {
   $('tint').style.background = TINTS[state.tint][1];
 }
 function renderLooks() {
-  $('looks').innerHTML = LOOKS.map((L, i) => `<button class="look-btn" type="button" data-look="${i}" aria-pressed="${i === state.look}"><img src="${L.face}" alt="">${L.name}</button>`).join('');
+  $('looks').innerHTML = `<button class="look-btn" type="button" data-look="${DOLL}" aria-pressed="${state.look === DOLL}"><img src="img/face4.jpg" alt="">옷 입히기</button>` +
+    LOOKS.map((L, i) => `<button class="look-btn" type="button" data-look="${i}" aria-pressed="${i === state.look}"><img src="${L.face}" alt="">${L.name}</button>`).join('');
   $('savedCount').textContent = `코디함 ${state.saved.length}`;
 }
 function renderTabs() {
@@ -248,7 +284,7 @@ function renderGrid() {
   $('grid').innerHTML = list.length ? list.map(i => `
     <div class="item" role="button" tabindex="0" data-item="${esc(i.name)}" aria-pressed="${i.name === state.item}">
       <div class="thumb"><img src="${i.img}" alt="" loading="lazy"></div>
-      ${wearing(i.name) ? '<span class="badge">착용 중</span>' : ''}
+      ${wearing(i.name) ? `<span class="badge">${isWear(i.name) ? '입는 중' : '착용 중'}</span>` : ''}
       <button class="fav" type="button" data-fav="${esc(i.name)}" aria-label="${esc(i.name)} 찜하기" aria-pressed="${state.favs.includes(i.name)}">${heartSvg}</button>
       <span class="label">${esc(i.name)}</span>
     </div>`).join('') : `<div class="empty">아직 찜한 아이템이 없어요. 마음에 드는 옷의 하트를 눌러 보세요 ♡</div>`;
@@ -256,8 +292,13 @@ function renderGrid() {
 function renderDetail() {
   const i = ITEMS.find(x => x.name === state.item) || ITEMS[0];
   const on = wearing(i.name);
+  if (isWear(i.name)) {
+    const t = state.look !== DOLL ? '누르면 옷 입히기 화면에서 입어 볼 수 있어요' : on ? '입고 있어요 · 한 번 더 누르면 벗어요' : '누르면 입어요';
+    $('detail').innerHTML = `<div class="dthumb"><img src="${i.img}" alt=""></div><div><h3>${esc(i.name)}</h3><p>${esc(i.desc)}</p><span class="state${on ? '' : ' off'}">${t}</span></div>`;
+    return;
+  }
   const others = LOOKS.filter((L, k) => k !== state.look && L.wear.includes(i.name)).map(L => L.name);
-  const stateText = on ? `지금 ${LOOKS[state.look].name}에서 입고 있어요`
+  const stateText = on ? `지금 ${lookName()}에서 입고 있어요`
     : others.length ? `${others.join(', ')}에서 입을 수 있어요`
     : '아직 입혀 볼 수 없는 옷이에요. 옷 그림이 준비되면 입힐 수 있어요';
   $('detail').innerHTML = `<div class="dthumb"><img src="${i.img}" alt=""></div><div><h3>${esc(i.name)}</h3><p>${esc(i.desc)}</p><span class="state${on ? '' : ' off'}">${stateText}</span></div>`;
@@ -293,6 +334,15 @@ $('looks').addEventListener('click', e => { const b = e.target.closest('[data-lo
 $('tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (!b) return; state.tab = b.dataset.tab; renderTabs(); renderGrid(); save(); });
 function pickItem(el) {
   const name = el.dataset.item; state.item = name;
+  if (isWear(name)) {
+    if (state.look !== DOLL) { state.look = DOLL; if (!state.worn.includes(name)) state.worn.push(name); renderStage(); renderLooks(); sparkle(); }
+    else {
+      const k = state.worn.indexOf(name);
+      if (k >= 0) { state.worn.splice(k, 1); renderDoll(); }
+      else { state.worn.push(name); renderDoll(name); sparkle(); }
+    }
+    renderGrid(); renderDetail(); save(); return;
+  }
   const idx = LOOKS.findIndex(L => L.wear.includes(name));
   if (!wearing(name) && idx >= 0) setLook(idx);
   renderGrid(); renderDetail(); save();
@@ -313,6 +363,11 @@ $('tints').addEventListener('click', e => { const b = e.target.closest('[data-ti
 $('dollName').addEventListener('input', e => { state.name = e.target.value.trim(); save(); });
 
 function randomLook() {
+  if (state.look === DOLL) {
+    do { state.worn = WEAR.filter(() => Math.random() < .55).map(w => w.name); } while (!state.worn.length);
+    state.tint = Math.floor(Math.random() * (TINTS.length - 1));
+    renderTints(); renderStage(); renderGrid(); renderDetail(); save(); sparkle(); toast('랜덤 코디 완성!'); return;
+  }
   let i; do { i = Math.floor(Math.random() * LOOKS.length); } while (i === state.look && LOOKS.length > 1);
   state.tint = Math.floor(Math.random() * (TINTS.length - 1));
   renderTints(); setLook(i); renderStage(); toast(`${LOOKS[i].title} 코디 완성!`);
@@ -320,15 +375,21 @@ function randomLook() {
 $('btnRandom').addEventListener('click', randomLook);
 $('toolRandom').addEventListener('click', randomLook);
 $('btnSave').addEventListener('click', () => {
-  const L = LOOKS[state.look];
-  state.saved.push({ look: state.look, tint: state.tint, at: Date.now() });
-  save(); renderLooks(); toast(`${L.name}을(를) 코디함에 저장했어요`);
+  state.saved.push({ look: state.look, tint: state.tint, worn: state.look === DOLL ? [...state.worn] : null, at: Date.now() });
+  save(); renderLooks(); toast(`${lookName()} 코디를 코디함에 저장했어요`);
 });
 function openPhoto() {
-  const L = LOOKS[state.look];
-  $('pImg').src = L.img; $('pImg').alt = L.alt;
+  const box = $('pBox');
+  box.querySelectorAll('.doll').forEach(n => n.remove());
+  if (state.look === DOLL) {
+    $('pImg').hidden = true;
+    box.insertAdjacentHTML('afterbegin', `<div class="doll"><img class="dbg" src="img/room-blur.jpg" alt=""><div class="dlayers">${dollHTML()}</div></div>`);
+  } else {
+    const L = LOOKS[state.look];
+    $('pImg').hidden = false; $('pImg').src = L.img; $('pImg').alt = L.alt;
+  }
   $('pTint').style.background = TINTS[state.tint][1];
-  $('pCap').textContent = `${state.name || '나'}의 ${L.title} 코디 ♡`;
+  $('pCap').textContent = `${state.name || '나'}의 ${lookTitle()} 코디 ♡`;
   const d = new Date();
   $('pDate').textContent = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
   $('photo').hidden = false; $('btnClose').focus();
@@ -343,8 +404,9 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('photo'
 function start(data) {
   const saved = (data && data.state) || load();
   if (saved) state = { ...JSON.parse(JSON.stringify(DEFAULT)), ...saved };
-  if (!LOOKS[state.look]) state.look = 0;
-  if (!TABS.some(t => t.id === state.tab)) state.tab = 'top';
+  if (!LOOKS[state.look] && state.look !== DOLL) state.look = DOLL;
+  if (!Array.isArray(state.worn)) state.worn = [];
+  if (!TABS.some(t => t.id === state.tab)) state.tab = 'wear';
   renderAll();
 }
 window.claude?.hot?.snapshot?.(() => ({ state }));
