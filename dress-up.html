@@ -1,0 +1,663 @@
+<title>말랑 옷장</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap">
+<style>
+/* Layout: 아치형 거울(무대) + 옆에 옷장 패널(카테고리 탭 → 색 팔레트 → 옷 카드). 폰에서는 거울이 위에 붙어 있고 옷장이 아래로 스크롤. 의도적으로 밝은 단일 테마. */
+:root {
+  --bg: #f4effd;
+  --dot: #e4d9fb;
+  --paper: #ffffff;
+  --ink: #2e2240;
+  --muted: #756892;
+  --line: #e3d8f7;
+  --pink: #ff4f8b;
+  --pink-soft: #ffe0ec;
+  --frame: #c7b0f6;
+  --frame-deep: #8f72de;
+  --scrim: rgba(46, 34, 64, .62);
+  --font-display: "Jua", "Gowun Dodum", system-ui, sans-serif;
+  --font-body: "Gowun Dodum", system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--bg); color: var(--ink); }
+body {
+  font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+  background-image: radial-gradient(var(--dot) 1.3px, transparent 1.6px);
+  background-size: 20px 20px;
+  -webkit-tap-highlight-color: transparent;
+}
+.wrap { max-width: 1080px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--frame-deep); outline-offset: 2px; }
+
+header.top { padding-block: 22px 10px; display: flex; align-items: baseline; gap: 6px 14px; flex-wrap: wrap; }
+h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(30px, 5vw, 42px); line-height: 1.1; margin: 0; color: var(--pink); text-shadow: 3px 3px 0 var(--pink-soft); text-wrap: balance; }
+.sub { margin: 0; color: var(--muted); }
+
+.main { display: grid; grid-template-columns: minmax(280px, 380px) minmax(0, 1fr); gap: 28px; align-items: start; padding-block: 10px 48px; }
+
+/* ---------- 거울 ---------- */
+.stage-col { position: sticky; top: 16px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
+.mirror {
+  position: relative; width: min(100%, calc(70vh * 300 / 520)); max-width: 100%; aspect-ratio: 300 / 520;
+  background: var(--paper); border: 6px solid var(--frame); border-radius: 999px 999px 28px 28px; overflow: hidden;
+  box-shadow: 0 0 0 4px var(--paper), 0 0 0 8px var(--frame-deep), 0 22px 34px -20px rgba(80, 40, 140, .55);
+}
+.mirror svg { display: block; width: 100%; height: 100%; }
+.side { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+.nameplate { display: flex; align-items: center; gap: 10px; justify-content: center; }
+.nameplate label { font-family: var(--font-display); color: var(--muted); letter-spacing: .04em; }
+.nameplate input {
+  width: 9.5em; font-family: var(--font-display); font-size: 20px; text-align: center; color: var(--ink);
+  background: var(--pink-soft); border: 2px dashed var(--pink); border-radius: 999px; padding: 4px 14px;
+}
+.actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.btn { font-family: var(--font-display); font-size: 16px; border-radius: 16px; padding: 10px 8px; border: 2px solid var(--line); background: var(--paper); transition: transform .12s; }
+.btn:hover { transform: translateY(-2px); }
+.btn:active { transform: translateY(1px); }
+.btn.primary { background: var(--pink); border-color: var(--pink); color: var(--paper); box-shadow: 0 4px 0 #d23671; }
+.btn.photo { background: var(--frame-deep); border-color: var(--frame-deep); color: var(--paper); box-shadow: 0 4px 0 #6a51b8; }
+
+/* ---------- 옷장 ---------- */
+.closet { background: var(--paper); border: 2px solid var(--line); border-radius: 26px; padding: 18px; min-width: 0; position: relative; }
+.closet::before { content: ""; position: absolute; left: 28px; right: 28px; top: -7px; height: 10px; border-radius: 6px; background: var(--frame); }
+.tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.tab { font-family: var(--font-display); font-size: 15px; border: 2px solid var(--line); background: var(--paper); border-radius: 999px; padding: 6px 14px; white-space: nowrap; }
+.tab[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+.cat-head { display: flex; align-items: baseline; gap: 4px 12px; flex-wrap: wrap; margin-block: 16px 4px; }
+.cat-head h2 { font-family: var(--font-display); font-weight: 400; font-size: 24px; margin: 0; }
+.cat-head p { margin: 0; color: var(--muted); font-size: 14px; }
+.swatches { display: flex; flex-wrap: wrap; gap: 8px; margin-block: 10px 14px; }
+.sw { width: 32px; height: 32px; border-radius: 50%; background: var(--c); border: 3px solid var(--paper); box-shadow: 0 0 0 2px var(--line); transition: transform .12s; padding: 0; }
+.sw[aria-pressed="true"] { box-shadow: 0 0 0 3px var(--pink); transform: scale(1.12); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(108px, 1fr)); gap: 10px; }
+.card { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px 6px 10px; background: var(--bg); border: 2px solid transparent; border-radius: 18px; transition: transform .12s, border-color .12s; }
+.card:hover { transform: translateY(-2px); border-color: var(--frame); }
+.card svg { width: 100%; height: 96px; display: block; }
+.card span { font-family: var(--font-display); font-size: 14px; }
+.card[aria-pressed="true"] { border-color: var(--pink); background: var(--pink-soft); }
+.card[aria-pressed="true"]::after { content: "✓"; position: absolute; top: 6px; right: 8px; width: 22px; height: 22px; border-radius: 50%; background: var(--pink); color: var(--paper); font-size: 13px; line-height: 22px; text-align: center; }
+
+/* ---------- 반짝 ---------- */
+.spark { position: absolute; pointer-events: none; color: var(--pink); font-size: 18px; animation: spark .8s ease-out forwards; }
+@keyframes spark { from { opacity: 1; transform: translateY(0) scale(.6); } to { opacity: 0; transform: translateY(-34px) scale(1.2); } }
+.doll { animation: bob 3.4s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(-3px); } }
+.blink { transform-box: fill-box; transform-origin: center; animation: blink 4.6s infinite; }
+@keyframes blink { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(.1); } }
+
+/* ---------- 사진 ---------- */
+#photo { position: fixed; inset: 0; z-index: 30; background: var(--scrim); display: grid; place-items: center; overflow-y: auto;
+  padding: max(20px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(20px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.photo-inner { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+.polaroid { width: min(320px, 82vw); background: var(--paper); padding: 14px 14px 18px; border-radius: 6px; box-shadow: 0 24px 40px -12px rgba(20, 10, 40, .6); transform: rotate(-2.5deg); animation: drop .5s cubic-bezier(.2, 1.4, .4, 1); }
+@keyframes drop { from { transform: translateY(-40px) rotate(6deg); opacity: 0; } }
+.polaroid svg { width: 100%; aspect-ratio: 300 / 440; display: block; border-radius: 3px; }
+.polaroid .pname { font-family: var(--font-display); font-size: 26px; margin: 12px 0 0; line-height: 1.2; }
+.polaroid .ptitle { font-family: var(--font-display); color: var(--pink); font-size: 18px; margin: 2px 0 6px; text-wrap: balance; }
+.polaroid .ptags { color: var(--frame-deep); font-size: 14px; margin: 0; }
+.polaroid .pdate { color: var(--muted); font-size: 12px; margin: 8px 0 0; text-align: right; font-variant-numeric: tabular-nums; }
+.photo-hint { color: var(--paper); margin: 0; font-size: 14px; text-align: center; }
+
+@media (max-width: 760px) {
+  .main { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .stage-col { top: env(safe-area-inset-top, 0px); z-index: 5; flex-direction: row; align-items: center; gap: 14px; padding-block: 10px; background: var(--bg); }
+  .mirror { width: min(46%, calc(42vh * 300 / 520)); flex: none; }
+  .side { flex: 1; min-width: 0; }
+  .nameplate { flex-direction: column; gap: 2px; }
+  .nameplate input { width: 100%; font-size: 18px; }
+  .actions { grid-template-columns: 1fr; }
+  .tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); }
+  .card svg { height: 84px; }
+  .closet { padding: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .doll, .blink, .spark, .polaroid { animation: none !important; }
+  .btn, .card, .sw { transition: none; }
+}
+</style>
+
+<header class="top wrap">
+  <h1>말랑 옷장</h1>
+  <p class="sub">이름을 지어 주고, 옷장에서 골라 입혀 보세요. 같은 옷을 한 번 더 누르면 벗겨져요.</p>
+</header>
+
+<main class="wrap main">
+  <section class="stage-col" aria-label="인형">
+    <div class="mirror" id="mirror"><svg id="stage" viewBox="0 0 300 520" role="img" aria-label="옷을 입은 인형"></svg></div>
+    <div class="side">
+      <div class="nameplate">
+        <label for="dollName">이름</label>
+        <input id="dollName" maxlength="8" value="콩이" autocomplete="off">
+      </div>
+      <div class="actions">
+        <button class="btn primary" id="btnRandom" type="button">랜덤 코디</button>
+        <button class="btn" id="btnReset" type="button">다 벗기기</button>
+        <button class="btn photo" id="btnPhoto" type="button">사진 찍기</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="closet" aria-label="옷장">
+    <div class="tabs" id="tabs" role="tablist"></div>
+    <div class="cat-head"><h2 id="catTitle">상의</h2><p id="catHint"></p></div>
+    <div class="swatches" id="swatches"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+</main>
+
+<div id="photo" hidden>
+  <div class="photo-inner">
+    <figure class="polaroid" style="margin:0">
+      <svg id="photoSvg" viewBox="0 0 300 440"></svg>
+      <figcaption>
+        <p class="pname" id="pName"></p>
+        <p class="ptitle" id="pTitle"></p>
+        <p class="ptags" id="pTags"></p>
+        <p class="pdate" id="pDate"></p>
+      </figcaption>
+    </figure>
+    <p class="photo-hint">마음에 들면 화면을 캡처해서 간직하세요.</p>
+    <button class="btn primary" id="btnClose" type="button">옷장으로 돌아가기</button>
+  </div>
+</div>
+
+<script>
+(() => {
+/* ---------- 팔레트 ---------- */
+const CLOTH = ['#ff6b9a', '#ff9f43', '#ffd23f', '#7bd389', '#3cc7a8', '#6fb6ff', '#4d6fe0', '#9b7bf6', '#d9a7ff', '#ffffff', '#2d2a3a', '#e84855', '#a0785a'];
+const CNAME = { '#ff6b9a': '핑크', '#ff9f43': '오렌지', '#ffd23f': '레몬', '#7bd389': '연두', '#3cc7a8': '민트', '#6fb6ff': '하늘색', '#4d6fe0': '파랑', '#9b7bf6': '보라', '#d9a7ff': '라벤더', '#ffffff': '화이트', '#2d2a3a': '블랙', '#e84855': '레드', '#a0785a': '브라운' };
+const HAIR = ['#2b1d16', '#5a3825', '#9a5a32', '#e2a64a', '#f4d98d', '#e0607e', '#9b7bf6', '#4d9de0', '#e9e6f2'];
+const HNAME = { '#2b1d16': '흑발', '#5a3825': '갈색', '#9a5a32': '밤색', '#e2a64a': '골드', '#f4d98d': '금발', '#e0607e': '핑크', '#9b7bf6': '보라', '#4d9de0': '파랑', '#e9e6f2': '은발' };
+const SKIN = ['#fde5d2', '#f6cfae', '#e3ae86', '#bb8059', '#7d5238'];
+const SNAME = { '#fde5d2': '밝은 피부', '#f6cfae': '복숭아 피부', '#e3ae86': '구릿빛 피부', '#bb8059': '갈색 피부', '#7d5238': '짙은 피부' };
+
+function shade(hex, amt) {
+  const n = parseInt(hex.slice(1), 16);
+  const f = v => Math.round(amt < 0 ? v * (1 + amt) : v + (255 - v) * amt);
+  return '#' + [n >> 16, (n >> 8) & 255, n & 255].map(v => f(v).toString(16).padStart(2, '0')).join('');
+}
+const st = (c, k = .38) => `fill="${c}" stroke="${shade(c, -k)}" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"`;
+const limb = (x1, y1, x2, y2, w, c) =>
+  `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${shade(c, -.38)}" stroke-width="${w + 5}" stroke-linecap="round"/>` +
+  `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`;
+const lerp = (a, b, t) => +(a + (b - a) * t).toFixed(1);
+let uid = 0;
+const isLight = c => { const n = parseInt(c.slice(1), 16); return ((n >> 16) * .3 + ((n >> 8) & 255) * .59 + (n & 255) * .11) > 170; };
+function starPath(cx, cy, R, r) {
+  let d = '';
+  for (let i = 0; i < 10; i++) {
+    const a = -Math.PI / 2 + i * Math.PI / 5, rad = i % 2 ? r : R;
+    d += (i ? 'L' : 'M') + (cx + rad * Math.cos(a)).toFixed(1) + ' ' + (cy + rad * Math.sin(a)).toFixed(1);
+  }
+  return d + 'Z';
+}
+const heart = (x, y, s = 1) => `M${x} ${y + 14 * s}C${x - 24 * s} ${y - 2 * s} ${x - 14 * s} ${y - 20 * s} ${x} ${y - 8 * s}C${x + 14 * s} ${y - 20 * s} ${x + 24 * s} ${y - 2 * s} ${x} ${y + 14 * s}Z`;
+
+/* ---------- 몸 ---------- */
+const TORSO = 'M112 216 Q150 206 188 216 L183 298 L190 334 L110 334 L117 298 Z';
+function bodyParts(s) {
+  return {
+    body: limb(114, 222, 96, 314, 15, s) + limb(186, 222, 204, 314, 15, s) +
+      limb(134, 330, 134, 450, 21, s) + limb(166, 330, 166, 450, 21, s) +
+      `<ellipse cx="130" cy="456" rx="13" ry="7" ${st(s, .28)}/><ellipse cx="170" cy="456" rx="13" ry="7" ${st(s, .28)}/>` +
+      `<rect x="140" y="186" width="20" height="34" rx="6" ${st(s, .28)}/><path d="${TORSO}" ${st(s, .28)}/>`,
+    hands: `<circle cx="96" cy="318" r="10" ${st(s, .28)}/><circle cx="204" cy="318" r="10" ${st(s, .28)}/>`,
+    head: headSVG(s),
+  };
+}
+const headSVG = s => `<circle cx="82" cy="142" r="13" ${st(s, .28)}/><circle cx="218" cy="142" r="13" ${st(s, .28)}/><circle cx="150" cy="130" r="70" ${st(s, .28)}/>`;
+const neckPatch = (s, y = 212) => `<path d="M139 ${y} Q150 ${y + 12} 161 ${y}Z" fill="${s}"/>`;
+const UNDER = {
+  top: `<path d="M120 222 Q150 234 180 222 L184 296 L116 296Z" fill="#ffffff" stroke="#cdc3dd" stroke-width="2"/><path d="M124 223 L126 212 M176 223 L174 212" stroke="#cdc3dd" stroke-width="3" stroke-linecap="round"/>`,
+  bottom: `<path d="M113 292 L187 292 L191 340 L154 342 L150 328 L146 342 L109 340Z" fill="#f1ecf9" stroke="#cdc3dd" stroke-width="2" stroke-linejoin="round"/>`,
+};
+
+/* ---------- 옷장 데이터 ---------- */
+const CATS = [
+  { id: 'hair', name: '헤어', pal: HAIR, names: HNAME, vb: '30 20 240 240', hint: '머리 모양과 머리색을 골라요.' },
+  { id: 'face', name: '얼굴', pal: SKIN, names: SNAME, vb: '76 74 148 128', hint: '표정과 피부색을 골라요.' },
+  { id: 'top', name: '상의', pal: CLOTH, names: CNAME, vb: '74 196 152 130', opt: true, hint: '상의를 입으면 원피스는 벗겨져요.' },
+  { id: 'bottom', name: '하의', pal: CLOTH, names: CNAME, vb: '78 284 144 180', opt: true, hint: '하의를 입으면 원피스는 벗겨져요.' },
+  { id: 'dress', name: '원피스', pal: CLOTH, names: CNAME, vb: '56 196 188 270', opt: true, hint: '원피스를 입으면 상의와 하의는 벗겨져요.' },
+  { id: 'outer', name: '아우터', pal: CLOTH, names: CNAME, vb: '60 196 180 170', opt: true, hint: '어떤 옷 위에도 걸칠 수 있어요.' },
+  { id: 'shoes', name: '신발', pal: CLOTH, names: CNAME, vb: '102 392 96 76', opt: true, hint: '' },
+  { id: 'headAcc', name: '머리 장식', pal: CLOTH, names: CNAME, vb: '40 14 220 150', opt: true, hint: '' },
+  { id: 'prop', name: '소품', pal: CLOTH, names: CNAME, vb: '50 60 230 290', opt: true, hint: '' },
+  { id: 'bg', name: '배경', vb: '0 0 300 520', hint: '어디로 놀러 갈까요?' },
+];
+const CAT = Object.fromEntries(CATS.map(c => [c.id, c]));
+
+const ITEMS = {
+  hair: [['bob', '단발'], ['long', '긴 생머리'], ['twin', '양갈래'], ['pony', '포니테일'], ['short', '숏컷'], ['curly', '뽀글 파마']],
+  face: [['smile', '방긋'], ['wink', '윙크'], ['sparkle', '반짝반짝'], ['tongue', '메롱'], ['sleepy', '졸려']],
+  top: [['tee', '반팔 티'], ['blouse', '블라우스'], ['stripe', '줄무늬 티'], ['hoodie', '후드티'], ['sweater', '하트 니트'], ['crop', '크롭 탑']],
+  bottom: [['skirt', '플리츠 스커트'], ['shorts', '반바지'], ['pants', '긴바지'], ['jeans', '청바지', '#4d6fe0'], ['overalls', '멜빵 반바지']],
+  dress: [['aline', '원피스'], ['princess', '공주 드레스'], ['sailor', '세일러 원피스'], ['hanbok', '한복']],
+  outer: [['cardigan', '가디건'], ['jacket', '라이더 재킷'], ['cape', '망토']],
+  shoes: [['mary', '메리제인'], ['sneaker', '운동화'], ['boots', '부츠'], ['ballet', '발레 슈즈']],
+  headAcc: [['ribbon', '리본'], ['crown', '왕관', '#ffd23f'], ['cat', '고양이 귀'], ['beret', '베레모'], ['straw', '밀짚모자'], ['flower', '꽃 핀']],
+  prop: [['glasses', '동그란 안경', '#2d2a3a'], ['heart', '하트 선글라스'], ['necklace', '진주 목걸이', '#ffffff'], ['bag', '크로스백'], ['balloon', '풍선'], ['wand', '별 요술봉', '#ffd23f']],
+  bg: [['room', '내 방'], ['park', '공원'], ['stage', '무대'], ['beach', '바닷가'], ['night', '밤하늘']],
+};
+for (const k in ITEMS) ITEMS[k] = ITEMS[k].map(([id, name, dc]) => ({ id, name, dc }));
+const itemName = (cat, id) => (ITEMS[cat].find(i => i.id === id) || {}).name;
+
+/* ---------- 머리 ---------- */
+const BANGS = 'M78 140 C70 68 110 50 150 50 C190 50 230 68 222 140 C216 122 208 110 198 102 C190 116 172 118 166 104 C156 118 140 118 132 104 C124 118 108 118 102 104 C92 112 84 124 78 140Z';
+const SWEPT = 'M78 146 C68 66 120 48 154 50 C196 52 232 74 222 146 C214 118 200 100 180 92 C158 112 120 120 96 112 C88 122 82 132 78 146Z';
+const CAP = 'M72 140 C66 60 112 44 150 44 C188 44 234 60 228 140 L226 160 L74 160Z';
+const shine = `<path d="M110 76 Q130 62 156 61" fill="none" stroke="#fff" stroke-opacity=".38" stroke-width="5" stroke-linecap="round"/>`;
+const TAIL = 'M84 108 C40 118 30 196 48 256 C58 288 46 308 40 322 C72 312 88 280 82 240 C78 200 92 160 98 128Z';
+const R = { hair: {}, face: {}, top: {}, bottom: {}, dress: {}, outer: {}, shoes: {}, headAcc: {}, prop: {}, bg: {} };
+
+R.hair.bob = c => ({ hairBack: `<path d="M68 140 C62 58 110 42 150 42 C190 42 238 58 232 140 L234 212 Q214 224 196 210 L104 210 Q86 224 66 212Z" ${st(c)}/>`, hairFront: `<path d="${BANGS}" ${st(c)}/>` + shine });
+R.hair.long = c => ({ hairBack: `<path d="M68 140 C62 58 110 42 150 42 C190 42 238 58 232 140 L242 320 Q222 336 202 322 Q182 336 162 324 L138 324 Q118 336 98 322 Q78 336 58 320Z" ${st(c)}/>`, hairFront: `<path d="${BANGS}" ${st(c)}/>` + shine });
+R.hair.twin = c => ({
+  hairBack: `<path d="${TAIL}" ${st(c)}/><path d="${TAIL}" transform="translate(300 0) scale(-1 1)" ${st(c)}/><path d="${CAP}" ${st(c)}/>`,
+  hairFront: `<path d="${BANGS}" ${st(c)}/>` + shine + `<circle cx="88" cy="114" r="8" ${st('#ff4f8b')}/><circle cx="212" cy="114" r="8" ${st('#ff4f8b')}/>`,
+});
+R.hair.pony = c => ({
+  hairBack: `<path d="M196 70 C252 58 266 124 252 184 C244 222 256 252 264 272 C232 266 214 232 220 190 C224 150 218 112 192 98Z" ${st(c)}/><path d="${CAP}" ${st(c)}/>`,
+  hairFront: `<path d="${SWEPT}" ${st(c)}/>` + shine + `<circle cx="206" cy="78" r="8" ${st('#ff4f8b')}/>`,
+});
+R.hair.short = c => ({ hairBack: `<path d="M74 140 C66 64 112 46 150 46 C188 46 234 64 226 140 L224 168 Q214 150 212 132 L88 132 Q86 150 76 168Z" ${st(c)}/>`, hairFront: `<path d="${SWEPT}" ${st(c)}/>` + shine });
+R.hair.curly = c => {
+  let back = '', front = '';
+  for (let d = -45; d <= 225; d += 18) {
+    const a = d * Math.PI / 180;
+    back += `<circle cx="${(150 + 80 * Math.cos(a)).toFixed(1)}" cy="${(130 - 80 * Math.sin(a)).toFixed(1)}" r="27" ${st(c)}/>`;
+  }
+  back += `<circle cx="150" cy="120" r="80" fill="${c}"/>`;
+  front = `<path d="M82 116 C78 60 120 50 150 50 C180 50 222 60 218 116 Q150 90 82 116Z" fill="${c}"/>`;
+  [[90, 112], [108, 98], [128, 92], [150, 90], [172, 92], [192, 98], [210, 112]].forEach(([x, y]) => { front += `<circle cx="${x}" cy="${y}" r="15" ${st(c)}/>`; });
+  return { hairBack: back, hairFront: front + shine };
+};
+
+/* ---------- 얼굴 ---------- */
+const BLUSH = `<ellipse cx="106" cy="164" rx="11" ry="6" fill="#ff8fab" opacity=".45"/><ellipse cx="194" cy="164" rx="11" ry="6" fill="#ff8fab" opacity=".45"/>`;
+const EYE = (x, cls = '') => `<ellipse cx="${x}" cy="144" rx="7" ry="9.5" fill="#2b1d2e"/><circle cx="${x + 3}" cy="140" r="2.8" fill="#fff"/>`;
+const mouthLine = d => `<path d="${d}" fill="none" stroke="#7a3644" stroke-width="2.6" stroke-linecap="round"/>`;
+R.face.smile = () => BLUSH + `<g class="blink">${EYE(124)}${EYE(176)}</g>` + mouthLine('M142 168 Q150 176 158 168');
+R.face.wink = () => BLUSH + EYE(124) + mouthLine('M168 145 Q176 136 184 145') + `<path d="M141 166 Q150 181 159 166Z" fill="#c94a5e" stroke="#7a3644" stroke-width="2" stroke-linejoin="round"/>`;
+R.face.sparkle = () => BLUSH + `<g class="blink"><ellipse cx="124" cy="144" rx="10" ry="12" fill="#3a2350"/><ellipse cx="176" cy="144" rx="10" ry="12" fill="#3a2350"/>` +
+  `<path d="${starPath(127, 140, 5, 2)}" fill="#fff"/><path d="${starPath(179, 140, 5, 2)}" fill="#fff"/><circle cx="120" cy="149" r="2" fill="#fff"/><circle cx="172" cy="149" r="2" fill="#fff"/></g>` +
+  `<ellipse cx="150" cy="172" rx="4.5" ry="5.5" fill="#c94a5e" stroke="#7a3644" stroke-width="2"/>`;
+R.face.tongue = () => BLUSH + mouthLine('M117 137 L131 145 L117 153') + mouthLine('M183 137 L169 145 L183 153') +
+  `<path d="M145 170 Q150 184 156 170Z" fill="#ff7a96" stroke="#7a3644" stroke-width="2" stroke-linejoin="round"/>` + mouthLine('M140 167 Q150 174 160 167');
+R.face.sleepy = () => BLUSH + mouthLine('M116 144 Q124 151 132 144') + mouthLine('M168 144 Q176 151 184 144') + mouthLine('M146 172 Q150 169 154 172') +
+  `<text x="224" y="86" font-family="Jua, sans-serif" font-size="20" fill="#8f72de">z</text><text x="238" y="68" font-family="Jua, sans-serif" font-size="14" fill="#8f72de">z</text>`;
+
+/* ---------- 상의 ---------- */
+R.top.tee = (c, x) => `<path d="M115 216 L97 258 L117 266 L126 236Z" ${st(c)}/><path d="M185 216 L203 258 L183 266 L174 236Z" ${st(c)}/>` +
+  `<path d="M110 214 Q150 204 190 214 L186 306 L114 306Z" ${st(c)}/>` + neckPatch(x.skin) + `<path d="M138 211 Q150 225 162 211" fill="none" stroke="${shade(c, -.38)}" stroke-width="2.5"/>`;
+R.top.blouse = (c, x) => {
+  const col = isLight(c) && c !== '#ffd23f' ? '#ffd0e1' : '#ffffff';
+  return `<ellipse cx="110" cy="238" rx="13" ry="21" transform="rotate(14 110 238)" ${st(c)}/><ellipse cx="190" cy="238" rx="13" ry="21" transform="rotate(-14 190 238)" ${st(c)}/>` +
+    `<path d="M112 214 Q150 206 188 214 L184 302 L116 302Z" ${st(c)}/>` + neckPatch(x.skin, 210) +
+    `<path d="M150 212 Q130 208 124 226 Q140 238 150 220 Q160 238 176 226 Q170 208 150 212Z" ${st(col, .25)}/>` +
+    [246, 266, 286].map(y => `<circle cx="150" cy="${y}" r="3" fill="${shade(c, -.3)}"/>`).join('');
+};
+R.top.stripe = (c, x) => {
+  const id = 'cl' + (uid++), shape = 'M110 214 Q150 204 190 214 L186 306 L114 306Z';
+  const sc = isLight(c) ? '#2d3a6b' : '#ffffff';
+  return limb(114, 222, 97, 304, 20, c) + limb(186, 222, 203, 304, 20, c) +
+    `<clipPath id="${id}"><path d="${shape}"/></clipPath><path d="${shape}" ${st(c)}/>` +
+    `<g clip-path="url(#${id})" stroke="${sc}" stroke-width="7">${[228, 246, 264, 282, 300].map(y => `<line x1="100" y1="${y}" x2="200" y2="${y}"/>`).join('')}</g>` +
+    `<path d="${shape}" fill="none" stroke="${shade(c, -.38)}" stroke-width="2.5" stroke-linejoin="round"/>` + neckPatch(x.skin);
+};
+R.top.hoodie = (c, x) => limb(114, 224, 97, 304, 21, c) + limb(186, 224, 203, 304, 21, c) +
+  `<ellipse cx="150" cy="212" rx="36" ry="13" ${st(shade(c, -.12))}/><path d="M108 216 Q150 206 192 216 L188 318 L112 318Z" ${st(c)}/>` +
+  `<path d="M126 284 L174 284 L180 312 L120 312Z" ${st(shade(c, -.1))}/>` + neckPatch(x.skin) +
+  `<path d="M142 222 L140 254 M158 222 L160 254" stroke="#fff" stroke-width="3" stroke-linecap="round"/><circle cx="140" cy="256" r="3" fill="#fff"/><circle cx="160" cy="256" r="3" fill="#fff"/>`;
+R.top.sweater = (c, x) => {
+  const hc = c === '#ff6b9a' || c === '#e84855' ? '#ffffff' : '#ff6b9a';
+  return limb(114, 222, 97, 304, 22, c) + limb(186, 222, 203, 304, 22, c) +
+    `<path d="M108 214 Q150 204 192 214 L188 312 L112 312Z" ${st(c)}/><path d="M112 300 L188 300 L188 314 L112 314Z" ${st(shade(c, -.12))}/>` +
+    neckPatch(x.skin) + `<path d="M134 211 Q150 227 166 211" fill="none" stroke="${shade(c, -.15)}" stroke-width="6" stroke-linecap="round"/>` +
+    `<path d="${heart(150, 256, 1.05)}" fill="${hc}" stroke="${shade(hc, -.3)}" stroke-width="2"/>`;
+};
+R.top.crop = c => `<path d="M118 220 Q150 230 182 220 L185 272 L115 272Z" ${st(c)}/><path d="M123 222 L125 210 M177 222 L175 210" stroke="${c}" stroke-width="4" stroke-linecap="round"/>` +
+  `<path d="M118 262 L182 262" stroke="${shade(c, -.2)}" stroke-width="3"/>`;
+
+/* ---------- 하의 ---------- */
+const SHORTS = 'M112 292 L188 292 L194 360 L156 362 L150 334 L144 362 L106 360Z';
+R.bottom.shorts = c => `<path d="${SHORTS}" ${st(c)}/><path d="M113 302 L187 302" stroke="${shade(c, -.25)}" stroke-width="2.5"/>`;
+const pantsBase = c => limb(134, 330, 133, 444, 28, c) + limb(166, 330, 167, 444, 28, c) + `<path d="M112 292 L188 292 L191 346 L109 346Z" ${st(c)}/>`;
+R.bottom.pants = c => pantsBase(c) + `<path d="M113 302 L187 302 M150 302 L150 340" stroke="${shade(c, -.25)}" stroke-width="2.5"/>`;
+R.bottom.jeans = c => pantsBase(c) +
+  `<path d="M113 302 L187 302 M150 302 L150 340" stroke="${shade(c, -.25)}" stroke-width="2.5"/>` +
+  `<path d="M120 312 Q130 322 140 312 M160 312 Q170 322 180 312 M121 350 L121 428 M179 350 L179 428" fill="none" stroke="#ffd23f" stroke-width="1.6" stroke-dasharray="4 3"/>` +
+  `<rect x="118" y="428" width="31" height="14" rx="4" ${st(shade(c, .3))}/><rect x="151" y="428" width="31" height="14" rx="4" ${st(shade(c, .3))}/>`;
+R.bottom.skirt = c => `<path d="M114 292 L186 292 L208 374 L92 374Z" ${st(c)}/>` +
+  `<path d="M128 300 L114 372 M139 300 L132 372 M150 300 L150 372 M161 300 L168 372 M172 300 L186 372" stroke="${shade(c, -.25)}" stroke-width="2"/>` +
+  `<rect x="112" y="288" width="76" height="12" rx="4" ${st(shade(c, -.1))}/>`;
+R.bottom.overalls = c => ({
+  bottom: R.bottom.shorts(c),
+  bottomOver: `<path d="M127 216 L124 256 M173 216 L176 256" stroke="${shade(c, -.38)}" stroke-width="10" stroke-linecap="round"/><path d="M127 216 L124 256 M173 216 L176 256" stroke="${c}" stroke-width="6" stroke-linecap="round"/>` +
+    `<path d="M124 252 L176 252 L180 312 L120 312Z" ${st(c)}/><rect x="138" y="264" width="24" height="18" rx="4" ${st(shade(c, -.1))}/>` +
+    `<circle cx="129" cy="258" r="4" ${st('#ffd23f')}/><circle cx="171" cy="258" r="4" ${st('#ffd23f')}/>`,
+});
+
+/* ---------- 원피스 ---------- */
+const puff = (c, r = 13) => `<ellipse cx="110" cy="236" rx="${r}" ry="${r + 6}" transform="rotate(16 110 236)" ${st(c)}/><ellipse cx="190" cy="236" rx="${r}" ry="${r + 6}" transform="rotate(-16 190 236)" ${st(c)}/>`;
+const bow = (x, y, c) => `<path d="M${x} ${y} L${x - 16} ${y - 9} L${x - 16} ${y + 9}Z M${x} ${y} L${x + 16} ${y - 9} L${x + 16} ${y + 9}Z" ${st(c)}/><circle cx="${x}" cy="${y}" r="5" ${st(shade(c, -.1))}/>`;
+R.dress.aline = (c, x) => puff(c, 12) + `<path d="M114 214 Q150 206 186 214 L182 286 L212 392 Q150 402 88 392 L118 286Z" ${st(c)}/>` +
+  neckPatch(x.skin) + `<path d="M118 282 L182 282" stroke="${shade(c, -.25)}" stroke-width="5"/>` + bow(150, 284, '#ffffff') +
+  `<path d="M92 384 Q150 394 208 384" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="2 5" stroke-linecap="round"/>`;
+R.dress.princess = (c, x) => {
+  let scal = '';
+  for (let i = 0; i <= 8; i++) { const px = 74 + i * 19; scal += `<circle cx="${px}" cy="${448 + Math.sin(i / 8 * Math.PI) * 9}" r="10" ${st(shade(c, .35), .25)}/>`; }
+  return puff(c, 16) + scal +
+    `<path d="M120 288 Q78 380 66 446 Q150 466 234 446 Q222 380 180 288Z" ${st(c)}/>` +
+    `<path d="M92 370 Q150 392 208 370" fill="none" stroke="${shade(c, .35)}" stroke-width="7" stroke-linecap="round"/>` +
+    `<path d="M118 214 Q150 206 182 214 L178 292 L122 292Z" ${st(shade(c, -.06))}/>` + neckPatch(x.skin) + bow(150, 290, shade(c, .45)) +
+    [[104, 410], [196, 404], [140, 430], [168, 340], [124, 352]].map(([a, b]) => `<path d="${starPath(a, b, 5, 2)}" fill="#fff"/>`).join('');
+};
+R.dress.sailor = (c, x) => {
+  const line = isLight(c) ? '#2d3a6b' : '#ffffff';
+  return puff(c, 11) + `<path d="M114 214 Q150 206 186 214 L182 290 L200 372 Q150 380 100 372 L118 290Z" ${st(c)}/>` + neckPatch(x.skin) +
+    `<path d="M116 212 L150 252 L184 212 L196 238 L150 266 L104 238Z" ${st('#ffffff', .2)}/>` +
+    `<path d="M110 236 L150 260 L190 236" fill="none" stroke="${line === '#ffffff' ? '#2d3a6b' : line}" stroke-width="3"/>` + bow(150, 262, '#e84855');
+};
+R.dress.hanbok = (c, x) => {
+  const jeo = c === '#ffd23f' || c === '#ffffff' ? '#ffe0ec' : '#fff3c4';
+  const SAEK = ['#e84855', '#ffd23f', '#3cc7a8', '#4d6fe0', '#c77dff'];
+  const sleeve = (x1, y1, x2, y2) => limb(x1, y1, x2, y2, 24, jeo) + SAEK.map((sc, i) => {
+    const t0 = .42 + i * .1, t1 = t0 + .1;
+    return `<line x1="${lerp(x1, x2, t0)}" y1="${lerp(y1, y2, t0)}" x2="${lerp(x1, x2, t1)}" y2="${lerp(y1, y2, t1)}" stroke="${sc}" stroke-width="24"/>`;
+  }).join('');
+  return `<path d="M112 236 Q98 360 84 448 Q150 464 216 448 Q202 360 188 236Z" ${st(c)}/>` +
+    `<path d="M104 444 Q150 456 196 444" fill="none" stroke="${shade(c, .35)}" stroke-width="3"/>` +
+    sleeve(114, 222, 97, 306) + sleeve(186, 222, 203, 306) +
+    `<path d="M110 212 Q150 204 190 212 L188 252 L112 252Z" ${st(jeo, .25)}/>` + neckPatch(x.skin, 210) +
+    `<path d="M136 208 L152 238 L166 208" fill="none" stroke="#3a3a7a" stroke-width="7" stroke-linejoin="round"/><path d="M137 208 L152 236 L165 208" fill="none" stroke="#ffffff" stroke-width="2.5" stroke-linejoin="round"/>` +
+    `<path d="M152 240 L134 300 L142 302 L156 246Z M152 240 L170 290 L162 292 L150 248Z" fill="#e84855" stroke="#a52a3a" stroke-width="1.5" stroke-linejoin="round"/><ellipse cx="152" cy="242" rx="8" ry="6" fill="#e84855" stroke="#a52a3a" stroke-width="1.5"/>`;
+};
+
+/* ---------- 아우터 ---------- */
+R.outer.cardigan = c => limb(114, 222, 97, 304, 23, c) + limb(186, 222, 203, 304, 23, c) +
+  `<path d="M106 214 Q126 208 140 214 L142 318 L110 318Z" ${st(c)}/><path d="M194 214 Q174 208 160 214 L158 318 L190 318Z" ${st(c)}/>` +
+  [238, 262, 286].map(y => `<circle cx="136" cy="${y}" r="3.5" fill="#fff" stroke="${shade(c, -.38)}" stroke-width="1.5"/>`).join('') +
+  `<rect x="116" y="290" width="18" height="16" rx="3" ${st(shade(c, -.08))}/><rect x="166" y="290" width="18" height="16" rx="3" ${st(shade(c, -.08))}/>`;
+R.outer.jacket = c => limb(114, 222, 97, 304, 23, c) + limb(186, 222, 203, 304, 23, c) +
+  `<path d="M106 214 L142 220 L146 298 L110 298Z" ${st(c)}/><path d="M194 214 L158 220 L154 298 L190 298Z" ${st(c)}/>` +
+  `<path d="M142 220 L124 214 L132 254Z M158 220 L176 214 L168 254Z" ${st(shade(c, -.15))}/>` +
+  `<path d="M120 266 L136 286" stroke="#cfd3dc" stroke-width="3" stroke-linecap="round"/><circle cx="118" cy="232" r="3" fill="#cfd3dc"/><circle cx="182" cy="232" r="3" fill="#cfd3dc"/>`;
+R.outer.cape = c => `<path d="M112 212 Q150 200 188 212 L228 350 Q150 366 72 350Z" ${st(c)}/>` +
+  `<path d="M80 336 Q150 350 220 336" fill="none" stroke="${shade(c, .35)}" stroke-width="4"/>` +
+  `<path d="M126 210 Q150 228 174 210 L180 222 Q150 244 120 222Z" ${st(shade(c, -.15))}/><circle cx="150" cy="230" r="7" ${st('#ffd23f')}/>`;
+
+/* ---------- 신발 ---------- */
+const FEET = [130, 170];
+const shoeShape = x => `M${x - 15} 461 Q${x - 15} 444 ${x} 444 Q${x + 15} 444 ${x + 15} 461Z`;
+R.shoes.sneaker = c => FEET.map(x => `<path d="${shoeShape(x)}" ${st(c)}/><rect x="${x - 16}" y="458" width="32" height="7" rx="3.5" fill="#fff" stroke="#b9b3c6" stroke-width="2"/><path d="M${x - 5} 450 L${x + 5} 450 M${x - 5} 454 L${x + 5} 454" stroke="#fff" stroke-width="2" stroke-linecap="round"/>`).join('');
+R.shoes.mary = c => FEET.map(x => `<path d="${shoeShape(x)}" ${st(c)}/><path d="M${x - 11} 450 L${x + 11} 450" stroke="${shade(c, -.38)}" stroke-width="3"/><circle cx="${x + 6}" cy="450" r="2.5" fill="#fff"/><ellipse cx="${x - 6}" cy="455" rx="4" ry="2" fill="#fff" opacity=".5"/>`).join('');
+R.shoes.boots = c => ({ shoesOver: FEET.map(x => `<path d="M${x - 14} 398 L${x + 14} 398 L${x + 15} 448 Q${x + 17} 463 ${x} 463 L${x - 16} 463 L${x - 15} 448Z" ${st(c)}/><rect x="${x - 16}" y="394" width="32" height="12" rx="4" ${st(shade(c, .3))}/>`).join('') });
+R.shoes.ballet = c => FEET.map(x => `<ellipse cx="${x}" cy="457" rx="14" ry="7.5" ${st(c)}/><path d="M${x - 10} 452 L${x + 10} 432 L${x - 10} 414 M${x + 10} 452 L${x - 10} 432 L${x + 10} 414" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`).join('');
+
+/* ---------- 머리 장식 ---------- */
+R.headAcc.ribbon = c => `<path d="M198 68 L170 48 L172 90Z" ${st(c)}/><path d="M198 68 L226 48 L224 90Z" ${st(c)}/><circle cx="198" cy="68" r="8" ${st(shade(c, -.1))}/>`;
+R.headAcc.crown = c => `<path d="M112 72 L116 32 L134 54 L150 22 L166 54 L184 32 L188 72Z" ${st(c)}/><circle cx="150" cy="58" r="6" ${st('#e84855')}/><circle cx="128" cy="64" r="4" ${st('#4d9de0')}/><circle cx="172" cy="64" r="4" ${st('#4d9de0')}/>`;
+R.headAcc.cat = c => `<path d="M84 104 Q150 30 216 104" fill="none" stroke="${shade(c, -.38)}" stroke-width="7" stroke-linecap="round"/>` +
+  `<path d="M98 82 L92 32 L130 58Z" ${st(c)}/><path d="M202 82 L208 32 L170 58Z" ${st(c)}/><path d="M102 70 L99 46 L118 60Z M198 70 L201 46 L182 60Z" fill="#ffb3c7"/>`;
+R.headAcc.beret = c => `<ellipse cx="158" cy="60" rx="66" ry="24" transform="rotate(-10 158 60)" ${st(c)}/><circle cx="168" cy="36" r="6" ${st(c)}/>`;
+R.headAcc.straw = c => `<ellipse cx="150" cy="84" rx="104" ry="24" ${st('#f2d47a')}/><path d="M98 84 Q98 28 150 28 Q202 28 202 84Z" ${st('#f2d47a')}/>` +
+  `<path d="M99 68 Q150 76 201 68 L202 84 Q150 92 98 84Z" ${st(c)}/><path d="M64 88 Q150 112 236 88 M76 96 Q150 116 224 96" fill="none" stroke="#c9a14a" stroke-width="1.5" opacity=".7"/>`;
+R.headAcc.flower = c => {
+  let p = '';
+  for (let i = 0; i < 5; i++) { const a = i * 72 * Math.PI / 180 - Math.PI / 2; p += `<circle cx="${(104 + 11 * Math.cos(a)).toFixed(1)}" cy="${(82 + 11 * Math.sin(a)).toFixed(1)}" r="9" ${st(c)}/>`; }
+  return p + `<circle cx="104" cy="82" r="7" ${st('#ffd23f')}/>`;
+};
+
+/* ---------- 소품 ---------- */
+R.prop.glasses = c => `<g fill="rgba(255,255,255,.28)" stroke="${c}" stroke-width="4"><circle cx="124" cy="143" r="17"/><circle cx="176" cy="143" r="17"/></g>` +
+  `<path d="M141 141 Q150 134 159 141 M107 140 L86 136 M193 140 L214 136" fill="none" stroke="${c}" stroke-width="4" stroke-linecap="round"/>`;
+R.prop.heart = c => `<path d="${heart(124, 142, 1.05)}" fill="${c}" fill-opacity=".9" stroke="${shade(c, -.45)}" stroke-width="3"/><path d="${heart(176, 142, 1.05)}" fill="${c}" fill-opacity=".9" stroke="${shade(c, -.45)}" stroke-width="3"/>` +
+  `<path d="M141 138 Q150 132 159 138 M101 138 L86 136 M199 138 L214 136" fill="none" stroke="${shade(c, -.45)}" stroke-width="3" stroke-linecap="round"/><ellipse cx="117" cy="138" rx="5" ry="3" fill="#fff" opacity=".6"/><ellipse cx="169" cy="138" rx="5" ry="3" fill="#fff" opacity=".6"/>`;
+R.prop.necklace = c => {
+  let p = '';
+  for (let i = 0; i <= 10; i++) { const t = i / 10; p += `<circle cx="${(128 + 44 * t).toFixed(1)}" cy="${(214 + 18 * Math.sin(Math.PI * t)).toFixed(1)}" r="4" ${st(c, .3)}/>`; }
+  return { neck: p + `<path d="${heart(150, 240, .45)}" fill="#ff6b9a" stroke="#c23a68" stroke-width="1.5"/>` };
+};
+R.prop.bag = c => `<path d="M184 216 L118 304" stroke="${shade(c, -.38)}" stroke-width="5" stroke-linecap="round"/><path d="M184 216 L118 304" stroke="${c}" stroke-width="2.5" stroke-linecap="round"/>` +
+  `<rect x="98" y="300" width="42" height="34" rx="9" ${st(c)}/><path d="M98 312 Q119 324 140 312 L140 306 Q140 300 132 300 L106 300 Q98 300 98 306Z" ${st(shade(c, -.12))}/><circle cx="119" cy="318" r="3" fill="#ffd23f"/>`;
+R.prop.balloon = c => `<path d="M204 316 Q224 262 250 196" fill="none" stroke="#8a7fa3" stroke-width="1.6"/><ellipse cx="250" cy="160" rx="28" ry="34" ${st(c)}/>` +
+  `<path d="M245 194 L255 194 L250 186Z" ${st(c)}/><ellipse cx="240" cy="146" rx="6" ry="10" fill="#fff" opacity=".45" transform="rotate(20 240 146)"/>`;
+R.prop.wand = c => `<path d="M204 318 L234 252" stroke="#a989e8" stroke-width="5" stroke-linecap="round"/><path d="${starPath(238, 242, 20, 9)}" ${st(c)}/>` +
+  `<circle cx="262" cy="222" r="3" fill="${c}"/><circle cx="214" cy="226" r="2.5" fill="${c}"/><circle cx="256" cy="268" r="2" fill="${c}"/>`;
+
+/* ---------- 배경 ---------- */
+const rnd = (() => { let s = 7; return () => (s = (s * 9301 + 49297) % 233280) / 233280; })();
+const STARS = Array.from({ length: 40 }, () => [rnd() * 300, rnd() * 360, .8 + rnd() * 1.8]);
+R.bg.room = () => {
+  let dots = '';
+  for (let y = 18; y < 430; y += 34) for (let x = (y / 34 % 2) * 17 + 10; x < 300; x += 34) dots += `<circle cx="${x}" cy="${y}" r="3" fill="#ffd0de"/>`;
+  return `<rect width="300" height="520" fill="#ffe8ef"/>${dots}<rect x="24" y="64" width="78" height="98" rx="8" fill="#bfe6ff" stroke="#fff" stroke-width="7"/>` +
+    `<path d="M63 64 V162 M24 113 H102" stroke="#fff" stroke-width="5"/><circle cx="84" cy="88" r="8" fill="#fff"/>` +
+    `<rect x="214" y="90" width="58" height="46" rx="4" fill="#fff" stroke="#e7b7c8" stroke-width="4"/><path d="M222 128 L238 108 L250 120 L258 112 L266 128Z" fill="#7bd389"/>` +
+    `<rect y="430" width="300" height="90" fill="#e9c69c"/><path d="M0 456 H300 M0 486 H300" stroke="#d6ad7f" stroke-width="2"/><ellipse cx="150" cy="474" rx="128" ry="24" fill="#c7b0f6"/>`;
+};
+R.bg.park = () => `<rect width="300" height="520" fill="#c4e8ff"/><circle cx="252" cy="70" r="30" fill="#ffe066"/>` +
+  `<g fill="#fff"><ellipse cx="70" cy="80" rx="34" ry="14"/><ellipse cx="92" cy="70" rx="22" ry="14"/><ellipse cx="190" cy="140" rx="28" ry="10"/></g>` +
+  `<path d="M0 392 Q80 350 160 390 T300 380 V520 H0Z" fill="#8fd694"/><rect x="34" y="250" width="16" height="130" rx="4" fill="#a0785a"/>` +
+  `<circle cx="42" cy="236" r="44" fill="#5fbf73"/><circle cx="18" cy="262" r="26" fill="#5fbf73"/><circle cx="68" cy="262" r="28" fill="#5fbf73"/>` +
+  `<g fill="#ff9fbd"><circle cx="232" cy="430" r="5"/><circle cx="252" cy="446" r="5"/><circle cx="44" cy="452" r="5"/><circle cx="268" cy="414" r="4"/></g>`;
+R.bg.stage = () => `<rect width="300" height="520" fill="#3b2050"/><path d="M110 0 L190 0 L276 520 L24 520Z" fill="#fff6c9" opacity=".18"/>` +
+  STARS.slice(0, 14).map(([x, y, r]) => `<circle cx="${x}" cy="${y * .8}" r="${r}" fill="#ffe7a3" opacity=".7"/>`).join('') +
+  `<path d="M0 0 H62 Q50 120 66 240 Q40 360 58 520 H0Z" fill="#d23a52"/><path d="M300 0 H238 Q250 120 234 240 Q260 360 242 520 H300Z" fill="#d23a52"/>` +
+  `<path d="M20 0 V520 M40 0 V520 M280 0 V520 M260 0 V520" stroke="#a82a40" stroke-width="3"/><path d="M0 0 H300 V26 Q150 48 0 26Z" fill="#a82a40"/>` +
+  `<rect y="440" width="300" height="80" fill="#7a4632"/><path d="M0 440 H300" stroke="#ffd27a" stroke-width="4"/>`;
+R.bg.beach = () => `<rect width="300" height="520" fill="#a6e3ff"/><circle cx="60" cy="80" r="28" fill="#fff07a"/>` +
+  `<rect y="320" width="300" height="90" fill="#36b6d6"/><path d="M0 344 Q20 336 40 344 T80 344 T120 344 T160 344 T200 344 T240 344 T280 344 T320 344 M0 374 Q20 366 40 374 T80 374 T120 374 T160 374 T200 374 T240 374 T280 374 T320 374" fill="none" stroke="#fff" stroke-width="3" opacity=".7"/>` +
+  `<path d="M0 400 Q150 378 300 400 V520 H0Z" fill="#f7dcac"/><path d="M246 404 L262 304" stroke="#a0785a" stroke-width="4"/><path d="M206 316 Q262 270 318 316Z" fill="#ff6b9a"/><path d="M234 316 Q262 280 290 316" fill="#fff"/>` +
+  `<path d="M40 470 l8 -12 l8 12Z" fill="#ffb3a7"/><circle cx="270" cy="480" r="5" fill="#fff"/>`;
+R.bg.night = () => `<rect width="300" height="520" fill="#1f2257"/>` +
+  STARS.map(([x, y, r]) => `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r.toFixed(1)}" fill="#fff" opacity=".8"/>`).join('') +
+  `<circle cx="236" cy="74" r="30" fill="#ffe9a8"/><circle cx="250" cy="64" r="28" fill="#1f2257"/>` +
+  `<path d="${starPath(56, 110, 10, 4)}" fill="#ffe9a8"/><path d="M0 420 Q100 380 200 410 T300 400 V520 H0Z" fill="#2e3380"/>`;
+
+/* ---------- 조합 ---------- */
+const ORDER = ['bg', 'shadow', 'hairBack', 'body', 'under', 'shoes', 'bottom', 'shoesOver', 'top', 'dress', 'bottomOver', 'outer', 'neck', 'hands', 'head', 'face', 'hairFront', 'headAcc', 'prop'];
+const DEF = { face: 'face', top: 'top', bottom: 'bottom', dress: 'dress', outer: 'outer', shoes: 'shoes', headAcc: 'headAcc', prop: 'prop', bg: 'bg' };
+
+function layers() {
+  const L = {};
+  const add = (o, def) => {
+    if (!o) return;
+    if (typeof o === 'string') L[def] = (L[def] || '') + o;
+    else for (const k in o) L[k] = (L[k] || '') + o[k];
+  };
+  return { L, add };
+}
+const outLayers = (L, from = 0) => ORDER.slice(from).map(k => L[k] || '').join('');
+
+function compose(opts = {}) {
+  const { sel, col } = state, ctx = { skin: col.face };
+  const { L, add } = layers();
+  add(R.bg[sel.bg](), 'bg');
+  add(`<ellipse cx="150" cy="466" rx="64" ry="10" fill="#2e2240" opacity=".16"/>`, 'shadow');
+  add(bodyParts(ctx.skin));
+  if (!sel.top && !sel.dress) add(UNDER.top, 'under');
+  if (!sel.bottom && !sel.dress) add(UNDER.bottom, 'under');
+  for (const cat of ['hair', 'face', 'top', 'bottom', 'dress', 'outer', 'shoes', 'headAcc', 'prop']) {
+    const id = sel[cat];
+    if (id && R[cat][id]) add(R[cat][id](col[cat], ctx), DEF[cat]);
+  }
+  const bg = (L.bg || '') + (L.shadow || '');
+  const doll = outLayers(L, 2);
+  return bg + (opts.still ? doll : `<g class="doll">${doll}</g>`);
+}
+
+const MANN = '#ebe4f6';
+function thumb(cat, id) {
+  if (cat === 'bg') return `<svg viewBox="0 0 300 520" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${R.bg[id]()}</svg>`;
+  if (!id) return `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 34 a9 9 0 1 1 9 -9" fill="none" stroke="#8f72de" stroke-width="4" stroke-linecap="round"/><path d="M50 34 L14 66 Q8 74 18 74 L82 74 Q92 74 86 66Z" fill="none" stroke="#8f72de" stroke-width="4" stroke-linejoin="round"/></svg>`;
+  const ctx = { skin: state.col.face }, c = state.col[cat];
+  const { L, add } = layers();
+  if (cat === 'hair') { add({ head: headSVG(ctx.skin) }); add(R.face.smile(), 'face'); add(R.hair[id](c)); }
+  else if (cat === 'face') { add({ head: headSVG(ctx.skin) }); add(R.face[id](), 'face'); }
+  else if (cat === 'headAcc') { add({ head: headSVG(MANN) }); add(R.headAcc[id](c), 'headAcc'); }
+  else { add(bodyParts(MANN)); add(R[cat][id](c, { skin: MANN }), DEF[cat]); }
+  return `<svg viewBox="${CAT[cat].vb}" aria-hidden="true">${outLayers(L)}</svg>`;
+}
+
+/* ---------- 상태 ---------- */
+const DEFAULT = {
+  sel: { hair: 'twin', face: 'smile', top: 'blouse', bottom: 'skirt', dress: null, outer: null, shoes: 'mary', headAcc: 'ribbon', prop: null, bg: 'room' },
+  col: { hair: '#5a3825', face: '#f6cfae', top: '#ffffff', bottom: '#ff6b9a', dress: '#9b7bf6', outer: '#ffd23f', shoes: '#e84855', headAcc: '#ff6b9a', prop: '#ff6b9a' },
+  name: '콩이', tab: 'top',
+};
+const KEY = 'malang-closet-v1';
+let state = JSON.parse(JSON.stringify(DEFAULT));
+
+const $ = id => document.getElementById(id);
+const stage = $('stage'), tabsEl = $('tabs'), gridEl = $('grid'), swEl = $('swatches');
+
+function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
+function load() {
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (s && s.sel && s.col) return s;
+  } catch (e) {}
+  return null;
+}
+
+function renderStage() {
+  stage.innerHTML = compose();
+  const worn = ['top', 'bottom', 'dress', 'outer', 'shoes'].map(c => state.sel[c] && itemName(c, state.sel[c])).filter(Boolean);
+  stage.setAttribute('aria-label', `${state.name || '인형'}: ${worn.join(', ') || '기본 옷'}`);
+}
+function renderTabs() {
+  tabsEl.innerHTML = CATS.map(c => `<button class="tab" role="tab" type="button" data-tab="${c.id}" aria-selected="${c.id === state.tab}">${c.name}</button>`).join('');
+}
+function renderPanel() {
+  const cat = CAT[state.tab];
+  $('catTitle').textContent = cat.name;
+  $('catHint').textContent = cat.hint;
+  swEl.hidden = !cat.pal;
+  if (cat.pal) {
+    swEl.innerHTML = cat.pal.map(c => `<button class="sw" type="button" data-color="${c}" style="--c:${c}" aria-label="${cat.names[c]}" title="${cat.names[c]}" aria-pressed="${state.col[cat.id] === c}"></button>`).join('');
+  }
+  const cards = (cat.opt ? [{ id: null, name: '벗기' }] : []).concat(ITEMS[cat.id]);
+  gridEl.innerHTML = cards.map(it => `<button class="card" type="button" data-id="${it.id || ''}" aria-pressed="${(state.sel[cat.id] || null) === it.id}">${thumb(cat.id, it.id)}<span>${it.name}</span></button>`).join('');
+}
+function renderAll() { renderStage(); renderTabs(); renderPanel(); $('dollName').value = state.name; }
+
+function sparkle() {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const m = $('mirror');
+  for (let i = 0; i < 7; i++) {
+    const s = document.createElement('span');
+    s.className = 'spark';
+    s.textContent = i % 2 ? '✦' : '♥';
+    s.style.left = (12 + Math.random() * 76) + '%';
+    s.style.top = (18 + Math.random() * 64) + '%';
+    s.style.animationDelay = (i * 40) + 'ms';
+    m.appendChild(s);
+    setTimeout(() => s.remove(), 1000);
+  }
+}
+
+function choose(catId, id) {
+  const s = state.sel, cat = CAT[catId];
+  const next = cat.opt && s[catId] === id ? null : id;
+  if (next === s[catId]) return;
+  s[catId] = next;
+  if (catId === 'dress' && next) { s.top = null; s.bottom = null; }
+  if ((catId === 'top' || catId === 'bottom') && next && s.dress) s.dress = null;
+  const item = next && ITEMS[catId].find(i => i.id === next);
+  if (item && item.dc) state.col[catId] = item.dc;
+  renderStage(); renderPanel(); save(); sparkle();
+}
+
+/* ---------- 이벤트 ---------- */
+tabsEl.addEventListener('click', e => {
+  const b = e.target.closest('[data-tab]'); if (!b) return;
+  state.tab = b.dataset.tab; renderTabs(); renderPanel(); save();
+});
+gridEl.addEventListener('click', e => {
+  const b = e.target.closest('.card'); if (!b) return;
+  choose(state.tab, b.dataset.id || null);
+});
+swEl.addEventListener('click', e => {
+  const b = e.target.closest('[data-color]'); if (!b) return;
+  state.col[state.tab] = b.dataset.color;
+  if (state.tab === 'face' || state.tab === 'hair' || state.sel[state.tab]) sparkle();
+  renderStage(); renderPanel(); save();
+});
+$('dollName').addEventListener('input', e => { state.name = e.target.value.trim(); renderStage(); save(); });
+
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const ids = c => ITEMS[c].map(i => i.id);
+$('btnRandom').addEventListener('click', () => {
+  const s = state.sel, c = state.col;
+  s.hair = pick(ids('hair')); c.hair = pick(HAIR); s.face = pick(ids('face'));
+  if (Math.random() < .35) { s.dress = pick(ids('dress')); s.top = s.bottom = null; }
+  else { s.dress = null; s.top = pick(ids('top')); s.bottom = pick(ids('bottom')); }
+  s.outer = Math.random() < .3 ? pick(ids('outer')) : null;
+  s.shoes = pick(ids('shoes'));
+  s.headAcc = Math.random() < .6 ? pick(ids('headAcc')) : null;
+  s.prop = Math.random() < .45 ? pick(ids('prop')) : null;
+  s.bg = pick(ids('bg'));
+  for (const k of ['top', 'bottom', 'dress', 'outer', 'shoes', 'headAcc', 'prop']) c[k] = pick(CLOTH);
+  while (c.bottom === c.top) c.bottom = pick(CLOTH);
+  for (const k of ['bottom', 'headAcc', 'prop']) { const it = s[k] && ITEMS[k].find(i => i.id === s[k]); if (it && it.dc && Math.random() < .6) c[k] = it.dc; }
+  renderStage(); renderPanel(); save(); sparkle();
+});
+$('btnReset').addEventListener('click', () => {
+  for (const k of ['top', 'bottom', 'dress', 'outer', 'shoes', 'headAcc', 'prop']) state.sel[k] = null;
+  renderStage(); renderPanel(); save();
+});
+
+/* ---------- 사진 ---------- */
+function lookTitle() {
+  const s = state.sel;
+  if (!s.top && !s.bottom && !s.dress) return '앗, 옷 입는 걸 깜빡했어요';
+  if (s.dress === 'princess' && s.headAcc === 'crown') return '오늘은 내가 공주님';
+  if (s.dress === 'hanbok') return '설날 세배 준비 완료';
+  if (s.prop === 'wand' && (s.outer === 'cape' || s.dress === 'princess')) return '변신! 마법소녀';
+  if (s.bg === 'beach' && (s.headAcc === 'straw' || s.prop === 'heart')) return '여름 바캉스 룩';
+  if (s.headAcc === 'cat') return '냥냥 모드 ON';
+  if (s.face === 'sleepy') return '5분만 더 잘래요';
+  if (s.bg === 'stage') return '무대 체질 아이돌 룩';
+  if (s.bg === 'night') return '별 보러 가는 밤 산책 룩';
+  if (s.top === 'hoodie' && (s.bottom === 'jeans' || s.bottom === 'pants')) return '꾸안꾸 캠퍼스 룩';
+  if (s.dress === 'sailor') return '교복 느낌 세일러 룩';
+  if (s.bg === 'park' && s.prop === 'balloon') return '놀이공원 가는 날';
+  const main = s.dress ? state.col.dress : s.top ? state.col.top : state.col.bottom;
+  return `${CNAME[main] || '컬러'} 포인트 데일리 룩`;
+}
+$('btnPhoto').addEventListener('click', () => {
+  $('photoSvg').innerHTML = `<g transform="translate(0 -40)">${compose({ still: true })}</g>`;
+  $('pName').textContent = state.name || '이름 없는 인형';
+  $('pTitle').textContent = lookTitle();
+  const tags = ['dress', 'top', 'bottom', 'outer', 'headAcc', 'prop'].map(c => state.sel[c] && itemName(c, state.sel[c])).filter(Boolean).slice(0, 4);
+  $('pTags').textContent = tags.map(t => '#' + t.replace(/\s/g, '')).join(' ');
+  const d = new Date();
+  $('pDate').textContent = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
+  $('photo').hidden = false;
+  $('btnClose').focus();
+});
+const closePhoto = () => { $('photo').hidden = true; $('btnPhoto').focus(); };
+$('btnClose').addEventListener('click', closePhoto);
+$('photo').addEventListener('click', e => { if (e.target.id === 'photo') closePhoto(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('photo').hidden) closePhoto(); });
+
+/* ---------- 시작 ---------- */
+function start(data) {
+  const saved = (data && data.state) || load();
+  if (saved) state = { ...JSON.parse(JSON.stringify(DEFAULT)), ...saved, sel: { ...DEFAULT.sel, ...saved.sel }, col: { ...DEFAULT.col, ...saved.col } };
+  if (!CAT[state.tab]) state.tab = 'top';
+  renderAll();
+}
+window.claude?.hot?.snapshot?.(() => ({ state }));
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+})();
+</script>
