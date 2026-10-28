@@ -198,6 +198,10 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 .mic{position:absolute;font-size:clamp(16px,5vw,22px);animation:wiggle 1.1s ease-in-out infinite}
 @keyframes wiggle{0%,100%{transform:translate(0,0) rotate(0)}33%{transform:translate(4px,-3px) rotate(15deg)}66%{transform:translate(-3px,3px) rotate(-12deg)}}
 .hypha{position:absolute;width:18%;height:18%;border-radius:50%;border:2px dashed rgba(110,110,110,.7);background:radial-gradient(circle,rgba(150,150,150,.5),transparent 70%)}
+/* 6 피부세포 그대로 */
+.spindle{position:absolute;width:24%;height:6%;border-radius:50%;background:radial-gradient(circle,#c97c63 0 8%,#f4c4ae 12%);border:2px solid #d99a80;opacity:.85;animation:fl 3s ease-in-out infinite}
+.ele.ghost{opacity:.35;filter:grayscale(1)}
+.ele.ghost .head,.ele.ghost .ear,.ele.ghost .trunk{border-style:dashed}
 /* 5 제각각 / 형제들 */
 .pos{position:absolute;transform:translate(-50%,-50%)}
 .pos .ele{font-size:var(--fs)}
@@ -498,6 +502,34 @@ const CASES = [
     },
     after: "healthyMany",
     concept: "좋은 실험은 누가, 언제 해도 같은 결과가 나와야 해요. 표준화와 자동화는 오가노이드를 신약 개발에 쓰기 위한 핵심 과제예요."
+  },
+  {
+    title: "피부세포로 만들었는데 아무것도 안 돼요",
+    parent: "dad", parentName: "금쪽이 아빠 · 맞춤 의학 연구실",
+    story: ["환자분 피부세포를 조금 받았어요.", "이걸로 장 오가노이드를 만들려고요.", "그런데 몇 주째 피부세포 그대로예요.", "금쪽이가 태어나질 않아요. 😢"],
+    scope: "skin",
+    caps: ["(금쪽이 탄생 대기 중…)", "(변신 능력 0%)"],
+    note: "길쭉한 피부세포(섬유아세포)만 가득해요. 몇 주가 지나도 다른 세포로 바뀌지 않아요.",
+    diag: {
+      q: "금쪽이가 태어나지 않는 원인은 무엇일까요?",
+      options: [
+        { t: "이미 분화가 끝난 피부세포를 그대로 썼다", ok: true, why: "피부세포는 이미 '피부'로 역할이 정해진 세포예요. 그대로는 장 세포로 변하지 못해요. 오가노이드는 여러 세포로 변할 수 있는 줄기세포에서 출발해요." },
+        { t: "피부세포 수가 너무 적었다", why: "수를 늘려도 피부세포는 피부세포예요. 변신 능력이 없는 게 문제예요." },
+        { t: "환자 세포는 원래 실험에 쓸 수 없다", why: "오히려 환자 세포는 아주 귀한 재료예요! 그 환자에게 꼭 맞는 오가노이드를 만들 수 있어요." },
+        { t: "장 성장인자를 아직 안 넣었다", why: "성장인자는 줄기세포에게 길을 알려 주는 신호예요. 피부세포는 신호를 줘도 보통 장이 되지 못해요." }
+      ]
+    },
+    presc: {
+      q: "환자의 피부세포로 금쪽이를 만들려면 어떤 처방이 필요할까요?",
+      options: [
+        { t: "피부세포를 역분화시켜 유도만능줄기세포(iPSC)로 되돌린 뒤 오가노이드를 만든다", ok: true, why: "역분화는 다 자란 세포를 줄기세포 상태로 되돌리는 거예요. 야마나카 인자(Oct4, Sox2, Klf4, c-Myc라는 4가지 유전자)를 넣으면 피부세포가 iPSC가 돼요. 이 발견은 2012년 노벨 생리의학상을 받았어요." },
+        { t: "피부세포를 그대로 마트리겔에 넣는다", why: "3D 지지체는 발판일 뿐이에요. 피부세포의 '변신 능력'을 되살려 주진 못해요." },
+        { t: "피부세포는 쓸모없으니 실험을 접는다", why: "포기하긴 일러요! 피부세포도 되돌리면 줄기세포가 될 수 있어요." },
+        { t: "성장인자를 아주 많이 넣어 억지로 바꾼다", why: "신호를 세게 줘도 피부세포는 보통 장으로 바뀌지 않아요. 먼저 줄기세포 상태로 되돌려야 해요." }
+      ]
+    },
+    after: "healthy",
+    concept: "피부세포를 그대로 쓰면 실패, 역분화시키면 성공! 환자 피부세포로 만든 iPSC는 그 환자와 유전 정보가 같아요. 그래서 환자 맞춤 오가노이드로 약을 미리 시험할 수 있어요."
   }
 ];
 
@@ -507,9 +539,9 @@ const MAX_SCORE = CASES.length * 40;
 const MOOD = { "😢": "sad", "😐": "meh", "😊": "happy" };
 
 const GRADES = [
-  { min: 190, name: "세포 육아 마스터", emoji: "👑", msg: "완벽해요! 어떤 금쪽이도 믿고 맡길 수 있는 세포 육아 마스터예요." },
-  { min: 150, name: "수석 연구원", emoji: "🧪", msg: "날카로운 진단력! 연구실의 든든한 기둥이에요." },
-  { min: 100, name: "선임 연구원", emoji: "🔬", msg: "기본기가 탄탄해요! 조금만 더 하면 수석 연구원이에요." },
+  { min: 230, name: "세포 육아 마스터", emoji: "👑", msg: "완벽해요! 어떤 금쪽이도 믿고 맡길 수 있는 세포 육아 마스터예요." },
+  { min: 180, name: "수석 연구원", emoji: "🧪", msg: "날카로운 진단력! 연구실의 든든한 기둥이에요." },
+  { min: 120, name: "선임 연구원", emoji: "🔬", msg: "기본기가 탄탄해요! 조금만 더 하면 수석 연구원이에요." },
   { min: 0, name: "인턴 연구원", emoji: "🐣", msg: "아직은 금쪽이가 낯설어요. 다시 도전하면 금방 성장할 거예요!" }
 ];
 const gradeOf = s => GRADES.find(g => s >= g.min);
@@ -522,7 +554,7 @@ function ele(mood = "meh", cls = "", style = "") {
 }
 
 const SCENES = [
-  { v: `<span class="v">🧫</span><span class="v" style="animation-delay:.3s">✨</span>`, c: "처음엔 작은 줄기세포 몇 개였던 금쪽이." },
+  { v: `<span class="v">🧫</span><span class="v" style="animation-delay:.3s">✨</span>`, c: "환자의 피부세포를 줄기세포(iPSC)로 되돌려<br>태어난 금쪽이." },
   { v: `<div class="grow">${ele("meh")}</div>`, c: "3D 지지체 속에서 무럭무럭 자랐어요." },
   { v: `${ele("happy", "bouncy")}<span class="spk" style="top:0;right:-10px">✨</span>`, c: "이제 진짜 장을 닮은 '미니 장기'가 되었어요!" },
   { v: `<span class="v">🧑</span><span class="v" style="animation-delay:.4s">➡️</span><span class="v" style="animation-delay:.8s">🧫</span><span class="v" style="animation-delay:1.2s">💊</span>`, c: "환자의 세포로 만든 금쪽이에게<br>신약 후보들을 하나씩 시험해요." },
@@ -657,6 +689,10 @@ function scope(type) {
   } else if (type === "uneven") {
     const u = [[34, 36, 3.6, "none"], [74, 30, 1.8, "none"], [30, 74, 2.4, "scale(1.4,.6)"], [70, 70, 2.2, "scale(.75,1.3)"], [55, 54, 1.2, "none"]];
     inner = u.map(([l, t, fs, tf]) => `<div class="pos" style="left:${l}%;top:${t}%;--fs:${fs}cqw"><div style="transform:${tf}">${ele("sad")}</div></div>`).join("");
+  } else if (type === "skin") {
+    const sp = [[16, 22, 30], [58, 14, -20], [78, 40, 70], [12, 52, -50], [30, 80, 15], [64, 78, -35], [44, 32, 80], [70, 58, 10], [26, 38, -10], [50, 66, 45]];
+    inner = sp.map(([l, t, r]) => `<span class="spindle" style="left:${l}%;top:${t}%;transform:rotate(${r}deg)"></span>`).join("") +
+      ele("sad", "ghost") + `<span class="o2tag" style="color:var(--ink);border-color:var(--ink)">피부세포(섬유아세포)</span>`;
   } else if (type === "healthy") {
     inner = ele("happy", "bouncy") + `<span class="spk" style="left:12%;top:16%">✨</span><span class="spk" style="right:12%;top:22%;animation-delay:.5s">✨</span><span class="spk" style="left:18%;bottom:14%;animation-delay:.9s">✨</span>`;
   } else if (type === "healthyMany") {
@@ -709,7 +745,7 @@ function startScreen() {
       <input class="name-input" id="nameInput" maxlength="10" autocomplete="off" placeholder="랭킹에 표시할 닉네임" value="${esc(S.name)}">
       <button class="btn" id="startBtn">상담 시작</button>
       <button class="btn ghost" id="rankBtn">🏆 지금 랭킹 보기</button>
-      <div class="meta">사연 5개 · 약 5~7분 · 첫 시도 정답 +20점, 두 번째 +10점</div>
+      <div class="meta">사연 6개 · 약 6~8분 · 첫 시도 정답 +20점, 두 번째 +10점</div>
     </div>`);
   const moods = ["sad", "meh", "happy"]; let f = 0;
   S.timers.push(setInterval(() => {
@@ -944,9 +980,9 @@ function endScreen() {
   const g = gradeOf(S.score);
   const credits = [
     ["오늘의 세포 육아 전문가", `${esc(S.name)} (${g.name})`],
-    ["출연", "금쪽이 5남매 · 연구원 엄마 아빠"],
-    ["특별 출연", "마트리겔 · R-스폰딘 · 바이오리액터 · 클린벤치"],
-    ["오늘 배운 것", "3D 지지체 · 분화 신호 · 혈관화 · 무균 조작 · 표준화"],
+    ["출연", "금쪽이 6남매 · 연구원 엄마 아빠"],
+    ["특별 출연", "마트리겔 · R-스폰딘 · 바이오리액터 · 클린벤치 · 야마나카 인자"],
+    ["오늘 배운 것", "3D 지지체 · 분화 신호 · 혈관화 · 무균 조작 · 표준화 · 역분화(iPSC)"],
     ["다음 회 예고", "금쪽이, 드디어 혈관이 생기다?!"]
   ].map(([a, b]) => `<div><small>${a}</small><b>${b}</b></div>`).join("");
   render(`<div class="end screen-in" style="flex:1">
