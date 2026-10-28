@@ -91,47 +91,51 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 
 /* ===== 코끼리 캐릭터 (em 단위, font-size로 크기 조절) ===== */
 .ele{position:relative;width:10em;height:8.6em;flex:none}
-.ele .ear{position:absolute;top:1.3em;width:4.2em;height:4.7em;border-radius:50%;background:radial-gradient(ellipse at 50% 52%,var(--ear) 0 44%,var(--ele) 46%);border:.2em solid var(--ele-line)}
-.ele .ear.l{left:0;transform:rotate(-14deg)}
-.ele .ear.r{right:0;transform:rotate(14deg)}
-.ele .head{position:absolute;left:1.6em;top:.3em;width:6.8em;height:6.6em;border-radius:50%;border:.2em solid var(--ele-line);
+.ele .ear{position:absolute;top:1.1em;width:4.4em;height:4.6em;border-radius:52% 48% 50% 50%/55% 55% 45% 45%;background:radial-gradient(ellipse at 52% 54%,var(--ear) 0 46%,var(--ele) 48%);border:.2em solid var(--ele-line);animation:earwiggle 3.2s ease-in-out infinite}
+.ele .ear.l{left:.05em;transform:rotate(-16deg);transform-origin:85% 50%}
+.ele .ear.r{right:.05em;transform:rotate(16deg);transform-origin:15% 50%;animation-delay:.25s}
+@keyframes earwiggle{0%,80%,100%{rotate:0deg}88%{rotate:-6deg}94%{rotate:4deg}}
+.ele .head{position:absolute;left:1.35em;top:.45em;width:7.3em;height:6.7em;border-radius:50% 50% 47% 47%/54% 54% 46% 46%;border:.2em solid var(--ele-line);
   background-color:var(--ele);
-  background-image:radial-gradient(circle at 34% 26%,rgba(255,255,255,.55) 0 .9em,transparent .95em),radial-gradient(circle,rgba(255,255,255,.28) .16em,transparent .19em);
-  background-size:auto,1.15em 1.15em}
-.ele .eye{position:absolute;top:2.45em;width:.72em;height:.9em;border-radius:50%;background:var(--ink)}
-.ele .eye::after{content:"";position:absolute;top:.14em;left:.14em;width:.24em;height:.24em;border-radius:50%;background:#fff}
+  background-image:radial-gradient(ellipse at 32% 22%,rgba(255,255,255,.7) 0 .7em,transparent .75em),radial-gradient(circle at 22% 34%,rgba(255,255,255,.45) 0 .22em,transparent .25em),radial-gradient(circle,rgba(255,255,255,.22) .14em,transparent .17em);
+  background-size:auto,auto,1.1em 1.1em}
+/* 머리 위 곱슬 한 가닥 */
+.ele .head::before{content:"";position:absolute;top:-.75em;left:50%;width:.95em;height:.95em;margin-left:-.3em;border:.2em solid var(--ele-line);border-radius:50%;border-bottom-color:transparent;border-right-color:transparent;transform:rotate(30deg)}
+.ele .eye{position:absolute;top:2.75em;width:1.02em;height:1.18em;border-radius:50%;background:var(--ink)}
+.ele .eye::after{content:"";position:absolute;top:.16em;left:.16em;width:.42em;height:.42em;border-radius:50%;background:#fff}
+.ele .eye::before{content:"";position:absolute;bottom:.2em;right:.18em;width:.18em;height:.18em;border-radius:50%;background:#fff}
 .ele .eye.l{left:1.75em}.ele .eye.r{right:1.75em}
-.ele .brow{position:absolute;top:1.85em;width:1em;height:.2em;border-radius:.1em;background:var(--ink);opacity:0}
-.ele .brow.l{left:1.6em}.ele .brow.r{right:1.6em}
-.ele .cheek{position:absolute;top:3.55em;width:1.05em;height:.6em;border-radius:50%;background:var(--ear);opacity:.85}
-.ele .cheek.l{left:.75em}.ele .cheek.r{right:.75em}
-.ele .trunk{position:absolute;left:50%;top:3.3em;width:1.35em;height:3.9em;transform:translateX(-50%);background:var(--ele);border:.2em solid var(--ele-line);border-top:none;border-radius:.2em .2em .9em .9em;z-index:2}
-.ele .trunk::after{content:"";position:absolute;right:-.85em;bottom:-.45em;width:1em;height:1em;border:.2em solid var(--ele-line);border-radius:50%;border-left-color:transparent;border-top-color:transparent;transform:rotate(-20deg)}
-.ele .tear{position:absolute;left:1.85em;top:3.35em;width:.45em;height:.62em;border-radius:50% 50% 50% 50%/40% 40% 60% 60%;background:#5fb8f0;opacity:0}
+.ele .brow{position:absolute;top:2.25em;width:.9em;height:.18em;border-radius:.1em;background:var(--ink);opacity:0}
+.ele .brow.l{left:1.8em}.ele .brow.r{right:1.8em}
+.ele .cheek{position:absolute;top:4.05em;width:1.25em;height:.8em;border-radius:50%;background:radial-gradient(ellipse,#ff9fb4 0 45%,rgba(255,159,180,0) 75%)}
+.ele .cheek.l{left:.55em}.ele .cheek.r{right:.55em}
+.ele .trunk{position:absolute;left:50%;top:3.55em;width:1.45em;height:2.35em;transform:translateX(-50%);background:var(--ele);border:.2em solid var(--ele-line);border-top:none;border-radius:.3em .3em .8em .8em;z-index:2;
+  background-image:linear-gradient(transparent .75em,var(--ele-line) .75em .85em,transparent .85em 1.3em,var(--ele-line) 1.3em 1.4em,transparent 1.4em);background-size:60% 100%;background-position:center;background-repeat:no-repeat}
+.ele .trunk::after{content:"";position:absolute;left:50%;bottom:-.2em;width:1.1em;height:.55em;margin-left:-.55em;border-radius:50%;background:var(--ear);opacity:.55}
+.ele .tear{position:absolute;left:2.05em;top:3.85em;width:.5em;height:.68em;border-radius:50% 50% 50% 50%/40% 40% 60% 60%;background:#5fb8f0;opacity:0}
 .ele .acc{position:absolute;pointer-events:none}
 /* 표정 */
 .ele.sad{--ele:#b4cfdd;--ele-line:#7ea8bf}
 .ele.sad .brow{opacity:1}
-.ele.sad .brow.l{transform:rotate(-20deg)}.ele.sad .brow.r{transform:rotate(20deg)}
-.ele.sad .eye{height:.7em;top:2.6em}
+.ele.sad .brow.l{transform:rotate(-22deg)}.ele.sad .brow.r{transform:rotate(22deg)}
+.ele.sad .eye{height:.95em;top:2.9em}
 .ele.sad .tear{opacity:1;animation:drop 1.6s ease-in infinite}
 @keyframes drop{0%{transform:translateY(0);opacity:0}15%{opacity:1}100%{transform:translateY(1.6em);opacity:0}}
-.ele.meh .brow{opacity:1;top:1.95em}
-.ele.happy .eye{background:transparent;width:.9em;height:.5em;top:2.55em;border:.22em solid var(--ink);border-bottom:none;border-radius:.9em .9em 0 0}
-.ele.happy .eye::after{display:none}
-.ele.happy .cheek{opacity:1;transform:scale(1.15)}
+.ele.happy .eye{background:transparent;width:1.05em;height:.6em;top:2.95em;border:.24em solid var(--ink);border-bottom:none;border-radius:1em 1em 0 0}
+.ele.happy .eye::after,.ele.happy .eye::before{display:none}
+.ele.happy .cheek{transform:scale(1.2)}
 /* 소품 */
-.ele.mom .acc{top:-.9em;left:5.2em;width:2.2em;height:1.4em;z-index:3}
-.ele.mom .acc::before,.ele.mom .acc::after{content:"";position:absolute;top:0;width:1.1em;height:1.3em;background:var(--coral);border:.18em solid var(--ink);border-radius:50% 10% 50% 10%}
+.ele.mom .acc{top:-.6em;left:4.7em;width:2.4em;height:1.5em;z-index:3;transform:rotate(18deg)}
+.ele.mom .acc::before,.ele.mom .acc::after{content:"";position:absolute;top:0;width:1.2em;height:1.4em;background:var(--coral);border:.18em solid var(--ink);border-radius:50% 10% 50% 10%}
 .ele.mom .acc::before{left:0}.ele.mom .acc::after{right:0;transform:scaleX(-1)}
-.ele.dad .acc{top:2.15em;left:2.9em;width:4.2em;height:1.5em;z-index:3}
-.ele.dad .acc::before,.ele.dad .acc::after{content:"";position:absolute;top:0;width:1.5em;height:1.5em;border:.2em solid var(--ink);border-radius:50%;background:rgba(255,255,255,.25)}
+.ele.dad .acc{top:2.47em;left:1.39em;width:4.12em;height:1.75em;z-index:3}
+.ele.dad .acc::before,.ele.dad .acc::after{content:"";position:absolute;top:0;width:1.75em;height:1.75em;border:.2em solid var(--ink);border-radius:50%;background:rgba(255,255,255,.25)}
 .ele.dad .acc::before{left:0}.ele.dad .acc::after{right:0}
 /* 움직임 */
 .ele.bouncy{animation:bob 1.5s ease-in-out infinite}
-@keyframes bob{50%{transform:translateY(-.5em)}}
-.ele.wave .ear.r{animation:flap .5s ease-in-out infinite alternate;transform-origin:20% 50%}
-@keyframes flap{to{transform:rotate(30deg)}}
+@keyframes bob{0%,100%{transform:translateY(0) scale(1,1)}45%{transform:translateY(-.55em) scale(.98,1.03)}90%{transform:translateY(0) scale(1.04,.96)}}
+.ele.wave .ear.r{animation:flap .5s ease-in-out infinite alternate}
+@keyframes flap{to{rotate:24deg}}
 
 /* ===== 로딩 ===== */
 .loading{justify-content:center;align-items:center;text-align:center;gap:22px}
