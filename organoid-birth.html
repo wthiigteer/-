@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>금쪽같은 내 오가노이드: 탄생 편</title>
+<style>
+:root{
+  --y:#ffd400; --y2:#fff3b0; --gold:#f5a800; --ink:#222; --bg:#fff9e0;
+  --red:#ff4d4d; --green:#2bb673; --blue:#3d7bff; --cell:#ffc53d;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  min-height:100vh;color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Segoe UI",sans-serif;
+  background:repeating-linear-gradient(45deg,#fff9e0 0 22px,#fff4cc 22px 44px);
+  -webkit-tap-highlight-color:transparent;
+}
+#app{max-width:480px;margin:0 auto;min-height:100vh;padding:0 14px 48px;overflow-x:hidden}
+header{position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 0 6px;background:linear-gradient(#fff9e0 75%,rgba(255,249,224,0))}
+#dayCap{background:var(--ink);color:var(--y);font-weight:900;padding:6px 12px;border-radius:999px;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#scoreBox{background:var(--y);border:3px solid var(--ink);border-radius:999px;padding:3px 12px;font-weight:900;box-shadow:2px 2px 0 var(--ink);white-space:nowrap}
+#scoreBox.bump{animation:bump .4s}
+#prog{display:flex;gap:4px;margin:2px 0 10px}
+#prog i{flex:1;height:7px;border-radius:4px;background:#eadfa8}
+#prog i.on{background:var(--gold)}
+#prog i.cur{background:var(--ink)}
+
+.scr{animation:fadein .35s ease-out}
+.stitle{text-align:center;font-size:22px;font-weight:900;margin:6px 0 10px;line-height:1.3}
+.stitle .sn{display:inline-block;background:var(--red);color:#fff;border:3px solid var(--ink);border-radius:10px;padding:1px 9px;font-size:14px;margin-right:6px;vertical-align:3px;box-shadow:2px 2px 0 var(--ink)}
+.rtitle{text-align:center;font-size:27px;font-weight:900;color:var(--y);line-height:1.25;margin:10px 0;
+  text-shadow:-2px -2px 0 var(--ink),2px -2px 0 var(--ink),-2px 2px 0 var(--ink),2px 2px 0 var(--ink),0 5px 0 var(--ink)}
+.sit{background:#fff;border:3px solid var(--ink);border-radius:14px;padding:12px 14px;font-size:16px;line-height:1.6;box-shadow:3px 3px 0 var(--ink);margin:10px 0}
+.sit small{color:#666}
+.q{font-weight:900;font-size:17px;margin:14px 0 4px;text-align:center}
+.hint{font-weight:800;color:#b36b00;margin:8px 0 0}
+.small{font-size:13px;color:#555;line-height:1.5}
+.center{text-align:center}
+
+.btn{font:inherit;font-weight:800;font-size:16px;color:var(--ink);border:3px solid var(--ink);background:#fff;border-radius:14px;padding:12px 14px;box-shadow:3px 3px 0 var(--ink);cursor:pointer;touch-action:manipulation;transition:transform .05s}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.big{display:block;width:100%;background:var(--y);font-size:18px;margin-top:14px;padding:14px}
+
+/* 전문가 자막 */
+.expert{display:flex;gap:10px;align-items:flex-start;margin:14px 0}
+.ava{flex:0 0 54px;height:54px;border-radius:50%;background:#fff;border:3px solid var(--ink);display:flex;align-items:center;justify-content:center;font-size:30px;box-shadow:2px 2px 0 var(--ink)}
+.bub{flex:1;background:var(--y);border:3px solid var(--ink);border-radius:4px 16px 16px 16px;padding:8px 12px 10px;box-shadow:3px 3px 0 var(--ink);animation:slidein .4s ease-out}
+.bub .tag{display:inline-block;background:var(--ink);color:var(--y);font-size:12px;padding:2px 8px;border-radius:6px;margin-bottom:4px}
+.bub p{margin:0;font-weight:800;font-size:16px;line-height:1.5}
+
+/* 피드백 */
+.fbb{border:3px solid var(--ink);border-radius:12px;padding:10px 12px;margin-top:10px;font-weight:700;line-height:1.55;font-size:15px;animation:fadein .3s}
+.fbb.good{background:#d9f7e6}.fbb.bad{background:#ffe0e0}.fbb.info{background:#e6efff}
+
+/* 금쪽이 캐릭터 */
+.gk{--s:105px;--c:#ffc53d;--c2:#f7b52a;
+  width:var(--s);height:var(--s);border-radius:50%;position:relative;display:inline-flex;align-items:center;justify-content:center;
+  background:radial-gradient(circle at 34% 28%,#fffbe6 0 8%,#ffe27a 30%,var(--c) 70%,#e89a00 100%);
+  filter:drop-shadow(2px 0 0 #8a5200) drop-shadow(-2px 0 0 #8a5200) drop-shadow(0 2px 0 #8a5200) drop-shadow(0 -2px 0 #8a5200);
+  animation:bob 2.4s ease-in-out infinite;margin:calc(var(--s)*.22);vertical-align:middle}
+.gk .face{font-size:calc(var(--s)*.4);position:relative;z-index:3;line-height:1}
+.gk.lv0{--s:78px}
+.gk.lv1{--s:105px;
+  background:
+   radial-gradient(circle at 30% 62%,rgba(255,255,255,.45) 0 9%,transparent 10%),
+   radial-gradient(circle at 70% 64%,rgba(255,255,255,.4) 0 8%,transparent 9%),
+   radial-gradient(circle at 50% 82%,rgba(255,255,255,.35) 0 7%,transparent 8%),
+   radial-gradient(circle at 34% 28%,#fffbe6 0 8%,#ffe27a 30%,var(--c) 70%,#e89a00 100%)}
+.gk.lv2{--s:118px;
+  box-shadow:
+   0 calc(var(--s)*-.44) 0 calc(var(--s)*-.25) var(--c),
+   calc(var(--s)*.42) calc(var(--s)*.16) 0 calc(var(--s)*-.27) var(--c2),
+   calc(var(--s)*-.40) calc(var(--s)*.20) 0 calc(var(--s)*-.25) var(--c)}
+.gk.lv3{--s:126px;
+  background:radial-gradient(circle at 50% 50%,#fff6cf 0 14%,#ffd76a 16%,#ffe27a 30%,var(--c) 70%,#e89a00 100%);
+  box-shadow:
+   0 calc(var(--s)*-.47) 0 calc(var(--s)*-.27) var(--c),
+   calc(var(--s)*.34) calc(var(--s)*-.34) 0 calc(var(--s)*-.31) var(--c2),
+   calc(var(--s)*.47) 0 0 calc(var(--s)*-.27) var(--c),
+   calc(var(--s)*.34) calc(var(--s)*.34) 0 calc(var(--s)*-.31) var(--c2),
+   0 calc(var(--s)*.47) 0 calc(var(--s)*-.27) var(--c),
+   calc(var(--s)*-.34) calc(var(--s)*.34) 0 calc(var(--s)*-.31) var(--c2),
+   calc(var(--s)*-.47) 0 0 calc(var(--s)*-.27) var(--c),
+   calc(var(--s)*-.34) calc(var(--s)*-.34) 0 calc(var(--s)*-.31) var(--c2)}
+.gk.big{--s:150px}
+.gk.dark::after{content:"";position:absolute;inset:14%;border-radius:50%;z-index:1;
+  background:radial-gradient(circle,#3a2a10 0 34%,rgba(58,42,16,.65) 55%,rgba(58,42,16,0) 72%);animation:darken 1.6s ease-in-out infinite alternate}
+.gk.weird{--c:#a6ad83;--c2:#8f9b6c;border-radius:42% 58% 63% 37%/55% 38% 62% 45%;
+  background:radial-gradient(circle at 40% 35%,#e3e8cf,#a8b382 60%,#6f7d55);
+  box-shadow:calc(var(--s)*.36) calc(var(--s)*-.26) 0 calc(var(--s)*-.22) var(--c),calc(var(--s)*-.3) calc(var(--s)*.28) 0 calc(var(--s)*-.26) var(--c2),calc(var(--s)*.1) calc(var(--s)*.42) 0 calc(var(--s)*-.3) #b9a77a;
+  animation:wobble 1s ease-in-out infinite}
+.stage-gk{text-align:center;min-height:150px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap}
+
+/* 위기 & 반짝 */
+#crisis{position:fixed;left:50%;top:38%;transform:translate(-50%,-50%) scale(0);background:var(--red);color:#fff;font-size:34px;font-weight:900;
+  padding:12px 22px;border:4px solid var(--ink);border-radius:16px;box-shadow:5px 5px 0 var(--ink);z-index:100;text-align:center;pointer-events:none;
+  text-shadow:2px 2px 0 var(--ink);white-space:nowrap}
+#crisis small{display:block;font-size:16px;margin-top:2px;text-shadow:1px 1px 0 var(--ink)}
+#crisis.show{animation:pop 1.6s forwards}
+#vign{position:fixed;inset:0;pointer-events:none;z-index:95;box-shadow:inset 0 0 80px 20px rgba(255,0,0,.55);opacity:0}
+#vign.show{animation:flash 1s}
+body.shake #app{animation:shake .5s}
+.spk{position:fixed;left:50%;top:45%;font-size:24px;pointer-events:none;z-index:90;animation:spk 1.1s ease-out forwards}
+.plus{position:fixed;top:44px;right:max(16px,calc(50% - 222px));z-index:60;font-weight:900;font-size:22px;color:var(--green);text-shadow:1px 1px 0 #fff,-1px -1px 0 #fff;animation:up 1.2s forwards;pointer-events:none}
+
+/* 날짜 넘기기 */
+#flip{position:fixed;inset:0;background:rgba(34,34,34,.9);display:none;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--y);z-index:80;font-weight:900;font-size:28px;text-align:center}
+#flip.show{display:flex}
+#flip .clock{font-size:60px;animation:spin 1s linear infinite}
+#flip small{font-size:15px;color:#fff}
+
+/* 카드 */
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.card{font:inherit;color:var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:12px 8px;background:#fff;
+  border:3px solid var(--ink);border-radius:16px;box-shadow:3px 3px 0 var(--ink);cursor:pointer;min-height:128px;text-align:center;touch-action:manipulation;transition:transform .15s,background .2s}
+.card b{font-size:15px;line-height:1.3}
+.card small{color:#555;font-size:12.5px;line-height:1.35}
+.card .ce{font-size:36px;line-height:1}
+.card.sel{background:var(--y);transform:translateY(-3px)}
+.card.right{background:#b8f0cf}
+.card.wrong{background:#ffc9c9}
+.card.morph{animation:morph .9s}
+.card:disabled{cursor:default}
+.yama{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:10px 0 4px}
+.yama span{background:var(--ink);color:var(--y);font-weight:900;border-radius:999px;padding:4px 12px;animation:popin .4s backwards}
+.yama span:nth-child(2){animation-delay:.15s}.yama span:nth-child(3){animation-delay:.3s}.yama span:nth-child(4){animation-delay:.45s}
+
+/* 4지선다 */
+.opts{display:grid;gap:10px;margin-top:10px}
+.opt{text-align:left;width:100%;display:flex;gap:10px;align-items:center}
+.opt .ol{flex:0 0 28px;height:28px;border-radius:50%;background:var(--ink);color:var(--y);display:flex;align-items:center;justify-content:center;font-size:14px}
+.opt.right{background:#b8f0cf}
+.opt.wrong{background:#ffc9c9}
+.opt.wrong span+span,.opt.wrong{text-decoration:line-through}
+
+/* 2단계: 마트리겔 */
+.gauge{display:flex;align-items:center;gap:8px;font-weight:800;font-size:14px;margin:6px 0 8px}
+.gauge .bar{flex:1;height:16px;border:2px solid var(--ink);border-radius:8px;background:#fff;overflow:hidden}
+.gauge .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#7fd3ff,#ffb02e 60%,#ff4d4d);transition:width .1s linear}
+.stagebox{background:linear-gradient(#eef8ff,#d8efff);border:3px solid var(--ink);border-radius:16px;min-height:210px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;text-align:center;font-weight:700;line-height:1.5}
+.stagebox p{margin:6px 0}
+.tube{font-size:58px;line-height:1}
+.tube.mixed{animation:wiggle .5s ease-in-out 3}
+.tube.solid{filter:grayscale(1) brightness(.8)}
+.rub{width:100%;height:170px;border:3px dashed var(--blue);border-radius:14px;background:linear-gradient(#e3f4ff,#b6dfff);display:flex;flex-direction:column;align-items:center;justify-content:center;touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer}
+.rub .ice{font-size:40px}
+.rub b{font-size:22px}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.acts .btn{font-size:14.5px;padding:10px 8px}
+.dish{width:230px;max-width:100%;height:140px;border-radius:50%;background:radial-gradient(#ffffff,#dfe8ee);border:5px solid #9fb3c0;position:relative;cursor:pointer;touch-action:none;margin:6px auto}
+.dish.sm{width:150px;height:90px;cursor:default}
+.domeDot{position:absolute;width:44px;height:28px;border-radius:50% 50% 45% 45%/75% 75% 25% 25%;background:radial-gradient(circle at 40% 35%,#fffbe6,#f3d27a);border:2px solid #b08a2a;transform:translate(-50%,-50%);animation:popin .3s}
+.domeDot.set{background:radial-gradient(circle at 40% 35%,#fff3c0,#e9b93e);border-color:#8a6510}
+.incbox{background:#ffe9d6;border:3px solid var(--ink);border-radius:14px;padding:8px 14px;font-weight:900}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0}
+.pan{background:#fff;border:3px solid var(--ink);border-radius:14px;padding:8px;text-align:center;box-shadow:3px 3px 0 var(--ink)}
+.pan h4{margin:2px 0 6px;font-size:15px}
+.pan p{font-size:13px;margin:6px 0 0;line-height:1.45;font-weight:700}
+.pan.bad h4{color:#c22}.pan.good h4{color:#138a50}
+.flatdish{height:120px;display:flex;align-items:flex-end;justify-content:center;border-bottom:7px solid #9fb3c0;padding-bottom:1px}
+.pancake{width:74px;height:74px;border-radius:50%;background:radial-gradient(circle at 34% 28%,#fffbe6,#ffe27a 30%,var(--cell) 70%,#e89a00);display:flex;align-items:center;justify-content:center;font-size:30px;transform-origin:50% 100%;animation:flatten 2.2s .4s forwards;border:2px solid #8a5200}
+.domewrap{height:120px;display:flex;align-items:flex-end;justify-content:center;border-bottom:7px solid #9fb3c0}
+.dome{width:130px;max-width:100%;height:100px;border-radius:50% 50% 0 0/100% 100% 0 0;background:rgba(255,240,180,.75);border:2px solid #d4b04a;border-bottom:none;display:flex;align-items:center;justify-content:center}
+.dome .gk{margin:0}
+
+/* 3단계: 인큐베이터 */
+.incu{background:linear-gradient(#f2f4f7,#d6dce4);border:3px solid var(--ink);border-radius:18px;padding:12px;box-shadow:3px 3px 0 var(--ink)}
+.incu-win{background:radial-gradient(#fff,#e6f3ff);border:3px solid #7a8a99;border-radius:12px;height:160px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;transition:background .4s}
+.incu-win.cold{background:radial-gradient(#fff,#a9d8ff)}
+.incu-win.hot{background:radial-gradient(#fff,#ffb38a)}
+.incu-win.ok{background:radial-gradient(#fffbe6,#ffe58a)}
+.ctl{margin:8px 0}
+.ctl label{display:flex;justify-content:space-between;align-items:center;font-weight:800}
+.ctl b{font-family:ui-monospace,Menlo,Consolas,monospace;background:#222;color:#7CFC00;padding:2px 10px;border-radius:6px;min-width:70px;text-align:center}
+input[type=range]{width:100%;height:36px;accent-color:#e89a00;touch-action:manipulation}
+.issues{margin:6px 0 0;padding-left:0;list-style:none}
+.issues li{margin:4px 0}
+
+/* 4단계: 레시피 */
+.rcards .card{min-height:104px}
+.bowl{min-height:64px;background:#fff;border:3px dashed var(--ink);border-radius:0 0 70px 70px;text-align:center;padding:10px;margin-top:12px;font-weight:800;line-height:1.7}
+.bowl .chip{display:inline-block;background:var(--y);border:2px solid var(--ink);border-radius:999px;padding:0 10px;margin:2px;font-size:14px;animation:popin .25s}
+.pv{text-align:center}
+.pv .lbl{font-weight:900;font-size:18px;color:#6f7d55}
+
+/* 5단계 */
+.well{width:200px;height:200px;margin:10px auto;border-radius:50%;border:7px solid #b9c6d0;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;
+  background:radial-gradient(circle,#ff7584,#d6334a);transition:background .6s;box-shadow:inset 0 0 20px rgba(0,0,0,.15)}
+.well.orange{background:radial-gradient(circle,#ffb067,#e8742c)}
+.well.yellow{background:radial-gradient(circle,#ffe680,#f2c230)}
+.well.cloudy{background:radial-gradient(circle,#e8a3ab,#b9858c)}
+.well.cloudy::after{content:"";position:absolute;inset:0;z-index:4;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.75),rgba(225,225,225,.6));}
+.well .gk{margin:0}
+.germ{position:absolute;font-size:24px;z-index:5;animation:wig .5s ease-in-out infinite alternate,popin .3s}
+.mrow{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.calendar{display:inline-block;background:#fff;border:3px solid var(--ink);border-radius:10px;padding:4px 12px;font-weight:900}
+.mlog{max-height:120px;overflow:auto;font-size:14px;font-weight:700;margin-top:8px;line-height:1.6}
+
+/* 6단계 */
+.sibs{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:0;min-height:170px}
+.sibs .sib{animation:popin .5s backwards}
+
+/* 엔딩 */
+.scene{text-align:center;min-height:300px;display:flex;flex-direction:column;justify-content:center;align-items:center;animation:fadein .6s}
+.scene .bigv{font-size:60px;line-height:1.2;letter-spacing:4px}
+.scene p{font-size:19px;font-weight:800;line-height:1.55;background:#fff;border:3px solid var(--ink);border-radius:14px;padding:10px 14px;box-shadow:3px 3px 0 var(--ink)}
+.drugs{display:flex;justify-content:center;gap:4px}
+.dt{display:flex;flex-direction:column;align-items:center}
+.dt .pill{font-weight:900;background:#fff;border:2px solid var(--ink);border-radius:999px;padding:2px 10px;font-size:15px}
+.dt.win .pill{background:var(--y);animation:bump .6s 3}
+.three{background:#fff;border:4px solid var(--ink);border-radius:18px;padding:12px;box-shadow:4px 4px 0 var(--ink);text-align:center;margin:12px 0}
+.three h3{margin:0 0 8px;font-size:19px}
+.eq{display:flex;align-items:center;justify-content:center;gap:4px;font-weight:900;font-size:20px}
+.eq span{flex:1;display:flex;flex-direction:column;align-items:center;background:var(--y2);border:2px solid var(--ink);border-radius:12px;padding:6px 2px;font-size:26px}
+.eq span b{font-size:14px;margin-top:2px}
+.eq span small{font-size:12px;color:#7a5600}
+.three .sent{font-size:14px;font-weight:800;margin:10px 0 0;line-height:1.5}
+.gradecard{position:relative;overflow:hidden;background:linear-gradient(135deg,#fff3b0,#ffd400 50%,#f5a800);border:4px solid var(--ink);border-radius:20px;padding:18px 14px;text-align:center;box-shadow:5px 5px 0 var(--ink);margin:14px 0}
+.gradecard::before{content:"";position:absolute;top:-50%;left:-60%;width:40%;height:200%;background:rgba(255,255,255,.45);transform:rotate(25deg);animation:shine 2.6s infinite}
+.gradecard>*{position:relative;z-index:1}
+.gradecard .gi{font-size:56px}
+.gradecard .gn{font-size:28px;font-weight:900;margin:4px 0}
+.gradecard .gs{font-size:20px;font-weight:900}
+.gradecard .ladder{display:flex;justify-content:center;gap:4px;flex-wrap:wrap;margin-top:10px;font-size:12px;font-weight:800}
+.gradecard .ladder span{background:rgba(255,255,255,.6);border:2px solid var(--ink);border-radius:999px;padding:2px 8px;opacity:.5}
+.gradecard .ladder span.me{opacity:1;background:var(--ink);color:var(--y)}
+.brk{width:100%;border-collapse:collapse;font-weight:700;font-size:14px;background:#fff;border:3px solid var(--ink);border-radius:12px;overflow:hidden}
+.brk td{padding:7px 10px;border-bottom:1px solid #eee}
+.brk td:last-child{text-align:right;font-family:ui-monospace,Menlo,Consolas,monospace}
+
+/* 타이틀 */
+.hero{text-align:center}
+.onair{display:inline-block;background:var(--red);color:#fff;font-weight:900;border:3px solid var(--ink);border-radius:8px;padding:2px 10px;font-size:13px;margin-top:8px;animation:blink 1.4s infinite}
+.hero h1{margin:10px 0 0;font-size:34px;line-height:1.15;font-weight:900;color:#fff;
+  text-shadow:-3px -3px 0 var(--ink),3px -3px 0 var(--ink),-3px 3px 0 var(--ink),3px 3px 0 var(--ink),0 6px 0 var(--ink)}
+.hero h1 span{color:var(--y);font-size:44px}
+.hero .ep{display:inline-block;margin-top:10px;background:var(--ink);color:var(--y);font-weight:900;border-radius:999px;padding:4px 16px}
+.rules{text-align:left;background:#fff;border:3px solid var(--ink);border-radius:14px;padding:10px 14px 10px 30px;font-weight:700;line-height:1.7;margin:10px 0}
+.disc{font-size:12px;color:#777;margin-top:12px}
+
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes slidein{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:none}}
+@keyframes bob{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-5px) scale(1.03,.98)}}
+@keyframes wobble{0%,100%{transform:rotate(-4deg) scale(1)}50%{transform:rotate(4deg) scale(1.05,.95)}}
+@keyframes darken{from{opacity:.7}to{opacity:1}}
+@keyframes pop{0%{transform:translate(-50%,-50%) scale(0) rotate(-8deg)}12%{transform:translate(-50%,-50%) scale(1.2) rotate(3deg)}22%{transform:translate(-50%,-50%) scale(1) rotate(-2deg)}80%{transform:translate(-50%,-50%) scale(1);opacity:1}100%{transform:translate(-50%,-50%) scale(.9);opacity:0}}
+@keyframes flash{0%,100%{opacity:0}20%{opacity:1}}
+@keyframes shake{0%,100%{transform:translateX(0)}15%{transform:translateX(-10px) rotate(-1deg)}30%{transform:translateX(9px) rotate(1deg)}45%{transform:translateX(-7px)}60%{transform:translateX(6px)}75%{transform:translateX(-3px)}}
+@keyframes spk{0%{transform:translate(-50%,-50%) scale(.3);opacity:1}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.2) rotate(90deg);opacity:0}}
+@keyframes up{0%{opacity:0;transform:translateY(10px)}20%{opacity:1}100%{opacity:0;transform:translateY(-30px)}}
+@keyframes bump{50%{transform:scale(1.2)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes popin{0%{transform:scale(0)}70%{transform:scale(1.15)}100%{transform:scale(1)}}
+@keyframes morph{0%{transform:scale(1)}30%{transform:scale(.6) rotate(-15deg);filter:brightness(2)}60%{transform:scale(1.15) rotate(10deg)}100%{transform:scale(1)}}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-15deg)}75%{transform:rotate(15deg)}}
+@keyframes wig{from{transform:rotate(-12deg) translateY(0)}to{transform:rotate(12deg) translateY(-3px)}}
+@keyframes flatten{to{transform:scale(1.75,.28);border-radius:50% 50% 12px 12px}}
+@keyframes shine{0%{left:-60%}60%,100%{left:130%}}
+@keyframes blink{50%{opacity:.6}}
+.domeDot{animation:popin .3s}
+@media (min-width:700px){ #app{padding-top:10px} }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div id="dayCap">🎬 오늘의 사연</div>
+    <div id="scoreBox">⭐ <span id="score">0</span>점</div>
+  </header>
+  <div id="prog"></div>
+  <main id="main"></main>
+</div>
+<div id="crisis"></div>
+<div id="vign"></div>
+<div id="flip"></div>
+
+<script>
+/* ===== 기본 도구 ===== */
+let S;
+const MAX = {1:20,2:20,3:20,4:20,5:60,6:20};
+const STAGE_NAMES = {1:'재료 고르기',2:'집 짓기',3:'방 온도 맞추기',4:'이유식 만들기',5:'돌보기',6:'독립시키기'};
+const FACE = {sad:'😢',meh:'😐',happy:'😊',shock:'😱',sick:'😵',cold:'🥶',hot:'🥵',star:'🤩',sleep:'😴'};
+const main = document.getElementById('main');
+let T = [];
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+function every(fn, ms){ const id=setInterval(fn, ms); T.push(id); return id; }
+
+function screen(html){
+  T.forEach(clearInterval); T=[];
+  main.innerHTML = `<section class="scr">${html}</section>`;
+  window.scrollTo(0,0);
+  return main.firstElementChild;
+}
+function gk(level=S.level, mood='happy', cls='', size){
+  return `<div class="gk lv${level} ${cls}" ${size?`style="--s:${size}px"`:''}><span class="face">${FACE[mood]||mood}</span></div>`;
+}
+function expert(t){ return `<div class="expert"><div class="ava">🧑‍🔬</div><div class="bub"><b class="tag">세포 육아 전문가</b><p>${t}</p></div></div>`; }
+function title(n, t){ return `<div class="stitle"><span class="sn">${n}단계</span>${t}</div>`; }
+function sit(t){ return `<div class="sit">${t}</div>`; }
+function fbBox(type, html){ const ic={good:'⭕',bad:'❌',info:'💡'}[type]; return `<div class="fbb ${type}">${ic} ${html}</div>`; }
+function setDay(t){ $('#dayCap').textContent = t; }
+function setStage(n){
+  S.stage = n;
+  $('#prog').innerHTML = [1,2,3,4,5,6,7].map(i=>`<i class="${i<n?'on':i===n?'cur':''}"></i>`).join('');
+}
+function addNext(el, fn, label='다음 →'){
+  const b=document.createElement('button'); b.className='btn big'; b.innerHTML=label;
+  b.onclick=()=>{ b.disabled=true; fn(); };
+  el.appendChild(b);
+  setTimeout(()=>b.scrollIntoView({behavior:'smooth',block:'nearest'}),150);
+  return b;
+}
+function addScore(n){
+  if(n<=0) return;
+  S.score += n; S.pts[S.stage]=(S.pts[S.stage]||0)+n;
+  $('#score').textContent = S.score;
+  const f=document.createElement('div'); f.className='plus'; f.textContent='+'+n;
+  document.body.appendChild(f); setTimeout(()=>f.remove(),1300);
+  const sb=$('#scoreBox'); sb.classList.remove('bump'); void sb.offsetWidth; sb.classList.add('bump');
+}
+function crisis(sub){
+  const c=$('#crisis');
+  c.innerHTML='🚨 금쪽이 위기!'+(sub?`<small>${sub}</small>`:'');
+  c.classList.remove('show'); void c.offsetWidth; c.classList.add('show');
+  const v=$('#vign'); v.classList.remove('show'); void v.offsetWidth; v.classList.add('show');
+  document.body.classList.remove('shake'); void document.body.offsetWidth; document.body.classList.add('shake');
+  try{ navigator.vibrate && navigator.vibrate(180); }catch(e){}
+}
+function sparkle(n=16){
+  const em=['✨','⭐','💛','🌟'];
+  for(let i=0;i<n;i++){
+    const s=document.createElement('span'); s.className='spk'; s.textContent=em[i%4];
+    const a=Math.random()*Math.PI*2, r=70+Math.random()*130;
+    s.style.setProperty('--dx',Math.cos(a)*r+'px'); s.style.setProperty('--dy',Math.sin(a)*r+'px');
+    s.style.animationDelay=(Math.random()*.25)+'s';
+    document.body.appendChild(s); setTimeout(()=>s.remove(),1500);
+  }
+}
+function dayFlip(to, cb){
+  const f=$('#flip'); let cur=Math.min(S.lastDay, to);
+  f.innerHTML=`<div class="clock">⏩</div><div>금쪽이 육아 <span id="fd">${cur}</span>일차</div><small>시간이 빠르게 흘러요…</small>`;
+  f.classList.add('show');
+  const id=setInterval(()=>{
+    if(cur<to){ cur++; $('#fd').textContent=cur; }
+    else{ clearInterval(id); setTimeout(()=>{ f.classList.remove('show'); S.lastDay=to; setDay(`금쪽이 육아 ${to}일차`); cb(); },550); }
+  },260);
+}
+/* 4지선다 공통: 첫 시도 +20, 두 번째 +10, 두 번 틀리면 정답 공개 */
+function quiz(box, opts, onDone, onWrong){
+  const list=shuffle(opts.slice()); let tries=0, done=false;
+  box.innerHTML=`<div class="opts">${list.map((o,i)=>`<button class="btn opt" data-i="${i}"><span class="ol">${'ABCD'[i]}</span><span>${o.t}</span></button>`).join('')}</div><div class="qfb"></div>`;
+  const fb=$('.qfb',box), btns=$$('.opt',box);
+  btns.forEach(b=>b.onclick=()=>{
+    if(done) return;
+    const o=list[+b.dataset.i];
+    if(o.ok){
+      done=true; b.classList.add('right');
+      const pts=tries===0?20:10; addScore(pts); sparkle();
+      fb.innerHTML=fbBox('good',`<b>정답! +${pts}점</b><br>${o.why}`);
+      onDone(pts, fb);
+    }else{
+      tries++; b.classList.add('wrong'); b.disabled=true; crisis(); onWrong && onWrong(o);
+      if(tries>=2){
+        done=true; const ans=list.find(x=>x.ok);
+        btns[list.indexOf(ans)].classList.add('right');
+        fb.innerHTML=fbBox('bad',o.why)+fbBox('info',`정답은 「${ans.t}」예요. ${ans.why}`);
+        onDone(0, fb);
+      }else{
+        fb.innerHTML=fbBox('bad',o.why)+'<p class="hint">한 번 더 골라 보세요! (두 번째 정답 +10점)</p>';
+      }
+    }
+  });
+}
+function result({head, mood='happy', cls='', vis, text, coach, next, btn='다음 단계로 →'}){
+  const p=S.pts[S.stage]||0;
+  screen(`<div class="rtitle">${head}</div>
+    <div class="stage-gk">${vis || gk(S.level,mood,cls)}</div>
+    ${sit(text)}
+    <p class="center small">이번 단계 점수: <b>${p} / ${MAX[S.stage]}</b></p>
+    ${expert(coach)}
+    <div id="nxw"></div>`);
+  addNext($('#nxw'), next, btn);
+}
+
+/* ===== 타이틀 ===== */
+function titleScreen(){
+  S={score:0, level:0, stage:0, pts:{}, day:0, lastDay:0};
+  $('#score').textContent=0; setStage(0); setDay('🎬 오늘의 사연');
+  screen(`<div class="hero">
+    <div class="onair">● ON AIR · 육아 상담 예능 패러디</div>
+    <h1>금쪽같은 내<br><span>오가노이드</span></h1>
+    <div class="ep">탄생 편</div>
+    <div class="stage-gk">${gk(0,'happy','',96)}</div>
+    ${sit('오늘의 사연자는 <b>초보 연구원 부모</b>, 바로 당신!<br>줄기세포에서 <b>장 오가노이드 금쪽이</b>를 직접 탄생시키고 키워 보세요.<br><small>오가노이드 = 줄기세포로 만든, 진짜 장기를 닮은 작은 세포 덩어리</small>')}
+    ${expert('걱정 마세요. 단계마다 제가 옆에서 코칭해 드릴게요.')}
+    <ul class="rules">
+      <li>🎯 선택 문제: 첫 시도 정답 +20점, 두 번째 +10점</li>
+      <li>🎮 미니게임: 정확도에 따라 0~20점</li>
+      <li>⏱️ 총 7단계, 약 7~10분</li>
+    </ul>
+    <div id="stw"></div>
+    <p class="disc">※ 교육용 패러디 게임이며 실제 방송·출연자와 관계없습니다.</p>
+  </div>`);
+  addNext($('#stw'), stage1, '🍼 육아 시작!');
+}
+
+/* ===== 1단계: 재료 고르기 ===== */
+function stage1(){
+  setStage(1); setDay('금쪽이 육아 0일차 · 탄생 준비'); S.level=0;
+  const cards=[
+    {id:'gut', e:'🧬', n:'장 성체줄기세포', d:'장 속에서 새 장 세포를 만드는 세포'},
+    {id:'ips', e:'✨', n:'유도만능줄기세포(iPSC)', d:'어른 세포를 되돌려 만든 만능 세포'},
+    {id:'skin',e:'🖐️', n:'피부세포', d:'팔 피부에서 떼어 낸 보통 세포'},
+    {id:'rbc', e:'🩸', n:'적혈구', d:'피 속에서 산소를 나르는 세포'}
+  ];
+  screen(`${title(1,'금쪽이의 재료 고르기')}
+    <div class="stage-gk">${gk(0,'meh','',70)}</div>
+    ${sit('금쪽이를 만들려면 먼저 <b>재료</b>가 필요해요.<br><b>장 오가노이드 금쪽이</b>는 어떤 세포로 시작할 수 있을까요? 카드를 골라 보세요.')}
+    <div class="cards">${shuffle(cards).map(c=>`<button class="card" data-id="${c.id}"><span class="ce">${c.e}</span><b>${c.n}</b><small>${c.d}</small></button>`).join('')}</div>
+    <div id="fb"></div>`);
+  let tries=0, done=false;
+  const fb=$('#fb');
+  $$('.card').forEach(b=>b.onclick=()=>{
+    if(done) return;
+    const id=b.dataset.id;
+    if(id==='gut' || id==='ips'){
+      done=true; b.classList.add('right');
+      const pts=tries===0?20:10; addScore(pts); sparkle();
+      fb.innerHTML=fbBox('good', `<b>정답! +${pts}점</b><br>` + (id==='gut'
+        ? '장 성체줄기세포는 장 속에서 평생 새 장 세포를 만들어요. 그래서 바로 장 오가노이드가 될 수 있어요.'
+        : 'iPSC는 거의 모든 세포가 될 수 있어요. 장이 되라는 신호를 순서대로 주면 장 오가노이드가 돼요.'));
+      addNext(fb, ()=>s1Result(id));
+    }else if(id==='rbc'){
+      tries++; b.classList.add('wrong'); b.disabled=true; crisis('적혈구엔 핵이 없어요!');
+      fb.innerHTML=fbBox('bad','세포인 건 맞아요. 하지만 적혈구는 <b>핵</b>(유전 설계도가 든 방)이 없어서 스스로 늘어나거나 다른 세포가 될 수 없어요.')+'<p class="hint">다른 카드를 골라 보세요!</p>';
+    }else if(id==='skin'){
+      tries++; b.classList.add('wrong'); b.disabled=true; crisis('그대로는 실패!');
+      fb.innerHTML=fbBox('bad','살아 있는 세포인 건 맞아요. 하지만 피부세포는 이미 "피부"로 정해진 세포라 <b>그대로는</b> 장이 될 수 없어요.')
+        +'<p class="hint">💡 그런데… 피부세포를 처음 상태로 되돌리는 방법이 있어요!</p><button class="btn big" id="rev">🔄 역분화 시키기</button>';
+      $('#rev').onclick=()=>{
+        done=true; b.classList.remove('wrong'); b.classList.add('morph','right');
+        b.innerHTML='<span class="ce">✨</span><b>iPSC로 변신!</b><small>피부세포 → 만능 세포</small>';
+        sparkle(22);
+        const pts = tries<=1 ? 10 : 5; addScore(pts);
+        fb.innerHTML=fbBox('good',`<b>역분화 성공! +${pts}점</b><br><b>역분화</b>(다 자란 세포를 줄기세포 상태로 되돌리기)를 하면 피부세포도 <b>iPSC</b>(유도만능줄기세포)가 돼요.<br>2006년 야마나카 신야 연구팀은 피부세포에 <b>유전자 4개</b>를 넣어 만능 세포로 되돌렸어요.`)
+          +`<div class="yama">${['Oct4','Sox2','Klf4','c-Myc'].map(g=>`<span>${g}</span>`).join('')}</div>`
+          +'<p class="small center">이 4개를 <b>야마나카 인자</b>라고 불러요. 이 발견으로 2012년 노벨 생리의학상을 받았어요.</p>';
+        addNext(fb, ()=>s1Result('skin'));
+      };
+    }
+  });
+}
+function s1Result(id){
+  S.level=0;
+  const from = {gut:'장 성체줄기세포', ips:'iPSC', skin:'피부세포 → iPSC'}[id];
+  result({
+    head:'👶 금쪽이 탄생!',
+    text:`<b>${from}</b>에서 금쪽이가 태어났어요!<br>아직은 아주 작은 세포예요.`,
+    coach:'좋은 재료를 골랐어요. 금쪽이의 시작은 <b>줄기세포</b>(여러 종류의 세포로 자랄 수 있는 세포)예요.',
+    next:stage2
+  });
+}
+
+/* ===== 2단계: 집 짓기 (마트리겔) ===== */
+function stage2(){
+  setStage(2); setDay('금쪽이 육아 1일차 · 아침');
+  let retry=false;
+  run();
+  function run(){
+    let phase=0, gauge=0, mist=0, tick=null, over=false;
+    const acts=[
+      {id:'mix', t:'🧊 얼음 위에서 섞기'},
+      {id:'drop',t:'💧 접시에 돔 떨어뜨리기'},
+      {id:'inc', t:'🌡️ 37℃ 인큐베이터에 넣기'},
+      {id:'desk',t:'☕ 상온 책상에 잠깐 두기'}
+    ];
+    const el=screen(`${title(2,'금쪽이의 집 짓기')}
+      ${sit('금쪽이에게 <b>3D 집</b>이 필요해요. <b>마트리겔</b>(세포가 자리 잡는 젤리 같은 지지체)은 <b>차가울 땐 액체</b>, <b>37℃에서 굳는</b> 젤이에요.<br>젤이 굳기 전에 알맞은 순서로 집을 지어 주세요!'+(retry?'<br><b style="color:#c22">🔁 재도전 (최대 10점)</b>':''))}
+      <div class="gauge"><span>🧊 굳음 정도</span><div class="bar"><i id="gbar"></i></div></div>
+      <div class="stagebox" id="sbox"><div class="tube">🧪</div><p>튜브 속: 차가운 마트리겔 + 금쪽이 세포<br><small>(지금은 얼음 옆에 있어요)</small></p></div>
+      <div class="acts">${shuffle(acts).map(a=>`<button class="btn act" data-id="${a.id}">${a.t}</button>`).join('')}</div>
+      <div id="fb"></div>`);
+    const sbox=$('#sbox'), fb=$('#fb'), gbar=$('#gbar');
+    const setG=()=>{ gbar.style.width=Math.min(100,gauge)+'%'; };
+    const msg=(type,t)=>{ fb.innerHTML=fbBox(type,t); };
+    const lock=v=>$$('.act',el).forEach(b=>b.disabled=v);
+    function heat(){
+      if(tick) return;
+      tick=every(()=>{ if(over) return; gauge+=0.9; setG(); if(gauge>=100) fail('상온에 너무 오래 있어서 튜브 안에서 젤이 미리 굳어 버렸어요!'); },100);
+    }
+    function fail(t){
+      if(over) return; over=true; clearInterval(tick); gauge=100; setG(); lock(true);
+      crisis('젤이 미리 굳었어요!');
+      sbox.innerHTML='<div class="tube solid">🧪</div><p>딱딱하게 굳은 젤 덩어리…<br>금쪽이가 갇혀 버렸어요 😢</p>';
+      msg('bad', t+'<br>마트리겔은 차가울 땐 액체, 37℃에서 굳어요. <b>순서</b>와 <b>시간</b>이 중요해요!');
+      if(!retry) addNext(fb, ()=>{ retry=true; run(); }, '🔁 다시 도전 (최대 10점)');
+      else addNext(fb, s2Compare, '결과 보기 →');
+    }
+    function win(){
+      over=true; clearInterval(tick); lock(true);
+      const pts=Math.max(0,(retry?10:20)-mist*4-(gauge>70?4:gauge>40?2:0));
+      addScore(pts); sparkle();
+      sbox.innerHTML=`<div class="incbox">🌡️ 37℃ 인큐베이터</div>
+        <div class="dish sm">${[28,50,72].map(x=>`<span class="domeDot set" style="left:${x}%;top:50%"></span>`).join('')}</div>
+        <p>말랑한 돔이 37℃에서 탱글한 젤로 굳었어요!</p>`;
+      msg('good',`<b>집 완성! +${pts}점</b><br>실수 ${mist}번 · 굳음 정도 ${Math.round(gauge)}%`);
+      addNext(fb, s2Compare);
+    }
+    $$('.act',el).forEach(b=>b.onclick=()=>{
+      if(over) return;
+      const id=b.dataset.id;
+      if(id==='mix'){
+        if(phase!==0){ mist++; msg('bad','이미 골고루 섞었어요! 같은 일을 반복하는 동안에도 젤은 데워지고 있어요.'); return; }
+        lock(true);
+        sbox.innerHTML='<div class="rub" id="rub"><div class="ice">🧊🧪🧊</div><p>얼음 위에서 문지르거나 톡톡 탭!</p><b id="cnt">0 / 12</b></div>';
+        msg('info','얼음 위라서 마트리겔이 액체 상태로 있어요. 세포가 골고루 퍼지게 섞어 주세요.');
+        const rub=$('#rub'); let n=0, acc=0, lx=null, ly=null, fin=false;
+        const inc=()=>{
+          if(fin) return; n++; $('#cnt').textContent=Math.min(n,12)+' / 12';
+          if(n>=12){
+            fin=true; phase=1; lock(false);
+            sbox.innerHTML='<div class="tube mixed">🧪</div><p>골고루 섞였어요! 얼음에서 꺼냈어요.<br><b style="color:#c22">젤이 데워지기 전에 서둘러요!</b></p>';
+            msg('info','이제 튜브가 상온에 나왔어요. 굳음 정도가 오르기 시작해요!');
+            heat();
+          }
+        };
+        rub.onpointerdown=e=>{ lx=e.clientX; ly=e.clientY; inc(); };
+        rub.onpointermove=e=>{ if(lx===null) return; acc+=Math.hypot(e.clientX-lx,e.clientY-ly); lx=e.clientX; ly=e.clientY; while(acc>45){ acc-=45; inc(); } };
+        rub.onpointerup=rub.onpointerleave=rub.onpointercancel=()=>{ lx=null; };
+      }else if(id==='drop'){
+        if(phase===0){ mist++; crisis('아직 안 섞었어요!'); msg('bad','접시에 떨어뜨리는 건 맞는 단계예요. 하지만 세포를 젤에 고루 섞기 전이라 세포 없는 빈 돔이 돼요. 먼저 섞어야 해요.'); return; }
+        if(phase===2){ mist++; msg('bad','돔은 이미 다 만들었어요! 이제 굳혀야 해요.'); return; }
+        lock(true);
+        sbox.innerHTML='<p>접시를 <b>3번 탭</b>해서 동그란 돔을 만드세요!</p><div class="dish" id="dish"></div><b id="dc">0 / 3</b>';
+        const dish=$('#dish'); let k=0;
+        dish.onpointerdown=e=>{
+          if(k>=3 || over) return;
+          const r=dish.getBoundingClientRect();
+          const x=Math.min(80,Math.max(20,(e.clientX-r.left)/r.width*100));
+          const y=Math.min(75,Math.max(25,(e.clientY-r.top)/r.height*100));
+          const d=document.createElement('span'); d.className='domeDot'; d.style.left=x+'%'; d.style.top=y+'%';
+          dish.appendChild(d); k++; $('#dc').textContent=k+' / 3';
+          if(k>=3){ phase=2; lock(false); msg('info','돔 3개 완성! 아직은 말랑말랑해요. 이제 단단하게 굳혀야 해요.'); }
+        };
+      }else if(id==='inc'){
+        if(phase===0) fail('섞기도 전에 데워서 젤이 튜브째 굳어 버렸어요! 굳히는 건 맞는 단계지만 순서가 너무 빨라요.');
+        else if(phase===1) fail('돔을 만들기 전에 튜브째 데워서 굳어 버렸어요! 접시에 먼저 떨어뜨려야 해요.');
+        else win();
+      }else if(id==='desk'){
+        mist++; gauge+=35; setG(); crisis('상온에 방치!');
+        msg('bad','잠깐 쉬고 싶은 마음은 알아요. 하지만 상온(약 20~25℃)에서는 젤이 슬슬 굳기 시작해요. 굳음 정도가 확 올랐어요!');
+        heat();
+        if(gauge>=100) fail('상온에 두는 바람에 젤이 미리 굳어 버렸어요!');
+      }
+    });
+  }
+}
+function s2Compare(){
+  S.level=1;
+  result({
+    head:'🏠 2D 바닥 vs 3D 집',
+    vis:`<div class="cmp" style="width:100%">
+      <div class="pan bad"><h4>평평한 접시 (2D)</h4><div class="flatdish"><div class="pancake">😢</div></div><p>바닥에 붙어 납작하게 퍼져요. 장 모양을 만들 수 없어요.</p></div>
+      <div class="pan good"><h4>마트리겔 돔 (3D)</h4><div class="domewrap"><div class="dome">${gk(1,'happy','',64)}</div></div><p>사방이 젤로 감싸여 동그랗게 뭉쳐 자라요.</p></div>
+    </div>`,
+    text:'같은 금쪽이라도 어디서 자라느냐에 따라 모양이 완전히 달라져요. 마트리겔 속에서 금쪽이가 <b>동그란 공</b>이 됐어요!',
+    coach:'금쪽이한테는 집이 필요해요. 평평한 바닥은 집이 아니에요.',
+    next:stage3
+  });
+}
+
+/* ===== 3단계: 인큐베이터 ===== */
+function stage3(){
+  setStage(3); setDay('금쪽이 육아 1일차 · 밤');
+  let first=true;
+  screen(`${title(3,'금쪽이 방 온도 맞추기')}
+    ${sit('금쪽이 방은 <b>인큐베이터</b>(세포를 키우는 따뜻한 상자)예요.<br>금쪽이가 편히 자라도록 <b>온도·이산화탄소·습도</b>를 사람 몸속처럼 맞춰 주세요.')}
+    <div class="incu">
+      <div class="incu-win" id="iwin">${gk(1,'meh')}</div>
+      <div class="ctl"><label>🌡️ 온도 <b id="vT"></b></label><input type="range" id="rT" min="25" max="45" step="0.5" value="25"></div>
+      <div class="ctl"><label>🫧 이산화탄소(CO₂) <b id="vC"></b></label><input type="range" id="rC" min="0" max="10" step="0.5" value="0"></div>
+      <div class="ctl"><label>💧 습도 <b id="vH"></b></label><input type="range" id="rH" min="30" max="100" step="1" value="40"></div>
+    </div>
+    <button class="btn big" id="ok">✅ 설정 완료!</button>
+    <div id="fb"></div>`);
+  const rT=$('#rT'), rC=$('#rC'), rH=$('#rH'), win=$('#iwin'), fb=$('#fb');
+  const vals=()=>[+rT.value, +rC.value, +rH.value];
+  function issues(t,c,h){
+    const r=[];
+    if(t<37) r.push(['cold','🌡️ <b>온도가 낮아요</b> → 성장이 느려져요. 금쪽이가 추워서 잘 안 자라요.']);
+    else if(t>37) r.push(['hot','🌡️ <b>온도가 높아요</b> → 세포가 손상돼요. 사람도 고열이 오래가면 위험하죠.']);
+    if(c!==5) r.push(['ph','🫧 <b>CO₂가 5%가 아니에요</b> → 배양액의 pH(산성·염기성 정도)가 이상해져요.']);
+    if(h<90) r.push(['dry','💧 <b>습도가 낮아요</b> → 배양액이 증발해요. 금쪽이 집이 말라 버려요.']);
+    return r;
+  }
+  function live(){
+    const [t,c,h]=vals();
+    $('#vT').textContent=t.toFixed(1)+'℃'; $('#vC').textContent=c.toFixed(1)+'%'; $('#vH').textContent=h+'%';
+    const is=issues(t,c,h), k=is.map(x=>x[0]);
+    win.className='incu-win '+(k.includes('cold')?'cold':k.includes('hot')?'hot':is.length?'':'ok');
+    $('.face',win).textContent = k.includes('cold')?FACE.cold : k.includes('hot')?FACE.hot : is.length?FACE.meh:FACE.happy;
+  }
+  [rT,rC,rH].forEach(r=>r.oninput=live); live();
+  $('#ok').onclick=()=>{
+    const is=issues(...vals());
+    if(first){
+      first=false;
+      const pts=Math.round((3-is.length)/3*20); addScore(pts);
+      fb.innerHTML=`<p class="center small">첫 설정 정확도: <b>${3-is.length} / 3</b> → <b>+${pts}점</b></p>`;
+    }else fb.innerHTML='';
+    if(is.length){
+      crisis('방 환경이 안 맞아요!');
+      $('.face',win).textContent = is.some(x=>x[0]==='hot')?FACE.hot:is.some(x=>x[0]==='cold')?FACE.cold:FACE.sad;
+      fb.innerHTML+=fbBox('bad','<ul class="issues">'+is.map(x=>`<li>${x[1]}</li>`).join('')+'</ul>')
+        +expert('이건 금쪽이 잘못이 아니에요. 환경의 문제예요. 다시 맞춰 볼까요?');
+    }else{
+      sparkle(); $('#ok').disabled=true; [rT,rC,rH].forEach(r=>r.disabled=true);
+      fb.innerHTML+=fbBox('good','<b>완벽해요!</b> 37℃ · CO₂ 5% · 높은 습도. 금쪽이가 새근새근 자라요.');
+      addNext(fb, ()=>result({
+        head:'🌙 꿀잠 자는 금쪽이',
+        text:'따뜻하고 촉촉한 방에서 금쪽이가 쑥쑥 자라기 시작했어요.',
+        coach:'사람 몸속과 비슷하게 맞추는 게 핵심이에요. <b>CO₂ 5%</b>는 배양액의 pH를 일정하게 지켜 주고, <b>높은 습도</b>는 배양액이 마르지 않게 해 줘요.',
+        next:stage4
+      }));
+    }
+  };
+}
+
+/* ===== 4단계: 이유식(성장인자) ===== */
+function stage4(){
+  setStage(4); setDay('금쪽이 육아 2일차'); S.lastDay=2;
+  const ING=[
+    {id:'rsp', e:'🧪', n:'R-스폰딘', d:'Wnt 신호 켜기'},
+    {id:'egf', e:'🧪', n:'EGF', d:'세포 증식 돕기'},
+    {id:'nog', e:'🧪', n:'노긴', d:'BMP 신호 막기'},
+    {id:'wnti',e:'🧪', n:'Wnt 억제제', d:'Wnt 신호 끄기'},
+    {id:'bmp', e:'🧪', n:'BMP4', d:'BMP 신호 켜기'},
+    {id:'all', e:'🍲', n:'냉장고 속 아무거나', d:'전부 잔뜩 넣기'}
+  ];
+  const EX={
+    no_rsp:'R-스폰딘이 빠졌어요. Wnt 신호가 꺼지면 줄기세포가 줄기세포로 남지 못해요.',
+    no_egf:'EGF가 빠졌어요. 증식 신호가 없으면 금쪽이가 잘 늘어나지 않아요.',
+    no_nog:'노긴이 빠졌어요. BMP 신호를 막지 않으면 줄기세포가 너무 빨리 다른 세포로 변해 버려요.',
+    wnti:'Wnt 억제제는 신호를 조절하는 물질인 건 맞아요. 하지만 Wnt를 꺼 버려요. 금쪽이에겐 켜는 쪽이 필요해요.',
+    bmp:'BMP4도 성장인자인 건 맞아요. 하지만 BMP를 켜요. 장 줄기세포에겐 BMP를 막아야 해요.',
+    all:'많이 넣는다고 좋은 게 아니에요! 서로 반대인 신호가 섞여서 금쪽이가 헷갈려요.'
+  };
+  const sel=new Set(); let tries=0, done=false;
+  screen(`${title(4,'금쪽이 이유식 만들기')}
+    ${sit('<b>성장인자</b>(세포에게 "자라라, 변해라" 알려 주는 신호 물질)로 이유식을 만들어요.<br>장 줄기세포는 <b>Wnt 신호</b>(줄기세포를 지켜 주는 신호)는 <b>켜고</b>, <b>BMP 신호</b>(줄기세포를 다른 세포로 바꾸는 신호)는 <b>막아야</b> 해요. 쑥쑥 늘어날 신호도 필요하죠!<br><small>필요한 재료를 <b>모두</b> 골라 그릇에 담으세요.</small>')}
+    <div class="pv" id="pv">${gk(1,'meh')}</div>
+    <div class="cards rcards">${shuffle(ING).map(c=>`<button class="card" data-id="${c.id}"><span class="ce">${c.e}</span><b>${c.n}</b><small>${c.d}</small></button>`).join('')}</div>
+    <div class="bowl" id="bowl">🥣 그릇이 비어 있어요</div>
+    <button class="btn big" id="cook">🍼 이유식 완성!</button>
+    <div id="fb"></div>`);
+  const bowl=$('#bowl'), fb=$('#fb'), pv=$('#pv');
+  const nameOf=id=>ING.find(x=>x.id===id).n;
+  const paintBowl=()=>{ bowl.innerHTML = sel.size ? '🥣 '+[...sel].map(id=>`<span class="chip">${nameOf(id)}</span>`).join('') : '🥣 그릇이 비어 있어요'; };
+  $$('.rcards .card').forEach(b=>b.onclick=()=>{
+    if(done) return; const id=b.dataset.id;
+    if(sel.has(id)){ sel.delete(id); b.classList.remove('sel'); } else { sel.add(id); b.classList.add('sel'); }
+    paintBowl();
+  });
+  $('#cook').onclick=()=>{
+    if(done) return;
+    if(!sel.size){ fb.innerHTML=fbBox('info','재료를 하나 이상 골라 주세요.'); return; }
+    const msgs=[];
+    if(sel.has('all')) msgs.push(EX.all);
+    else ['rsp','egf','nog'].forEach(id=>{ if(!sel.has(id)) msgs.push(EX['no_'+id]); });
+    ['wnti','bmp'].forEach(id=>{ if(sel.has(id)) msgs.push(EX[id]); });
+    if(!msgs.length){
+      done=true; const pts=tries===0?20:10; addScore(pts); sparkle(); S.level=2;
+      pv.innerHTML=gk(2,'happy'); $('#cook').disabled=true;
+      fb.innerHTML=fbBox('good',`<b>완벽한 이유식! +${pts}점</b><br>R-스폰딘 + EGF + 노긴. 금쪽이가 냠냠 먹고 울퉁불퉁 자라기 시작해요!`);
+      addNext(fb, s4Result);
+      return;
+    }
+    tries++; crisis('엉뚱한 세포 덩어리가 됐어요!');
+    pv.innerHTML=gk(2,'sick','weird')+'<div class="lbl">😵 엉뚱한 세포 덩어리…</div>';
+    fb.innerHTML=fbBox('bad','<ul class="issues">'+msgs.map(m=>`<li>${m}</li>`).join('')+'</ul>');
+    if(tries>=2){
+      done=true; $('#cook').disabled=true; S.level=2;
+      $$('.rcards .card').forEach(b=>{ const ok=['rsp','egf','nog'].includes(b.dataset.id); b.classList.toggle('sel',false); b.classList.toggle('right',ok); b.disabled=true; });
+      fb.innerHTML+=fbBox('info','정답은 <b>R-스폰딘(Wnt 켜기) + EGF(증식) + 노긴(BMP 막기)</b>예요. 정답 레시피로 다시 키웠어요.');
+      setTimeout(()=>{ pv.innerHTML=gk(2,'meh'); },1200);
+      addNext(fb, s4Result);
+    }else{
+      fb.innerHTML+='<p class="hint">재료를 바꿔서 다시 만들어 보세요! (두 번째 성공 +10점)</p>';
+    }
+  };
+}
+function s4Result(){
+  S.level=2;
+  result({
+    head:'🍼 냠냠 금쪽이',
+    text:'금쪽이 표면이 <b>울퉁불퉁</b>해지기 시작했어요. 장 모양으로 자라는 중이에요!',
+    coach:'R-스폰딘은 Wnt를 켜고, EGF는 증식을 돕고, 노긴은 BMP를 막아요. 장 오가노이드 이유식 3종 세트예요.',
+    next:stage5
+  });
+}
+
+/* ===== 5단계: 돌보기 ===== */
+function stage5(){
+  setStage(5); S.day=3;
+  const evs=shuffle([evColor, evMedium, evBench]);
+  let i=0;
+  const go=()=>{
+    if(i>=evs.length) return dayFlip(S.day, s5Result);
+    const f=evs[i++];
+    dayFlip(S.day, ()=>f(go));
+  };
+  screen(`${title(5,'금쪽이 돌보기')}
+    <div class="stage-gk">${gk(2,'happy')}</div>
+    ${sit('이제 매일매일 금쪽이를 돌봐야 해요. 며칠이 빠르게 흘러갑니다!<br>그동안 <b>돌발 상황 3개</b>가 찾아와요. 침착하게 대처해 주세요.')}
+    ${expert('육아는 하루 이틀로 끝나지 않아요. 꾸준히 지켜봐 주세요.')}
+    <div id="nxw"></div>`);
+  addNext($('#nxw'), go, '⏩ 시간 빨리 감기');
+}
+function evColor(cb){
+  const k=['red','yellow','cloudy'][Math.floor(Math.random()*3)];
+  const meaning={
+    red:'빨간색은 pH(산성·염기성 정도)가 정상이라는 뜻이에요.',
+    yellow:'노란색은 금쪽이가 내놓은 노폐물 때문에 배양액이 산성이 됐다는 뜻이에요.',
+    cloudy:'뿌옇게 흐린 건 세균 같은 미생물이 자란 오염 신호예요.'
+  };
+  const tail={red:' 오늘은 그대로 두면 돼요.', yellow:' 새 배양액으로 갈아 주면 다시 빨개져요.', cloudy:' 오염은 퍼지니까 버리고 주변을 소독해요.'};
+  const base=[
+    {t:'정상이에요. 그대로 키우기', k:'red', no:'그대로 두는 건 빨간색일 때만 맞아요.'},
+    {t:'산성이에요. 배양액 교체하기', k:'yellow', no:'교체도 돌봄은 맞지만, 노랗게 변했을 때 하는 처치예요.'},
+    {t:'오염이에요. 버리고 소독하기', k:'cloudy', no:'소독은 좋은 습관이지만, 버리는 건 흐릴 때만이에요.'},
+    {t:'주스 같아요. 한 모금 맛보기', k:'x', no:'배양액은 음료가 아니에요! 실험실에선 무엇이든 맛보면 절대 안 돼요.'}
+  ];
+  const opts=base.map(o=>({t:o.t, ok:o.k===k, why: o.k===k ? meaning[k]+tail[k] : o.no+' '+meaning[k]}));
+  screen(`${title(5,'돌발 상황: 배양액 색 체크')}
+    ${sit('아침 점검 시간! 배양액 색을 보세요.<br><small>배양액에는 pH에 따라 색이 변하는 지시약(페놀레드)이 들어 있어요. 빨강=정상, 노랑=산성, 뿌옇게 흐림=오염</small>')}
+    <div class="well ${k}" id="w">${gk(2, k==='red'?'happy':'meh','',90)}</div>
+    <p class="q">이 배양액, 어떻게 할까요?</p>
+    <div id="qz"></div>`);
+  quiz($('#qz'), opts, (pts, fb)=>{
+    $('#w').className='well'; $('.face',$('#w')).textContent=FACE.happy;
+    S.day+=2;
+    fb.innerHTML+=expert('색은 금쪽이가 보내는 신호예요. 매일 눈으로 확인해 주세요.');
+    addNext(fb, cb);
+  });
+}
+function evMedium(cb){
+  const base=S.day;
+  screen(`${title(5,'돌발 상황: 배양액을 갈 시간이에요!')}
+    ${sit('금쪽이는 <b>배양액</b>(세포의 먹이가 든 물약) 속 영양분을 먹고 노폐물을 내놔요. 오래 두면 배양액이 <b>산성</b>이 돼서 노랗게 변해요.<br>9일을 빨리 감는 동안 <b>알맞은 때</b>에 교체 버튼을 누르세요!')}
+    <div class="mrow"><span class="calendar">📅 <b id="dd">0</b>일째</span><span class="calendar">교체 후 <b id="since">0</b>일</span></div>
+    <div class="well" id="mw">${gk(2,'happy','',90)}</div>
+    <button class="btn big" id="chg" disabled>🔄 배양액 교체</button>
+    <div class="mlog" id="mlog"></div>
+    <div id="fb"><button class="btn big" id="go">▶ 9일 빨리 감기 시작</button></div>`);
+  let d=0, since=0, early=0, late=0, good=0, run=false;
+  const mw=$('#mw'), mlog=$('#mlog'), fb=$('#fb');
+  const log=t=>{ mlog.innerHTML=`<div>${t}</div>`+mlog.innerHTML; };
+  function paint(){
+    mw.className='well '+(since>=4?'yellow':since===3?'orange':'');
+    $('.face',mw).textContent = since>=4?FACE.sad : since===3?FACE.meh : FACE.happy;
+  }
+  $('#go').onclick=()=>{
+    $('#go').remove(); $('#chg').disabled=false; run=true;
+    const id=every(()=>{
+      d++; since++;
+      $('#dd').textContent=d; $('#since').textContent=since;
+      setDay(`금쪽이 육아 ${base+d}일차`); paint();
+      if(since>=4){ late++; log(`⚠️ ${d}일째: 배양액이 노래졌어요! 산성 상태예요.`); if(since===4) crisis('배양액이 산성이 됐어요!'); }
+      if(d>=9){ clearInterval(id); end(); }
+    },1200);
+  };
+  $('#chg').onclick=()=>{
+    if(!run) return;
+    if(since<=1){ early++; log(`⏩ ${d}일째: 너무 일러요. 아직 영양분이 충분해서 아까워요.`); }
+    else if(since<=3){ good++; log(`✅ ${d}일째: 딱 좋아요! (${since}일 만에 교체)`); sparkle(6); }
+    else log(`🕒 ${d}일째: 늦었어요… 이미 산성이 된 뒤였어요.`);
+    since=0; $('#since').textContent=0; paint();
+  };
+  function end(){
+    run=false; $('#chg').disabled=true;
+    let pts=Math.max(0,20-early*4-late*4); if(good===0) pts=0;
+    addScore(pts); if(pts>=16) sparkle();
+    S.day=base+9; S.lastDay=S.day;
+    fb.innerHTML=fbBox(pts>=12?'good':'bad',`<b>배양액 교체 +${pts}점</b><br>제때 교체 ${good}번 · 너무 이른 교체 ${early}번 · 산성 방치 ${late}일`)
+      +expert('배양액은 <b>2~3일마다</b> 새것으로 갈아 줘요. 늦으면 산성이 되고, 너무 자주 갈면 영양분이 아까워요.');
+    addNext(fb, cb);
+  }
+}
+function evBench(cb){
+  const opts=[
+    {t:'클린벤치 안에서, 소독 후 열기', ok:true, why:'<b>클린벤치</b>(세균을 걸러 낸 공기가 흐르는 무균 작업대) 안에서, 손과 도구까지 소독하면 세균이 들어오지 못해요.'},
+    {t:'클린벤치 안에서, 소독 없이 열기', germ:2, why:'장소는 맞아요. 하지만 소독하지 않은 손과 도구에 묻은 세균이 그대로 들어가요.'},
+    {t:'그냥 책상에서, 재빨리 열고 닫기', germ:5, why:'빨리 하려는 마음은 좋아요. 하지만 책상 위 공기에는 세균과 곰팡이 포자가 떠다녀요.'},
+    {t:'창문 옆 바람 부는 곳에서 열기', germ:9, why:'바람은 먼지와 세균을 실어 와요! 금쪽이 집이 세균 놀이터가 돼요.'}
+  ];
+  screen(`${title(5,'돌발 상황: 뚜껑을 열어야 해요')}
+    ${sit('금쪽이가 잘 크는지 현미경으로 보려고 해요. 배양 접시 <b>뚜껑</b>을 열어야 하는데…<br>어디서, 어떻게 열까요?')}
+    <div class="well" id="w">${gk(2,'meh','',90)}</div>
+    <div id="qz"></div>`);
+  const w=$('#w');
+  quiz($('#qz'), opts, (pts, fb)=>{
+    $$('.germ',w).forEach(g=>g.remove()); $('.face',w).textContent=FACE.happy;
+    S.day+=2;
+    fb.innerHTML+=expert('금쪽이 방은 늘 깨끗해야 해요. 뚜껑은 클린벤치 안에서만 여는 거예요.');
+    addNext(fb, cb);
+  }, o=>{
+    $('.face',w).textContent=FACE.sick;
+    for(let i=0;i<(o.germ||3);i++){
+      const g=document.createElement('span'); g.className='germ'; g.textContent='🦠';
+      g.style.left=(8+Math.random()*75)+'%'; g.style.top=(8+Math.random()*75)+'%';
+      g.style.animationDelay=(Math.random()*.4)+'s,0s'; w.appendChild(g);
+    }
+  });
+}
+function s5Result(){
+  S.level=2;
+  result({
+    head:'💪 무럭무럭 금쪽이',
+    text:`${S.day}일 동안 잘 돌본 덕분에 금쪽이가 무럭무럭 컸어요! 이제 꽤 묵직해졌어요.`,
+    coach:'세포 육아의 기본은 꾸준함이에요. 색 확인하기, 제때 배양액 갈기, 깨끗하게 열기!',
+    next:stage6
+  });
+}
+
+/* ===== 6단계: 계대 배양 ===== */
+function stage6(){
+  setStage(6);
+  S.day+=2;
+  dayFlip(S.day, ()=>{
+    const opts=[
+      {t:'잘게 쪼개서 새 마트리겔에 옮겨 심기', ok:true, why:'작게 나누면 조각마다 산소와 영양분이 중심까지 닿아요. 이렇게 나눠서 새 집에 옮겨 키우는 걸 <b>계대 배양</b>이라고 해요.'},
+      {t:'지금 집에서 계속 크게 키워 보기', why:'계속 자라긴 해요. 하지만 커질수록 중심까지 산소가 더 못 가서 가운데 세포가 죽어요.'},
+      {t:'영양분 든 배양액만 2배로 넣기', why:'영양이 중요한 건 맞아요. 하지만 혈관이 없으니 아무리 넣어도 중심까지는 잘 안 닿아요.'},
+      {t:'어두운 가운데를 물감으로 가리기', why:'가린다고 문제가 사라지지 않아요! 속에서는 세포가 계속 죽고 있어요.'}
+    ];
+    screen(`${title(6,'금쪽이 독립시키기')}
+      <div class="stage-gk" id="big">${gk(3,'sad','dark big')}</div>
+      ${sit('금쪽이가 너무 커졌어요! 그런데 <b>가운데가 점점 어두워지고</b> 있어요.<br>금쪽이에게는 <b>혈관</b>이 없어서 산소와 영양분이 중심까지 가지 못해요. 어떻게 할까요?')}
+      <div id="qz"></div>`);
+    quiz($('#qz'), opts, (pts, fb)=>{
+      const big=$('#big');
+      big.innerHTML='<div class="sibs" id="sibs"></div>';
+      const sibs=$('#sibs');
+      for(let i=0;i<6;i++){
+        const w=document.createElement('div'); w.className='sib'; w.style.animationDelay=(i*.25)+'s';
+        w.innerHTML=gk(2, 'happy','',52); sibs.appendChild(w);
+      }
+      setTimeout(()=>sparkle(20),900);
+      S.level=3;
+      addNext(fb, ()=>result({
+        head:'👨‍👩‍👧‍👦 금쪽이 형제 탄생!',
+        vis:`<div class="sibs">${Array.from({length:6},(_,i)=>`<div class="sib" style="animation-delay:${i*.15}s">${gk(3,'happy','',56)}</div>`).join('')}</div>`,
+        text:(pts?'':'정답대로 잘게 나눠 심었더니… ')+'금쪽이가 <b>형제 6명</b>으로 늘었어요! 각자 새 집에서 <b>주름진 장 모양</b>으로 자라요.',
+        coach:'금쪽이한테는 혈관이 없어요. 너무 커지면 나눠 주는 게 사랑이에요. 이걸 <b>계대 배양</b>(나눠서 옮겨 키우기)이라고 해요.',
+        next:stage7, btn:'🎓 엔딩 보기 →'
+      }));
+    });
+  });
+}
+
+/* ===== 7단계: 엔딩 ===== */
+function stage7(){
+  setStage(7); S.day+=7;
+  dayFlip(S.day, ()=>{
+    setDay(`금쪽이 육아 ${S.day}일차 · 다 큰 금쪽이`);
+    const win=Math.floor(Math.random()*3);
+    const scenes=[
+      {v:'🧑‍🦱🏥', t:'장 질환으로 아픈 환자가 있어요.<br>어떤 약이 잘 들을지 아직 몰라요.'},
+      {v:'🔬➡️🧫', t:'환자의 장에서 아주 작은 조직을 얻어,<br>그 줄기세포로 <b>환자 맞춤 금쪽이</b>를 키워요.'},
+      {v:`<div class="drugs">${['A','B','C'].map((p,i)=>`<div class="dt ${i===win?'win':''}"><div class="pill">💊 ${p}</div>${gk(3,i===win?'happy':'sad','',58)}</div>`).join('')}</div>`, t:'여러 약을 금쪽이들에게 먼저 시험해요.<br>사람 대신 금쪽이가 먼저 확인!'},
+      {v:`💊${['A','B','C'][win]} ➡️ 🧑‍🦱😊`, t:`금쪽이에게 잘 들은 <b>약 ${['A','B','C'][win]}</b>를 찾았어요!<br>환자에게도 맞을 가능성이 높은 약이에요.`}
+    ];
+    let i=0;
+    screen(`<div class="rtitle">🎬 다 큰 금쪽이</div><div id="sc"></div><button class="btn" id="skip" style="display:block;margin:10px auto 0">건너뛰기 ⏭</button>`);
+    const sc=$('#sc');
+    const show=()=>{
+      if(i>=scenes.length) return finale();
+      const s=scenes[i++];
+      sc.innerHTML=`<div class="scene"><div class="bigv">${s.v}</div><p>${s.t}</p></div>`;
+      if(i===scenes.length) sparkle(20);
+    };
+    show();
+    const id=every(show, 3300);
+    sc.onclick=()=>show();
+    $('#skip').onclick=()=>{ clearInterval(id); finale(); };
+  });
+}
+function finale(){
+  const max=Object.values(MAX).reduce((a,b)=>a+b,0);
+  const pct=S.score/max;
+  const grades=[
+    {n:'초보 부모', i:'🍼', m:'괜찮아요, 모든 부모는 처음이에요. 다시 하면 금쪽이가 더 잘 클 거예요!'},
+    {n:'육아 새내기', i:'🌱', m:'기본은 잡았어요! 헷갈린 부분만 다시 보면 금방 고수가 돼요.'},
+    {n:'육아 고수', i:'🥇', m:'금쪽이가 아주 건강하게 자랐어요. 거의 전문가 수준이에요!'},
+    {n:'세포 육아 마스터', i:'👑', m:'완벽한 육아! 금쪽이가 당신을 자랑스러워해요.'}
+  ];
+  const gi = pct>=.85?3 : pct>=.65?2 : pct>=.4?1 : 0;
+  const g=grades[gi];
+  screen(`<div class="rtitle">🎉 금쪽이 육아 졸업!</div>
+    <div class="stage-gk">${gk(3,'star')}</div>
+    ${expert('다 컸네요, 금쪽이. 이제 금쪽이가 사람을 돕는 일을 해요. 정말 수고 많으셨어요!')}
+    <div class="three">
+      <h3>📌 오가노이드의 3요소</h3>
+      <div class="eq">
+        <span>🧬<b>줄기세포</b><small>재료</small></span>+
+        <span>🏠<b>3D 환경</b><small>집</small></span>+
+        <span>📡<b>성장인자</b><small>신호</small></span>
+      </div>
+      <p class="sent">오가노이드의 3요소 = 줄기세포(재료) + 3D 환경(집) + 성장인자(신호)</p>
+    </div>
+    <div class="gradecard">
+      <div class="small" style="color:#222;font-weight:900">초보 연구원 부모 육아 성적표</div>
+      <div class="gi">${g.i}</div>
+      <div class="gn">${g.n}</div>
+      <div class="gs">총점 ${S.score} / ${max}점</div>
+      <p style="font-weight:800;margin:8px 0 0">${g.m}</p>
+      <div class="ladder">${grades.map((x,k)=>`<span class="${k===gi?'me':''}">${x.n}</span>`).join('→')}</div>
+    </div>
+    <table class="brk">${Object.keys(MAX).map(k=>`<tr><td>${k}단계 · ${STAGE_NAMES[k]}</td><td>${S.pts[k]||0} / ${MAX[k]}</td></tr>`).join('')}</table>
+    <div id="nxw"></div>`);
+  sparkle(26);
+  addNext($('#nxw'), titleScreen, '🔁 다시 하기');
+}
+
+titleScreen();
+</script>
+</body>
+</html>
