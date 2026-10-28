@@ -163,6 +163,8 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 .desc{font-size:1rem;line-height:1.65;text-align:left}
 .desc small{display:block;margin-top:6px;color:#5d7088;font-size:.86rem}
 .name-input{display:block;width:100%;padding:12px 14px;font:inherit;font-size:1.05rem;font-weight:700;line-height:1.45;text-align:center;color:var(--ink);border:3px solid var(--ink);border-radius:14px;outline:none;background:var(--paper);resize:none}
+.name-err{color:var(--red);font-size:.88rem;font-weight:700;min-height:0;margin-top:-6px}
+.name-err:empty{display:none}
 .name-input::placeholder{color:#a3afbd;font-size:.88rem;font-weight:400}
 .meta{font-size:.86rem;color:#4d6178}
 
@@ -623,6 +625,20 @@ const Rank = {
   sorted() { return this.list.slice().sort((a, b) => b.score - a.score || a.at - b.at); },
   emit() { this.listeners.forEach(f => f()); },
   on(f) { this.listeners.add(f); f(); return () => this.listeners.delete(f); },
+  // 닉네임을 선점해요. 다른 기기가 이미 쓰고 있으면 false
+  async claim(name) {
+    await this.init();
+    const key = normName(name);
+    if (this.mode === "firebase") {
+      const ref = this.col.parent.collection("names").doc("n_" + encodeURIComponent(key));
+      const d = await ref.get();
+      if (d.exists) return d.data().device === DEVICE;
+      try { await ref.set({ device: DEVICE, at: this.fv.serverTimestamp() }); return true; }
+      catch (e) { const d2 = await ref.get(); return d2.exists && d2.data().device === DEVICE; }
+    }
+    if (this.mode === "local") return !this.list.some(r => normName(r.name) === key);
+    return true;
+  },
   async submit(e) {
     await this.init();
     if (this.mode === "firebase") {
@@ -744,6 +760,7 @@ function startScreen() {
         원인을 진단해 솔루션을 처방해 주세요!
       </div>
       <textarea class="name-input" id="nameInput" rows="2" maxlength="12" autocomplete="off" aria-label="닉네임 (학번과 이름)" placeholder="(자신의 학번과 이름으로 닉네임을 작성해주세요. 작성하지 않을 시, 간식이 제공되지 않습니다.)">${esc(S.name)}</textarea>
+      <div class="name-err" id="nameErr" role="alert"></div>
       <button class="btn" id="startBtn">상담 시작</button>
       <button class="btn ghost" id="rankBtn">🏆 지금 랭킹 보기</button>
       <div class="meta">사연 3개 · 약 3~4분 · 첫 시도 정답 +20점, 두 번째 +10점</div>
@@ -759,8 +776,27 @@ function startScreen() {
   document.getElementById("rankBtn").onclick = () => rankingScreen("start");
 }
 
-function begin() {
-  S.name = (document.getElementById("nameInput").value.replace(/\s+/g, " ").trim() || "익명").slice(0, 12);
+function normName(n) { return String(n).replace(/\s+/g, " ").trim().toLowerCase(); }
+
+async function begin() {
+  const btn = document.getElementById("startBtn"), err = document.getElementById("nameErr");
+  if (btn.disabled) return;
+  let name = document.getElementById("nameInput").value.replace(/\s+/g, " ").trim().slice(0, 12);
+  const auto = !name;
+  if (auto) name = "익명" + DEVICE.slice(-4).toUpperCase();
+  btn.disabled = true; btn.textContent = "닉네임 확인 중…"; err.textContent = "";
+  let ok = false;
+  try { ok = auto || await Rank.claim(name); }
+  catch (e) { console.warn(e); err.textContent = "닉네임을 확인하지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요."; }
+  if (!document.getElementById("startBtn")) return;
+  btn.disabled = false; btn.textContent = "상담 시작";
+  if (!ok) {
+    if (!err.textContent) err.textContent = "이미 사용 중인 닉네임이에요. 다른 닉네임을 입력해 주세요.";
+    const box = document.getElementById("nameInput");
+    box.classList.remove("shake"); void box.offsetWidth; box.classList.add("shake"); box.focus();
+    return;
+  }
+  S.name = name;
   store("gj-name", S.name);
   Object.assign(S, { idx: 0, step: 0, score: 0, caseScore: 0, first: 0, face: "😢", submitted: false, myId: null });
   showStep();
@@ -976,11 +1012,10 @@ function endScreen() {
     <div class="sub big">오늘의 상담을 모두 마쳤어요!</div>
     <div class="credits"><div class="roll">${credits}</div></div>
     <div class="quote">“모든 금쪽이는 <em>환경</em>만 맞으면<br>훌륭하게 자랄 수 있어요.”</div>
-    <div class="btn-row" style="width:100%"><button class="btn" id="again">다시 하기</button><button class="btn ghost" id="rank2">랭킹 보기</button></div>
+    <button class="btn ghost" id="rank2" style="width:100%">랭킹 보기</button>
     <div class="disclaimer">이 게임은 TV 육아 상담 예능을 패러디한 교육용 게임이에요.<br>실제 방송·출연자와는 관계가 없어요.</div>
   </div>`);
   sparkle();
-  document.getElementById("again").onclick = startScreen;
   document.getElementById("rank2").onclick = () => rankingScreen("result");
 }
 

@@ -17,5 +17,13 @@ service cloud.firestore {
         && request.resource.data.first <= 6;
       allow delete: if false;
     }
+    // 닉네임 선점: 한 번 만들면 바꾸거나 지울 수 없어요
+    match /organoid_rooms/{room}/names/{key} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly(['device', 'at'])
+        && request.resource.data.device is string
+        && request.resource.data.device.size() <= 40;
+      allow update, delete: if false;
+    }
   }
 }
