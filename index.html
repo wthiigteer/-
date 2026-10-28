@@ -156,17 +156,14 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 .start{justify-content:center;text-align:center;gap:16px}
 .start .ele{font-size:16px;margin:0 auto}
 .talk{display:flex;flex-direction:column;align-items:center;gap:10px}
-.say{position:relative;font-family:"Black Han Sans",var(--font-display);font-size:clamp(1.15rem,5.4vw,1.4rem);line-height:1.4;background:var(--yellow);color:var(--ink);border:3px solid var(--ink);border-radius:20px;padding:12px 18px;box-shadow:4px 4px 0 var(--ink);
-  animation:sayIn .6s cubic-bezier(.3,1.6,.5,1) both,sayPulse 1.6s ease-in-out .8s infinite}
-.say::after{content:"";position:absolute;left:50%;bottom:-17px;margin-left:-10px;border:10px solid transparent;border-top:14px solid var(--ink)}
-.say::before{content:"";position:absolute;left:50%;bottom:-11px;margin-left:-7px;border:7px solid transparent;border-top:10px solid var(--yellow);z-index:1}
-.say b{font-weight:400;color:#e0463c;font-size:1.25em}
-@keyframes sayIn{from{opacity:0;transform:scale(.3) rotate(-8deg)}}
-@keyframes sayPulse{0%,100%{transform:scale(1) rotate(-1.5deg);box-shadow:4px 4px 0 var(--ink),0 0 0 0 rgba(255,189,18,.7)}50%{transform:scale(1.06) rotate(1.5deg);box-shadow:4px 4px 0 var(--ink),0 0 0 12px rgba(255,189,18,0)}}
+.say{position:relative;font-size:.98rem;line-height:1.5;background:var(--paper);color:var(--ink);border:2px solid var(--ink);border-radius:18px;padding:9px 16px;animation:enter .5s ease .2s both}
+.say::after{content:"";position:absolute;left:50%;bottom:-12px;margin-left:-8px;border:8px solid transparent;border-top:11px solid var(--ink);border-bottom:0}
+.say::before{content:"";position:absolute;left:50%;bottom:-8px;margin-left:-6px;border:6px solid transparent;border-top:9px solid var(--paper);border-bottom:0;z-index:1}
+.say b{font-weight:700;color:var(--blue)}
 .desc{font-size:1rem;line-height:1.65;text-align:left}
 .desc small{display:block;margin-top:6px;color:#5d7088;font-size:.86rem}
 .name-input{display:block;width:100%;padding:12px 14px;font:inherit;font-size:1.05rem;font-weight:700;line-height:1.45;text-align:center;color:var(--ink);border:3px solid var(--ink);border-radius:14px;outline:none;background:var(--paper);resize:none}
-.name-input::placeholder{color:#c0392b;font-size:.9rem;font-weight:600}
+.name-input::placeholder{color:#a3afbd;font-size:.88rem;font-weight:400}
 .meta{font-size:.86rem;color:#4d6178}
 
 /* ===== 사연 접수 ===== */
@@ -406,7 +403,7 @@ const CASES = [
   {
     title: "납작하게 퍼지기만 해요",
     quote: "금쪽이는 눕고 싶은 게 아니에요.<br><em>설 자리가 필요했던 거예요.</em>",
-    parent: "mom", parentName: "금쪽이 엄마 · 3년 차 연구원",
+    parent: "mom", parentName: "금쪽이 엄마",
     story: ["선생님, 저희 금쪽이가요…", "동그랗게 자라야 하는데", "바닥에 납작하게 퍼지기만 해요.", "벌써 2주째예요. 😭"],
     scope: "flat",
     caps: ["바닥에 쫙— <em>붙어 버린</em> 금쪽이", "입체감 0%"],
@@ -435,7 +432,7 @@ const CASES = [
   {
     title: "가운데가 까맣게 죽어요",
     quote: "속이 아픈 건 금쪽이 탓이 아니에요.<br><em>숨 쉴 길부터 열어 주세요.</em>",
-    parent: "mom", parentName: "금쪽이 엄마 · 뇌 오가노이드 연구실",
+    parent: "mom", parentName: "금쪽이 엄마",
     story: ["처음엔 정말 잘 자랐어요.", "그런데 커질수록", "가운데가 까맣게 변해요.", "겉은 멀쩡한데 속이 아파요. 😢"],
     scope: "necro",
     caps: ["속이 <em>까맣게</em> 타들어 가는 금쪽이", "산소가 가운데까지 못 가요"],
@@ -464,7 +461,7 @@ const CASES = [
   {
     title: "피부세포로 만들었는데 아무것도 안 돼요",
     quote: "늦었다고 포기하지 마세요.<br><em>누구나 처음으로 돌아갈 수 있어요.</em>",
-    parent: "dad", parentName: "금쪽이 아빠 · 맞춤 의학 연구실",
+    parent: "dad", parentName: "금쪽이 아빠",
     story: ["환자분 피부세포를 조금 받았어요.", "이걸로 장 오가노이드를 만들려고요.", "그런데 몇 주째 피부세포 그대로예요.", "금쪽이가 태어나질 않아요. 😢"],
     scope: "skin",
     caps: ["금쪽이 <em>탄생</em> 대기 중…", "변신 능력 0%"],
@@ -711,7 +708,7 @@ function scope(type) {
 
 /* ===== HUD ===== */
 function hud() {
-  const dots = NUMS.map((n, i) => `<i class="${i < S.step ? "done" : i === S.step ? "now" : ""}">${i + 1}</i>`).join("");
+  const dots = CASES.map((c, i) => `<i class="${i < S.idx ? "done" : i === S.idx ? "now" : ""}">${i + 1}</i>`).join("");
   return `<div class="hud"><span class="tag">사연 ${S.idx + 1}/${CASES.length}</span><div class="dots">${dots}</div><span class="score" id="score">⭐ ${S.score}점</span></div>
   <div class="steplabel">STEP ${NUMS[S.step]} ${STEP_NAMES[S.step]}</div>`;
 }
@@ -741,12 +738,12 @@ function startScreen() {
     <div class="start screen-in" style="flex:1">
       ${logo()}
       <div><span class="sub cyan">세포 육아 상담 쇼</span></div>
-      <div class="talk"><div class="say" role="note">상담 점수가 <b>100점</b> 넘으면<br>간식을 제공해 줘요! 😋</div><div id="mascot">${ele("sad", "bouncy")}</div></div>
+      <div class="talk"><div class="say" role="note">상담 점수가 <b>100점</b> 넘으면<br>간식을 줘요! 😋</div><div id="mascot">${ele("sad", "bouncy")}</div></div>
       <div class="card desc">
         문제 행동을 보이는 <b>오가노이드</b>(줄기세포로 만든 미니 장기) 금쪽이를 관찰하고,
         원인을 진단해 솔루션을 처방해 주세요!
       </div>
-      <textarea class="name-input" id="nameInput" rows="2" maxlength="12" autocomplete="off" aria-label="닉네임 (학번과 이름)" placeholder="자신의 학번과 이름으로 닉네임을 작성해주세요. 작성하지 않을 시, 간식이 제공되지 않습니다.">${esc(S.name)}</textarea>
+      <textarea class="name-input" id="nameInput" rows="2" maxlength="12" autocomplete="off" aria-label="닉네임 (학번과 이름)" placeholder="(자신의 학번과 이름으로 닉네임을 작성해주세요. 작성하지 않을 시, 간식이 제공되지 않습니다.)">${esc(S.name)}</textarea>
       <button class="btn" id="startBtn">상담 시작</button>
       <button class="btn ghost" id="rankBtn">🏆 지금 랭킹 보기</button>
       <div class="meta">사연 3개 · 약 3~4분 · 첫 시도 정답 +20점, 두 번째 +10점</div>
