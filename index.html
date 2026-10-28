@@ -7,7 +7,7 @@
 <title>금쪽같은 내 세포</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Sans+KR:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=IBM+Plex+Sans+KR:wght@400;600;700&display=swap">
 <style>
 /* 레이아웃: 하늘색 배경 위 한 열 카드 스택(최대 480px). 상담 쇼 자막 + 코끼리 오가노이드 캐릭터 */
 :root{
@@ -217,6 +217,18 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 .spk{position:absolute;font-size:clamp(14px,4.5vw,20px);animation:twinkle 1.4s ease-in-out infinite}
 @keyframes twinkle{0%,100%{opacity:.2;transform:scale(.6) rotate(0)}50%{opacity:1;transform:scale(1.2) rotate(20deg)}}
 .caps{display:flex;flex-direction:column;align-items:center;gap:8px;margin-top:4px}
+/* ===== 예능 자막 ===== */
+.tvsub{--sc:var(--ink);font-family:"Black Han Sans",var(--font-display);font-weight:400;font-size:clamp(1.45rem,6.8vw,1.85rem);line-height:1.3;color:#fff;text-align:center;letter-spacing:.01em;
+  text-shadow:0.090em 0.000em 0 var(--sc),0.083em 0.034em 0 var(--sc),0.064em 0.064em 0 var(--sc),0.034em 0.083em 0 var(--sc),0.000em 0.090em 0 var(--sc),-0.034em 0.083em 0 var(--sc),-0.064em 0.064em 0 var(--sc),-0.083em 0.034em 0 var(--sc),-0.090em 0.000em 0 var(--sc),-0.083em -0.034em 0 var(--sc),-0.064em -0.064em 0 var(--sc),-0.034em -0.083em 0 var(--sc),-0.000em -0.090em 0 var(--sc),0.034em -0.083em 0 var(--sc),0.064em -0.064em 0 var(--sc),0.083em -0.034em 0 var(--sc),0.050em 0.000em 0 var(--sc),0.046em 0.019em 0 var(--sc),0.035em 0.035em 0 var(--sc),0.019em 0.046em 0 var(--sc),0.000em 0.050em 0 var(--sc),-0.019em 0.046em 0 var(--sc),-0.035em 0.035em 0 var(--sc),-0.046em 0.019em 0 var(--sc),-0.050em 0.000em 0 var(--sc),-0.046em -0.019em 0 var(--sc),-0.035em -0.035em 0 var(--sc),-0.019em -0.046em 0 var(--sc),-0.000em -0.050em 0 var(--sc),0.019em -0.046em 0 var(--sc),0.035em -0.035em 0 var(--sc),0.046em -0.019em 0 var(--sc),0 .16em 0 rgba(31,53,80,.28)}
+.tvsub em{font-style:normal;color:#3fd0c9}
+.tvsub.big{font-size:clamp(1.7rem,8vw,2.2rem)}
+.tvsub.alert{--sc:#d93b32;position:relative;display:inline-block;padding:0 1.15em}
+.tvsub.alert::before,.tvsub.alert::after{content:"";position:absolute;bottom:.02em;width:1em;height:.95em;background:#ff6b5e;
+  clip-path:polygon(0 100%,8% 18%,30% 62%,50% 0,70% 62%,92% 18%,100% 100%)}
+.tvsub.alert::before{left:0;transform:rotate(-14deg)}
+.tvsub.alert::after{right:0;transform:rotate(14deg)}
+.ep-tag{display:inline-block;background:var(--paper);color:var(--ink);font-weight:700;font-size:.85rem;border:2px solid var(--cyan);border-left:8px solid var(--cyan);border-radius:4px;padding:2px 10px;margin-bottom:6px}
+
 
 /* ===== 문제 ===== */
 .mini{display:flex;align-items:center;gap:10px;background:var(--paper);border:3px solid var(--ink);border-radius:14px;padding:6px 12px}
@@ -388,7 +400,7 @@ const CASES = [
     parent: "mom", parentName: "금쪽이 엄마 · 3년 차 연구원",
     story: ["선생님, 저희 금쪽이가요…", "동그랗게 자라야 하는데", "바닥에 납작하게 퍼지기만 해요.", "벌써 2주째예요. 😭"],
     scope: "flat",
-    caps: ["(바닥에 쫙— 붙어 버린 금쪽이)", "(입체감 0%)"],
+    caps: ["바닥에 쫙— <em>붙어 버린</em> 금쪽이", "입체감 0%"],
     note: "세포들이 바닥에 한 층으로만 깔려 있어요. 위로 쌓이질 않네요.",
     diag: {
       q: "금쪽이가 납작해진 원인은 무엇일까요?",
@@ -417,7 +429,7 @@ const CASES = [
     parent: "mom", parentName: "금쪽이 엄마 · 뇌 오가노이드 연구실",
     story: ["처음엔 정말 잘 자랐어요.", "그런데 커질수록", "가운데가 까맣게 변해요.", "겉은 멀쩡한데 속이 아파요. 😢"],
     scope: "necro",
-    caps: ["(속이 까맣게 타들어 가는 금쪽이)", "(산소가 가운데까지 못 가요)"],
+    caps: ["속이 <em>까맣게</em> 타들어 가는 금쪽이", "산소가 가운데까지 못 가요"],
     note: "바깥쪽 세포는 생생한데, 안쪽으로 갈수록 점점 어두워져요.",
     diag: {
       q: "금쪽이 가운데가 까맣게 죽는 원인은 무엇일까요?",
@@ -446,7 +458,7 @@ const CASES = [
     parent: "dad", parentName: "금쪽이 아빠 · 맞춤 의학 연구실",
     story: ["환자분 피부세포를 조금 받았어요.", "이걸로 장 오가노이드를 만들려고요.", "그런데 몇 주째 피부세포 그대로예요.", "금쪽이가 태어나질 않아요. 😢"],
     scope: "skin",
-    caps: ["(금쪽이 탄생 대기 중…)", "(변신 능력 0%)"],
+    caps: ["금쪽이 <em>탄생</em> 대기 중…", "변신 능력 0%"],
     note: "길쭉한 피부세포(섬유아세포)만 가득해요. 몇 주가 지나도 다른 세포로 바뀌지 않아요.",
     diag: {
       q: "금쪽이가 태어나지 않는 원인은 무엇일까요?",
@@ -761,7 +773,7 @@ function showStep() {
   if (S.step === 0) {
     const lines = c.story.map((l, i) => `<p style="animation-delay:${.2 + i * .55}s">${l}</p>`).join("");
     render(`${hud()}
-      <div class="case-title"><span class="onair">ON AIR</span><br><span class="sub big">사연 ${S.idx + 1}. “${c.title}”</span></div>
+      <div class="case-title"><span class="onair">ON AIR</span><br><span class="ep-tag">사연 ${S.idx + 1}</span><div class="tvsub big">“${c.title}”</div></div>
       ${S.idx === 0 ? `<div class="note">🎙️ 어서 오세요, <b>${esc(S.name)}</b> 전문가님! 오늘도 고민 많은 연구원 부모님들이 기다리고 있어요.</div>` : ""}
       <div class="parent"><div class="avatar">${ele("meh", c.parent)}</div><div class="bubble">${lines}</div></div>
       <div class="who">${c.parentName}</div>
@@ -769,7 +781,7 @@ function showStep() {
   } else if (S.step === 1) {
     render(`${hud()}
       ${scope(c.scope)}
-      <div class="caps"><span class="sub">${c.caps[0]}</span><span class="sub cyan">${c.caps[1]}</span></div>
+      <div class="caps"><div class="tvsub">${c.caps[0]}</div><div class="tvsub alert">${c.caps[1]}</div></div>
       <div class="note">🔍 <b>관찰 노트</b><br>${c.note}</div>
       <button class="btn" onclick="go(2)">원인 진단하기</button>`);
   } else if (S.step === 2 || S.step === 3) {
@@ -778,7 +790,7 @@ function showStep() {
     sparkle();
     render(`${hud()}
       ${scope(c.after)}
-      <div class="caps"><span class="sub">(완전히 달라진 금쪽이 ✨)</span></div>
+      <div class="caps"><div class="tvsub">완전히 <em>달라진</em> 금쪽이 ✨</div></div>
       <div class="quote">“${c.quote}”</div>
       <div class="concept"><h4>오늘의 육아 포인트</h4>${c.concept}</div>
       <div class="gain">이번 사연 획득 점수 <span>+${S.caseScore}점</span></div>
@@ -839,7 +851,7 @@ function nextCase() {
 /* ===== 성장 영상 ===== */
 function videoScreen() {
   render(`<div class="steplabel">특별 영상</div>
-    <div class="caps"><span class="sub big">“금쪽이, 이렇게 컸어요”</span></div>
+    <div class="caps"><div class="tvsub big">금쪽이, <em>이렇게</em> 컸어요</div></div>
     <div class="tv"><div class="tv-top"><span class="r">● REC</span><span>금쪽이 성장 영상</span><span id="cnt">1/${SCENES.length}</span></div>
       <div class="screen" id="scr"></div><div class="bar"><i id="bar"></i></div></div>
     <button class="btn ghost" id="skip">건너뛰기 ⏭</button>`);
