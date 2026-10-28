@@ -90,7 +90,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.5);color:var(--coral)}100%{transform:scale(1)}}
 
 /* ===== 코끼리 캐릭터 (em 단위, font-size로 크기 조절) ===== */
-.ele{--face:#c4e2fb;--earc:#a6d0f6;--earin:#f8bfd0;--line:var(--ink);position:relative;width:10em;height:8.6em;flex:none}
+.ele{--face:#c4e2fb;--trunk:#c4e2fb;--earc:#a6d0f6;--earin:#f8bfd0;--line:var(--ink);position:relative;width:10em;height:8.6em;flex:none}
 /* 주변 방울 */
 .ele::before,.ele::after{content:"";position:absolute;border-radius:50%;animation:bubble 2.4s ease-in-out infinite}
 .ele::before{right:1.1em;top:.7em;width:.6em;height:.6em;background:#8ec4f2;opacity:.8}
@@ -110,14 +110,15 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 .ele .brow.l{left:1.15em}.ele .brow.r{right:1.15em}
 .ele .cheek{position:absolute;top:3.0em;width:.95em;height:.8em;border-radius:50%;background:#f7a9c2}
 .ele .cheek.l{left:.4em}.ele .cheek.r{right:.4em}
-/* 위로 말린 코: 바깥 U + 안쪽 U로 튜브 모양 */
-.ele .trunk{position:absolute;left:2.25em;top:3.25em;width:1.85em;height:1.75em;border:.24em solid var(--line);border-top:none;border-radius:0 0 .95em .95em;background:var(--face);z-index:2}
-.ele .trunk::before{content:"";position:absolute;left:.36em;top:0;width:.72em;height:1.12em;border:.24em solid var(--line);border-top:none;border-radius:0 0 .4em .4em;background:var(--face)}
-.ele .trunk::after{content:"";position:absolute;right:-.24em;top:-.3em;width:.78em;height:.52em;border:.24em solid var(--line);border-radius:50%;background:var(--face)}
+/* 코: 남색 굵은 선 위에 얼굴색 선을 겹쳐 외곽선 있는 튜브로 그려요 */
+.ele .trunk{position:absolute;left:2.07em;top:2.6em;width:2.6em;height:2.6em;overflow:hidden;z-index:2}
+.ele .trunk path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.ele .trunk .t1{stroke:var(--line);stroke-width:10}
+.ele .trunk .t2{stroke:var(--trunk);stroke-width:5.6}
 .ele .tear{position:absolute;left:1.3em;top:2.8em;width:.45em;height:.62em;border-radius:50% 50% 50% 50%/40% 40% 60% 60%;background:#5fb8f0;opacity:0;z-index:3}
 .ele .acc{position:absolute;pointer-events:none}
 /* 표정 */
-.ele.sad{--face:#d3e4f0;--earc:#b8cfe0}
+.ele.sad{--face:#d3e4f0;--trunk:#d3e4f0;--earc:#b8cfe0}
 .ele.sad .brow{opacity:1}
 .ele.sad .brow.l{transform:rotate(-22deg)}.ele.sad .brow.r{transform:rotate(22deg)}
 .ele.sad .eye{height:.7em;top:2.1em}
@@ -184,7 +185,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 @keyframes spread{from{transform:scale(1.25,.38)}to{transform:scale(1.7,.3)}}
 .flatcell{position:absolute;width:15%;height:5%;border-radius:50%;background:var(--ele);border:2px solid var(--ele-line);opacity:.6}
 /* 2 정체성 혼란 */
-.ele.wrong{--face:conic-gradient(from 30deg,#b8f2a1,#c9a7ff,#ffd59e,#9ad7ff,#b8f2a1);--earc:#c9a7ff;--earin:#b8f2a1}
+.ele.wrong{--trunk:#d6c6ff;--face:conic-gradient(from 30deg,#b8f2a1,#c9a7ff,#ffd59e,#9ad7ff,#b8f2a1);--earc:#c9a7ff;--earin:#b8f2a1}
 .ele.wrong{animation:wobble 2.2s ease-in-out infinite}
 @keyframes wobble{25%{transform:rotate(-6deg) scale(1.03,.97)}75%{transform:rotate(6deg) scale(.97,1.03)}}
 .float{position:absolute;font-family:var(--font-display);font-size:clamp(15px,4.6vw,20px);background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:1px 7px;animation:fl 1.8s ease-in-out infinite}
@@ -556,7 +557,7 @@ const LOAD_TIPS = ["줄기세포 깨우는 중…", "3D 지지체 말랑하게 �
 
 /* ===== 코끼리 캐릭터 ===== */
 function ele(mood = "meh", cls = "", style = "") {
-  return `<div class="ele ${mood} ${cls}" style="${style}" aria-hidden="true"><i class="ear l"></i><i class="ear r"></i><div class="head"><i class="brow l"></i><i class="brow r"></i><i class="eye l"></i><i class="eye r"></i><i class="cheek l"></i><i class="cheek r"></i><i class="trunk"></i><i class="tear"></i><i class="acc"></i></div></div>`;
+  return `<div class="ele ${mood} ${cls}" style="${style}" aria-hidden="true"><i class="ear l"></i><i class="ear r"></i><div class="head"><i class="brow l"></i><i class="brow r"></i><i class="eye l"></i><i class="eye r"></i><i class="cheek l"></i><i class="cheek r"></i><svg class="trunk" viewBox="0 0 30 30"><path class="t1" d="M9 -4 C9 10 8.5 18 13 22 C17 25.5 23.5 23 23.5 18.5 C23.5 15.5 20.5 14.5 18.8 16.6"/><path class="t2" d="M9 -4 C9 10 8.5 18 13 22 C17 25.5 23.5 23 23.5 18.5 C23.5 15.5 20.5 14.5 18.8 16.6"/></svg><i class="tear"></i><i class="acc"></i></div></div>`;
 }
 
 const SCENES = [
