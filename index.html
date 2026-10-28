@@ -620,7 +620,7 @@ const Rank = {
     })();
     return this.ready;
   },
-  key() { return "gj-rank-" + ROOM; },
+  key() { return "gj-rank-v2-" + ROOM; },
   loadLocal() { this.mode = "local"; try { this.list = JSON.parse(store(this.key()) || "[]"); } catch (e) { this.list = []; } this.emit(); },
   sorted() { return this.list.slice().sort((a, b) => b.score - a.score || a.at - b.at); },
   emit() { this.listeners.forEach(f => f()); },
