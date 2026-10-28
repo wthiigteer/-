@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
-<title>금쪽같은 내 오가노이드</title>
+<title>금쪽같은 내 세포</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=IBM+Plex+Sans+KR:wght@400;600;700&display=swap">
@@ -271,6 +271,16 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 .vis .v{display:inline-block;opacity:0;animation:enter .5s ease forwards}
 .vis .ele{font-size:12px}
 .vis .grow{animation:grow 2.4s ease-out forwards}
+.osvg{display:block;max-width:100%;overflow:visible;animation:breathe 3s ease-in-out infinite}
+.osvg .cl{transform-box:fill-box;transform-origin:center;animation:cellpop .45s ease-out both}
+@keyframes cellpop{from{transform:scale(0);opacity:0}}
+@keyframes breathe{50%{transform:scale(1.04)}}
+.dose{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.85rem;color:#fff;font-weight:700}
+.dose b{font-size:1.4rem;opacity:0;animation:enter .4s ease forwards}
+.dose.bad .osvg{animation:wilt .8s ease var(--d) forwards}
+.dose.good .osvg{animation:thrive .8s ease var(--d) forwards}
+@keyframes wilt{to{transform:scale(.78);filter:grayscale(1) brightness(.7)}}
+@keyframes thrive{to{transform:scale(1.12);filter:drop-shadow(0 0 6px #ffe39a)}}
 @keyframes grow{from{transform:scale(.3)}to{transform:scale(1)}}
 .cap{color:#fff;font-weight:700;font-size:1.02rem;line-height:1.55;background:rgba(0,0,0,.35);border-radius:10px;padding:8px 12px}
 .cap small{display:block;font-size:.8rem;font-weight:600;color:#ffe39a;margin-top:4px}
@@ -402,35 +412,6 @@ const CASES = [
     concept: "오가노이드는 줄기세포가 3D 환경에서 스스로 모여 조직을 이루며(자기조직화) 만들어져요. 그래서 세포를 감싸 주는 입체 지지체가 꼭 필요해요."
   },
   {
-    title: "장이 돼야 하는데 엉뚱한 게 됐어요",
-    quote: "금쪽이가 길을 잃은 게 아니에요.<br><em>길을 알려 준 적이 없었던 거예요.</em>",
-    parent: "dad", parentName: "금쪽이 아빠 · 소화기 연구실",
-    story: ["장 오가노이드를 만들려고 했어요.", "그런데 장은커녕…", "정체를 알 수 없는 덩어리가 됐어요.", "금쪽아, 넌 대체 뭐가 되고 싶니? 🥲"],
-    scope: "wrong",
-    caps: ["(목표: 장 🌀 / 현재: ???)", "(정체성 혼란 중)"],
-    note: "세포 종류가 뒤죽박죽이에요. 장의 특징인 주름진 구조가 보이지 않아요.",
-    diag: {
-      q: "금쪽이가 엉뚱한 세포가 된 원인은 무엇일까요?",
-      options: [
-        { t: "장으로 가라는 분화 신호(성장인자) 조합이 틀렸다", ok: true, why: "줄기세포는 주변 신호를 보고 무엇이 될지 정해요(분화). 성장인자(세포에게 '이렇게 자라라' 알려 주는 신호 물질) 조합이 틀리면 엉뚱한 세포가 돼요." },
-        { t: "3D 지지체 없이 키워서 장 구조가 생기지 않았다", why: "지지체가 없었다면 납작하게 퍼졌을 거예요. 금쪽이는 입체 덩어리가 됐는데 세포 종류가 뒤죽박죽이니 신호 문제예요." },
-        { t: "처음 넣은 줄기세포 수가 너무 많았다", why: "세포 수는 크기와 밀도에 영향을 줘요. 하지만 무엇이 될지는 분화 신호가 정해요." },
-        { t: "배양접시 색깔이 마음에 안 들었다", why: "세포는 접시 색을 보지 못해요. 😅 세포는 화학 신호에 반응해요." }
-      ]
-    },
-    presc: {
-      q: "금쪽이가 장으로 자라려면 어떤 처방이 필요할까요?",
-      options: [
-        { t: "Wnt를 켜는 R-스폰딘과 EGF, 노긴을 넣는다", ok: true, why: "Wnt 신호는 장 줄기세포를 유지하고 늘려요. EGF는 증식을 돕고, 노긴은 BMP 신호를 막아 줄기세포를 지켜 줘요." },
-        { t: "Wnt 신호를 꺼서 줄기세포가 빨리 장 세포로 분화하게 한다", why: "Wnt를 끄면 분화가 빨라지는 건 맞아요. 하지만 장 줄기세포가 사라져서 금쪽이가 계속 자랄 수 없어요." },
-        { t: "BMP 신호를 강하게 켜서 장 세포로 분화시킨다", why: "BMP도 장 세포 분화에 관여해요. 하지만 노긴의 역할이 BMP를 '막는' 거예요. 켜면 줄기세포가 유지되지 못해요." },
-        { t: "장 사진을 보여 주며 응원한다", why: "마음은 고맙지만… 세포는 사진을 못 봐요. 📸 화학 신호로 말해 줘야 해요." }
-      ]
-    },
-    after: "healthy",
-    concept: "줄기세포는 어떤 성장인자를 받느냐에 따라 장, 뇌, 간 등 서로 다른 오가노이드로 자라요. 목표 장기에 맞는 '신호 레시피'가 필요해요."
-  },
-  {
     title: "가운데가 까맣게 죽어요",
     quote: "속이 아픈 건 금쪽이 탓이 아니에요.<br><em>숨 쉴 길부터 열어 주세요.</em>",
     parent: "mom", parentName: "금쪽이 엄마 · 뇌 오가노이드 연구실",
@@ -458,64 +439,6 @@ const CASES = [
     },
     after: "healthy",
     concept: "산소가 확산으로 퍼질 수 있는 거리는 약 0.1~0.2mm에 불과해요. 그래서 혈관이 없는 오가노이드는 어느 크기 이상 자라기 어려워요. '혈관화'는 오가노이드 연구의 큰 숙제예요."
-  },
-  {
-    title: "접시가 뿌옇게 흐려졌어요",
-    quote: "금쪽이를 혼낼 일이 아니에요.<br><em>집부터 깨끗이 치워 주세요.</em>",
-    parent: "dad", parentName: "금쪽이 아빠 · 신입 연구원",
-    story: ["아침에 인큐베이터를 열었는데…", "맑던 배양액이 뿌옇게 흐려졌어요.", "색깔도 노랗게 변했어요.", "금쪽이가 안 보여요! 😱"],
-    scope: "contam",
-    caps: ["(불청객 등장 🦠)", "(시야 확보 불가)"],
-    note: "작은 점들이 꿈틀꿈틀 움직여요. 솜털 같은 실 모양도 보여요.",
-    diag: {
-      q: "접시가 뿌옇게 흐려진 원인은 무엇일까요?",
-      options: [
-        { t: "세균·곰팡이가 들어와 번식했다", ok: true, why: "불청객이 번식하면 배양액이 뿌옇게 흐려져요. 이들이 산을 만들어서 배양액 색도 노랗게 변해요." },
-        { t: "배양액을 오래 안 갈아서 노폐물로 산성이 됐다", why: "산성이 되면 노랗게 변하는 건 맞아요. 하지만 뿌연 흐림과 꿈틀대는 점은 설명하지 못해요." },
-        { t: "금쪽이 세포가 너무 불어나 배양액에 떠다닌다", why: "세포가 많이 늘 수는 있어요. 하지만 오가노이드는 젤 안에서 자라고, 세포는 꿈틀대며 헤엄치지 않아요." },
-        { t: "금쪽이가 부끄러워서 숨어 버렸다", why: "숨은 게 아니에요! 불청객 때문에 흐려져서 안 보이는 거예요." }
-      ]
-    },
-    presc: {
-      q: "불청객을 막으려면 어떤 처방이 필요할까요?",
-      options: [
-        { t: "무균 작업대에서 다루고, 오염된 접시는 버린다", ok: true, why: "클린벤치(필터로 거른 공기가 흐르는 무균 작업대)에서 소독한 도구와 장갑으로 다뤄요. 인큐베이터도 깨끗이 관리해요." },
-        { t: "항생제를 넣어 균을 없애고 그대로 계속 키운다", why: "항생제는 세균을 줄여 줄 수 있어요. 하지만 곰팡이에는 잘 안 듣고, 남용하면 내성균이 생길 수 있어요." },
-        { t: "배양액만 새것으로 싹 갈아 주고 계속 키운다", why: "잠깐은 맑아 보여요. 하지만 균이 접시와 젤에 남아 다시 번식하고, 옆 접시로 퍼질 수도 있어요." },
-        { t: "금쪽이에게 작은 마스크를 씌워 준다", why: "귀엽지만 소용없어요. 😷 마스크가 아니라 무균 환경을 만들어야 해요." }
-      ]
-    },
-    after: "healthy",
-    concept: "세포 배양에서 오염은 실험을 한 번에 망치는 큰 적이에요. 그래서 연구자들은 '무균 조작(미생물이 들어가지 않게 다루는 기술)'을 가장 먼저 배워요."
-  },
-  {
-    title: "형제들끼리 크기랑 모양이 다 달라요",
-    quote: "형제끼리 비교하지 마세요.<br><em>같은 환경부터 주세요.</em>",
-    parent: "mom", parentName: "금쪽이 엄마 · 신약 개발팀",
-    story: ["같은 날, 같은 방법으로 키웠어요.", "그런데 형제들이 다 제각각이에요.", "크고, 작고, 찌그러지고…", "실험 결과를 믿을 수가 없어요. 🤯"],
-    scope: "uneven",
-    caps: ["(형제인데 이렇게 달라요?)", "(같은 약, 다른 반응…?)"],
-    note: "큰 아이, 작은 아이, 길쭉한 아이… 모두 같은 줄기세포에서 나왔어요.",
-    diag: {
-      q: "형제 금쪽이들이 제각각인 원인은 무엇일까요?",
-      options: [
-        { t: "작은 배양 조건 차이가 쌓인 재현성 문제다", ok: true, why: "손작업의 미세한 차이, 지지체의 제품별 차이 등이 쌓여 결과가 달라져요. 같은 조건에서 같은 결과가 나오는 성질(재현성)은 실제 연구에서도 큰 과제예요." },
-        { t: "형제마다 물려받은 유전자가 달라서 그렇다", why: "유전자가 다르면 모양이 달라질 수 있어요. 하지만 형제들은 같은 줄기세포에서 나와서 유전자가 같아요." },
-        { t: "자기조직화는 무작위라서 원래 해결할 수 없다", why: "자기조직화에 무작위성이 조금 있는 건 맞아요. 하지만 조건을 맞추면 차이를 크게 줄일 수 있어요." },
-        { t: "형제끼리 사이가 나빠서 경쟁했다", why: "세포에게 감정은 없어요. 😅 배양 조건의 작은 차이가 원인이에요." }
-      ]
-    },
-    presc: {
-      q: "형제들을 고르게 키우려면 어떤 처방이 필요할까요?",
-      options: [
-        { t: "배양 조건을 표준화하고 과정을 자동화한다", ok: true, why: "세포 수, 지지체, 배양액, 시간을 똑같이 맞춰요(표준화). 로봇이 같은 동작을 정확히 반복하면(자동화) 결과가 고르게 나와요." },
-        { t: "오가노이드를 아주 많이 만든 뒤 평균값만 쓴다", why: "많이 만들면 통계적으로 조금 도움은 돼요. 하지만 차이를 만드는 원인은 그대로 남아요." },
-        { t: "마트리겔을 더 많이 넣어 모두 크게 키운다", why: "마트리겔은 좋은 지지체예요. 하지만 제품마다 성분이 조금씩 달라 오히려 차이가 생겨서, 성분이 일정한 합성 젤을 연구 중이에요." },
-        { t: "제일 예쁜 금쪽이만 골라서 발표한다", why: "그건 결과를 왜곡하는 거예요! 연구 윤리에 어긋나요. 🙅" }
-      ]
-    },
-    after: "healthyMany",
-    concept: "좋은 실험은 누가, 언제 해도 같은 결과가 나와야 해요. 표준화와 자동화는 오가노이드를 신약 개발에 쓰기 위한 핵심 과제예요."
   },
   {
     title: "피부세포로 만들었는데 아무것도 안 돼요",
@@ -554,9 +477,9 @@ const MAX_SCORE = CASES.length * 40;
 const MOOD = { "😢": "sad", "😐": "meh", "😊": "happy" };
 
 const GRADES = [
-  { min: 230, name: "세포 육아 마스터", emoji: "👑", msg: "완벽해요! 어떤 금쪽이도 믿고 맡길 수 있는 세포 육아 마스터예요." },
-  { min: 180, name: "수석 연구원", emoji: "🧪", msg: "날카로운 진단력! 연구실의 든든한 기둥이에요." },
-  { min: 120, name: "선임 연구원", emoji: "🔬", msg: "기본기가 탄탄해요! 조금만 더 하면 수석 연구원이에요." },
+  { min: 110, name: "세포 육아 마스터", emoji: "👑", msg: "완벽해요! 어떤 금쪽이도 믿고 맡길 수 있는 세포 육아 마스터예요." },
+  { min: 90, name: "수석 연구원", emoji: "🧪", msg: "날카로운 진단력! 연구실의 든든한 기둥이에요." },
+  { min: 60, name: "선임 연구원", emoji: "🔬", msg: "기본기가 탄탄해요! 조금만 더 하면 수석 연구원이에요." },
   { min: 0, name: "인턴 연구원", emoji: "🐣", msg: "아직은 금쪽이가 낯설어요. 다시 도전하면 금방 성장할 거예요!" }
 ];
 const gradeOf = s => GRADES.find(g => s >= g.min);
@@ -568,12 +491,59 @@ function ele(mood = "meh", cls = "", style = "") {
   return `<div class="ele ${mood} ${cls}" style="${style}" aria-hidden="true"><i class="ear l"></i><i class="ear r"></i><div class="head"><i class="brow l"></i><i class="brow r"></i><i class="eye l"></i><i class="eye r"></i><i class="cheek l"></i><i class="cheek r"></i><svg class="trunk" viewBox="0 0 30 40"><path class="t1" d="M12 -4 C12 10 11 20 14 27 C16.5 32.5 22 33 23.5 28.5"/><path class="t2" d="M12 -4 C12 10 11 20 14 27 C16.5 32.5 22 33 23.5 28.5"/></svg><i class="tear"></i><i class="acc"></i></div></div>`;
 }
 
+/* ===== 오가노이드 성장 그림 (SVG) ===== */
+function cellG(x, y, r, i, nx = 0, ny = 0) {
+  return `<g class="cl" style="animation-delay:${(i * 0.035).toFixed(2)}s"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="#ffc9d6" stroke="#ff8fab" stroke-width="1.4"/><circle cx="${(x + nx).toFixed(1)}" cy="${(y + ny).toFixed(1)}" r="${(r * 0.42).toFixed(1)}" fill="#8a5bb5"/></g>`;
+}
+function ringCells(rf, r) {
+  const pts = [];
+  for (let i = 0; i <= 360; i++) { const t = i / 360 * Math.PI * 2, R = rf(t); pts.push([80 + R * Math.cos(t), 80 + R * Math.sin(t)]); }
+  const lumen = pts.map((q, i) => (i ? "L" : "M") + q[0].toFixed(1) + " " + q[1].toFixed(1)).join("") + "Z";
+  // 세포를 곡선 길이를 따라 같은 간격으로 배치해요
+  let cells = "", acc = 0, k = 0;
+  const gap = r * 1.85;
+  for (let i = 1; i < pts.length; i++) {
+    acc += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+    if (acc >= gap) {
+      acc = 0;
+      const [x, y] = pts[i], dx = x - 80, dy = y - 80, d = Math.hypot(dx, dy) || 1;
+      cells += cellG(x, y, r, k++, dx / d * r * 0.3, dy / d * r * 0.3);
+    }
+  }
+  return `<path d="${lumen}" fill="rgba(255,236,190,.28)"/>${cells}`;
+}
+function budR(t) {
+  // 가운데 공 + 둥근 싹 5개를 합친 윤곽 (장 오가노이드의 움 모양)
+  let R = 33;
+  const ct = Math.cos(t), st = Math.sin(t);
+  for (let k = 0; k < 5; k++) {
+    const a = k * Math.PI * 2 / 5 + 0.3, cx = 38 * Math.cos(a), cy = 38 * Math.sin(a), rad = 15;
+    const proj = cx * ct + cy * st, disc = rad * rad - (cx * cx + cy * cy - proj * proj);
+    if (disc >= 0 && proj > 0) R = Math.max(R, proj + Math.sqrt(disc));
+  }
+  return R;
+}
+const GEL = `<circle cx="80" cy="80" r="74" fill="rgba(173,216,255,.10)" stroke="rgba(173,216,255,.45)" stroke-width="2" stroke-dasharray="5 6"/>`;
+function orgSvg(stage, size = 170) {
+  let body = "";
+  if (stage === "cells") {
+    body = [[67, 67], [93, 67], [67, 93], [93, 93]].map(([x, y], i) => cellG(x, y, 13, i * 8)).join("");
+  } else if (stage === "cluster") {
+    for (let i = 0; i < 19; i++) { const r = 8.6 * Math.sqrt(i), t = i * 2.4; body += cellG(80 + r * Math.cos(t), 80 + r * Math.sin(t), 8.5, i); }
+    body = GEL + body;
+  } else if (stage === "cyst") {
+    body = GEL + ringCells(() => 42, 7.2);
+  } else if (stage === "bud") {
+    body = GEL + ringCells(budR, 5.6);
+  }
+  return `<svg class="osvg" viewBox="0 0 160 160" width="${size}" height="${size}" aria-hidden="true">${body}</svg>`;
+}
 const SCENES = [
-  { v: `<span class="v">🧫</span><span class="v" style="animation-delay:.3s">✨</span>`, c: "환자의 피부세포를 줄기세포(iPSC)로 되돌려<br>태어난 금쪽이." },
-  { v: `<div class="grow">${ele("meh")}</div>`, c: "3D 지지체 속에서 무럭무럭 자랐어요." },
-  { v: `${ele("happy", "bouncy")}<span class="spk" style="top:0;right:-10px">✨</span>`, c: "이제 진짜 장을 닮은 '미니 장기'가 되었어요!" },
-  { v: `<span class="v">🧑</span><span class="v" style="animation-delay:.4s">➡️</span><span class="v" style="animation-delay:.8s">🧫</span><span class="v" style="animation-delay:1.2s">💊</span>`, c: "환자의 세포로 만든 금쪽이에게<br>신약 후보들을 하나씩 시험해요." },
-  { v: `<span class="v">💊❌</span><span class="v" style="animation-delay:.5s">💊❌</span><span class="v" style="animation-delay:1s">💊✅</span>`, c: "어떤 약이 잘 듣는지<br>환자 몸 밖에서 미리 확인해요." },
+  { v: orgSvg("cells"), c: "환자의 피부세포를 되돌린 줄기세포(iPSC)예요.<br>쑥쑥 분열하며 수를 늘려요." },
+  { v: orgSvg("cluster"), c: "3D 지지체(마트리겔) 속에서<br>세포들이 모여 동그란 덩어리가 돼요." },
+  { v: orgSvg("cyst"), c: "세포들이 스스로 줄을 서서<br>속이 빈 공 모양을 만들어요(자기조직화)." },
+  { v: orgSvg("bud"), c: "주머니처럼 싹이 돋아나며<br>진짜 장을 닮은 오가노이드가 됐어요!" },
+  { v: ["A", "B", "C"].map((k, i) => `<div class="dose v ${i === 2 ? "good" : "bad"}" style="animation-delay:${i * 0.5}s;--d:${1.6 + i * 0.3}s">${orgSvg("bud", 78)}<span>💧 ${k}</span><b class="${i === 2 ? "ok" : "no"}" style="animation-delay:${1.6 + i * 0.3}s">${i === 2 ? "✅" : "❌"}</b></div>`).join(""), c: "환자 오가노이드에 신약 후보를 넣어<br>잘 듣는 약을 몸 밖에서 미리 찾아요." },
   { v: `<span class="v">🧑</span><span class="v" style="animation-delay:.4s">😊</span><span class="v" style="animation-delay:.8s">💙</span>`, c: "환자는 자기에게 꼭 맞는 약을 찾았어요!<small>실제로 환자 오가노이드로 맞춤 약을 고르는 연구가 진행 중이에요.<br>동물실험을 줄이는 데도 도움이 돼요.</small>", d: 4200 }
 ];
 
@@ -593,7 +563,7 @@ function render(html, wide) {
 function logo(cls = "") {
   const rot = [-5, 3, -2, 4, -4, 2, -3, 5];
   const chars = (t, o) => [...t].map((c, i) => c === " " ? `<span style="width:.3em"></span>` : `<span style="transform:rotate(${rot[(i + o) % rot.length]}deg)">${c}</span>`).join("");
-  return `<div class="logo ${cls}"><div class="l1">${chars("금쪽같은 내", 0)}</div><div class="l2">${chars("오가노이드", 3)}</div></div>`;
+  return `<div class="logo ${cls}"><div class="l1">${chars("금쪽같은 내", 0)}</div><div class="l2">${chars("세포", 3)}</div></div>`;
 }
 
 /* ===== 회차(room) / 기기 id ===== */
@@ -755,12 +725,11 @@ function startScreen() {
       <div class="card desc">
         문제 행동을 보이는 <b>오가노이드</b>(줄기세포로 만든 미니 장기) 금쪽이를 관찰하고,
         원인을 진단해 솔루션을 처방해 주세요!
-        <small>※ 줄기세포: 여러 종류의 세포로 변할 수 있는 세포</small>
       </div>
       <input class="name-input" id="nameInput" maxlength="10" autocomplete="off" placeholder="랭킹에 표시할 닉네임" value="${esc(S.name)}">
       <button class="btn" id="startBtn">상담 시작</button>
       <button class="btn ghost" id="rankBtn">🏆 지금 랭킹 보기</button>
-      <div class="meta">사연 6개 · 약 6~8분 · 첫 시도 정답 +20점, 두 번째 +10점</div>
+      <div class="meta">사연 3개 · 약 3~4분 · 첫 시도 정답 +20점, 두 번째 +10점</div>
     </div>`);
   const moods = ["sad", "meh", "happy"]; let f = 0;
   S.timers.push(setInterval(() => {
@@ -935,10 +904,10 @@ function resultScreen() {
 
 async function shareResult() {
   const g = gradeOf(S.score);
-  const text = `[금쪽같은 내 오가노이드] ${S.name}님은 ${S.score}점, '${g.name}' ${g.emoji} 등급을 받았어요! 나도 도전하기 👉 ${joinUrl()}`;
+  const text = `[금쪽같은 내 세포] ${S.name}님은 ${S.score}점, '${g.name}' ${g.emoji} 등급을 받았어요! 나도 도전하기 👉 ${joinUrl()}`;
   const msg = document.getElementById("shareMsg");
   try {
-    if (navigator.share) { await navigator.share({ title: "금쪽같은 내 오가노이드", text }); return; }
+    if (navigator.share) { await navigator.share({ title: "금쪽같은 내 세포", text }); return; }
     await navigator.clipboard.writeText(text);
     msg.textContent = "결과 문구를 복사했어요. 메신저에 붙여 넣어 보세요!";
   } catch (e) {
@@ -995,9 +964,9 @@ function endScreen() {
   const g = gradeOf(S.score);
   const credits = [
     ["오늘의 세포 육아 전문가", `${esc(S.name)} (${g.name})`],
-    ["출연", "금쪽이 6남매 · 연구원 엄마 아빠"],
-    ["특별 출연", "마트리겔 · R-스폰딘 · 바이오리액터 · 클린벤치 · 야마나카 인자"],
-    ["오늘 배운 것", "3D 지지체 · 분화 신호 · 혈관화 · 무균 조작 · 표준화 · 역분화(iPSC)"],
+    ["출연", "금쪽이 3남매 · 연구원 엄마 아빠"],
+    ["특별 출연", "마트리겔 · 바이오리액터 · 야마나카 인자"],
+    ["오늘 배운 것", "3D 지지체 · 혈관화 · 역분화(iPSC)"],
     ["다음 회 예고", "금쪽이, 드디어 혈관이 생기다?!"]
   ].map(([a, b]) => `<div><small>${a}</small><b>${b}</b></div>`).join("");
   render(`<div class="end screen-in" style="flex:1">

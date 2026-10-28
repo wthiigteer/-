@@ -10,11 +10,11 @@ service cloud.firestore {
         && request.resource.data.name.size() <= 12
         && request.resource.data.score is int
         && request.resource.data.score >= 0
-        && request.resource.data.score <= 240
+        && request.resource.data.score <= 120
         && request.resource.data.score % 10 == 0
         && request.resource.data.first is int
         && request.resource.data.first >= 0
-        && request.resource.data.first <= 12;
+        && request.resource.data.first <= 6;
       allow delete: if false;
     }
   }
