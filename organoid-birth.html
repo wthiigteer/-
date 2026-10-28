@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light">
-<title>금쪽같은 내 오가노이드: 탄생 편</title>
+<title>금쪽같은 내 세포</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -383,8 +383,12 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
    탄생 편 전용 스타일 (위 공통 디자인 시스템 위에 얹어요)
    ========================================================= */
 #app{padding-block:16px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.logo .l2{font-size:clamp(2.3rem,11.5vw,3.4rem)}
-.logo.small .l2{font-size:1.7rem}
+[hidden]{display:none!important}
+.howto{background:var(--paper);border:3px solid var(--ink);border-left:10px solid var(--yellow);border-radius:16px;padding:14px 16px;box-shadow:4px 4px 0 var(--ink);animation:enter .35s ease both}
+.howto h3{font-family:var(--font-display);font-weight:400;font-size:1.35rem}
+.howto ol{padding-left:1.3em;margin-top:6px;display:flex;flex-direction:column;gap:4px;line-height:1.55;font-weight:600}
+.howto .tip{margin-top:8px;font-size:.88rem;color:#4d6178;line-height:1.5}
+.play{display:flex;flex-direction:column;gap:14px}
 .ep-sub{display:inline-block;margin-top:6px;font-family:var(--font-display);font-size:1.25rem;color:#fff;background:var(--coral);border:3px solid var(--ink);border-radius:10px;padding:2px 14px;transform:rotate(-2deg);box-shadow:3px 3px 0 var(--ink)}
 
 /* 방송 정보 바(좌상단) */
@@ -599,7 +603,7 @@ function render(html, wide) {
 function logo(cls = "") {
   const rot = [-5, 3, -2, 4, -4, 2, -3, 5];
   const chars = (t, o) => [...t].map((c, i) => c === " " ? `<span style="width:.3em"></span>` : `<span style="transform:rotate(${rot[(i + o) % rot.length]}deg)">${c}</span>`).join("");
-  return `<div class="logo ${cls}"><div class="l1">${chars("금쪽같은", 0)}</div><div class="l2">${chars("내 오가노이드", 3)}</div></div>`;
+  return `<div class="logo ${cls}"><div class="l1">${chars("금쪽같은", 0)}</div><div class="l2">${chars("내 세포", 3)}</div></div>`;
 }
 
 /* ===== 코끼리 금쪽이 ===== */
@@ -629,6 +633,15 @@ function stageBox(inner, cap, alert) {
 }
 function sit(t) { return `<div class="card desc">${t}</div>`; }
 function expert(t) { return `<div class="expert"><div class="ex-ava">${ele("happy", "dad")}</div><div class="ex-bub"><span class="tag">세포 육아 전문가</span><p>${t}</p></div></div>`; }
+// 미니게임 시작 전 '게임 방법' 카드
+function howto(title, steps, tip) {
+  return `<div class="howto" id="howto"><h3>🎮 게임 방법 · ${title}</h3><ol>${steps.map(x => `<li>${x}</li>`).join("")}</ol>${tip ? `<p class="tip">${tip}</p>` : ""}<button class="btn yellow" id="howGo" style="margin-top:12px">알겠어요, 시작!</button></div>`;
+}
+function onHowGo(fn) {
+  const b = $("#howGo");
+  if (!b) { fn && fn(); return; }
+  b.onclick = () => { $("#howto").remove(); const pl = $("#play"); if (pl) pl.hidden = false; fn && fn(); };
+}
 function fbBox(type, title, body) { return `<div class="fb ${type}"><h3>${title}</h3><div>${body}</div></div>`; }
 function addNext(el, fn, label = "다음 →", cls = "") {
   const b = document.createElement("button"); b.className = "btn " + cls; b.innerHTML = label;
@@ -962,10 +975,19 @@ function stage2() {
     render(`${head("1일차 · 아침")}
       <div class="tvsub">금쪽이한테 <em>집</em>이 필요해요</div>
       ${sit("<b>마트리겔</b>(세포가 자리 잡는 젤리 같은 지지체)은 <b>차가울 땐 액체</b>, <b>37℃에서 굳는</b> 젤이에요. 젤이 굳기 전에 알맞은 순서로 3D 집을 지어 주세요!" + (retry ? "<br><b style=\"color:var(--red)\">🔁 재도전 (최대 10점)</b>" : ""))}
+      ${retry ? "" : howto("마트리겔 집 짓기", [
+        "아래 버튼 4개 중 <b>알맞은 3개를 알맞은 순서</b>로 눌러 집을 지어요.",
+        "섞을 땐 화면을 <b>문지르거나 톡톡 탭</b>, 돔을 만들 땐 <b>접시를 3번 탭</b>해요.",
+        "튜브가 얼음에서 나오면 <b>굳음 정도</b>가 올라가요. 100%가 되기 전에 끝내야 해요!",
+        "순서가 틀리거나 늦으면 실패예요. 재도전은 한 번(최대 10점)이에요."
+      ], "점수: 20점에서 실수 1번마다 −4점, 굳음 정도가 높으면 조금 더 감점돼요.")}
+      <div class="play" id="play" ${retry ? "" : "hidden"}>
       <div class="gauge"><span>🧊 굳음 정도</span><div class="gbar"><i id="gbar"></i></div></div>
       <div class="lab" id="lab"><div class="tube">🧪</div><p>튜브 속: 차가운 마트리겔 + 금쪽이 세포<br><small>(지금은 얼음 옆에 있어요)</small></p></div>
       <div class="acts">${shuffle(acts).map(a => `<button class="btn ghost act" data-id="${a.id}">${a.t}</button>`).join("")}</div>
-      <div id="fb"></div>`);
+      <div id="fb"></div>
+      </div>`);
+    onHowGo();
     const lab = $("#lab"), fb = $("#fb"), gbar = $("#gbar");
     const setG = () => { gbar.style.width = Math.min(100, gauge) + "%"; };
     const msg = (type, title, t) => { fb.innerHTML = fbBox(type, title, t); };
@@ -1060,6 +1082,13 @@ function stage3() {
   render(`${head("1일차 · 밤")}
     <div class="tvsub">금쪽이 방, <em>몇 도</em>가 좋을까요?</div>
     ${sit("금쪽이 방은 <b>인큐베이터</b>(세포를 키우는 따뜻한 상자)예요. 금쪽이가 편히 자라도록 <b>온도·이산화탄소·습도</b>를 사람 몸속처럼 맞춰 주세요.")}
+    ${howto("인큐베이터 맞추기", [
+      "슬라이더 3개를 움직여 <b>온도·이산화탄소·습도</b>를 맞춰요.",
+      "움직이는 동안 금쪽이 <b>표정</b>이 바로 바뀌어요. 힌트로 써 보세요!",
+      "다 맞췄다 싶으면 <b>[설정 완료!]</b>를 눌러요.",
+      "틀린 항목은 이유를 알려 줘요. 모두 맞춰야 다음 단계로 가요."
+    ], "점수: 처음 [설정 완료!]를 눌렀을 때 맞힌 항목 수로 매겨요 (3개 20점 · 2개 13점 · 1개 7점).")}
+    <div class="play" id="play" hidden>
     <div class="incu">
       <div class="incu-win" id="iwin">${org("meh")}</div>
       <div class="ctl"><label for="rT">🌡️ 온도 <output id="vT"></output></label><input type="range" id="rT" min="25" max="45" step="0.5" value="25"></div>
@@ -1067,7 +1096,9 @@ function stage3() {
       <div class="ctl"><label for="rH">💧 습도 <output id="vH"></output></label><input type="range" id="rH" min="30" max="100" step="1" value="40"></div>
     </div>
     <button class="btn" id="ok">✅ 설정 완료!</button>
-    <div id="fb"></div>`);
+    <div id="fb"></div>
+    </div>`);
+  onHowGo();
   const rT = $("#rT"), rC = $("#rC"), rH = $("#rH"), win = $("#iwin"), fb = $("#fb");
   const vals = () => [+rT.value, +rC.value, +rH.value];
   function issues(t, c, h) {
@@ -1134,10 +1165,18 @@ function stage4() {
   render(`${head("2일차")}
     ${stageBox(org("meh"), "금쪽이 <em>이유식</em>, 뭘 넣을까요?")}
     ${sit("<b>성장인자</b>(세포에게 \"자라라, 변해라\" 알려 주는 신호 물질)로 이유식을 만들어요. 장 줄기세포는 <b>Wnt 신호</b>(줄기세포를 지켜 주는 신호)는 <b>켜고</b>, <b>BMP 신호</b>(줄기세포를 다른 세포로 바꾸는 신호)는 <b>막아야</b> 해요. 쑥쑥 늘어날 신호도 필요하죠!<small>필요한 재료를 모두 골라 그릇에 담으세요.</small>")}
+    ${howto("이유식 레시피", [
+      "재료 카드를 누르면 <b>그릇</b>에 담겨요. 다시 누르면 빠져요.",
+      "필요한 재료를 <b>모두</b> 골랐다면 <b>[이유식 완성!]</b>을 눌러요.",
+      "틀리면 금쪽이가 엉뚱한 세포 덩어리가 돼요. 한 번 더 고칠 수 있어요."
+    ], "점수: 첫 시도 성공 20점 · 두 번째 성공 10점.")}
+    <div class="play" id="play" hidden>
     <div class="picks rpicks">${shuffle(ING).map(c => `<button class="pick" data-id="${c.id}"><span class="pe">${c.e}</span><b>${c.n}</b><small>${c.d}</small></button>`).join("")}</div>
     <div class="bowl" id="bowl">🥣 그릇이 비어 있어요</div>
     <button class="btn" id="cook">🍼 이유식 완성!</button>
-    <div id="fb"></div>`);
+    <div id="fb"></div>
+    </div>`);
+  onHowGo();
   const bowl = $("#bowl"), fb = $("#fb"), pv = $("#orgs");
   const nameOf = id => ING.find(x => x.id === id).n;
   const paintBowl = () => { bowl.innerHTML = sel.size ? "🥣 " + [...sel].map(id => `<span class="chip">${nameOf(id)}</span>`).join("") : "🥣 그릇이 비어 있어요"; };
@@ -1232,17 +1271,24 @@ function evMedium(cb) {
   render(`${head(base + "일차")}
     <div class="tvsub">배양액을 <em>갈 시간</em>이에요!</div>
     ${sit("금쪽이는 <b>배양액</b>(세포의 먹이가 든 물약) 속 영양분을 먹고 노폐물을 내놔요. 오래 두면 배양액이 <b>산성</b>이 돼서 노랗게 변해요. 9일을 빨리 감는 동안 <b>알맞은 때</b>에 교체 버튼을 누르세요!")}
+    ${howto("배양액 교체 타이밍", [
+      "시작하면 <b>9일</b>이 빠르게 흘러요. (하루에 약 1초)",
+      "배양액 <b>색</b>과 <b>교체 후 며칠</b>이 지났는지 보면서 <b>[🔄 배양액 교체]</b>를 눌러요.",
+      "너무 늦으면 배양액이 노랗게 변하고, 너무 일찍 갈면 영양분이 아까워요."
+    ], "점수: 20점에서 너무 이른 교체 1번마다 −4점, 노랗게 둔 날 하루마다 −4점.")}
+    <div class="play" id="play" hidden>
     <div class="mrow"><span class="chipbox">📅 <span id="dd">0</span>일째</span><span class="chipbox">교체 후 <span id="since">0</span>일</span></div>
     <div class="well" id="mw">${org("happy", "", 8)}</div>
     <button class="btn cyan" id="chg" disabled>🔄 배양액 교체</button>
     <div class="mlog" id="mlog"></div>
-    <div id="fb"><button class="btn" id="go">▶ 9일 빨리 감기 시작</button></div>`);
+    <div id="fb"></div>
+    </div>`);
   let d = 0, since = 0, early = 0, late = 0, good = 0, run = false;
   const mw = $("#mw"), mlog = $("#mlog"), fb = $("#fb");
   const log = t => { mlog.innerHTML = `<div>${t}</div>` + mlog.innerHTML; };
   const paint = () => { mw.className = "well " + (since >= 4 ? "yellow" : since === 3 ? "orange" : ""); setMood(mw, since >= 4 ? "sad" : since === 3 ? "meh" : "happy"); };
-  $("#go").onclick = () => {
-    $("#go").remove(); $("#chg").disabled = false; run = true;
+  onHowGo(() => {
+    $("#chg").disabled = false; run = true;
     const id = every(() => {
       d++; since++;
       $("#dd").textContent = d; $("#since").textContent = since;
@@ -1251,7 +1297,7 @@ function evMedium(cb) {
       if (since >= 4) { late++; log(`⚠️ ${d}일째: 배양액이 노래졌어요! 산성 상태예요.`); if (since === 4) crisis("배양액이 산성이 됐어요!"); }
       if (d >= 9) { clearInterval(id); end(); }
     }, 1200);
-  };
+  });
   $("#chg").onclick = () => {
     if (!run) return;
     if (since <= 1) { early++; log(`⏩ ${d}일째: 너무 일러요. 아직 영양분이 충분해서 아까워요.`); }
@@ -1478,7 +1524,7 @@ function endScreen() {
     ["출연", "금쪽이 · 금쪽이 형제 6명"],
     ["특별 출연", "마트리겔 · R-스폰딘 · EGF · 노긴 · 야마나카 인자"],
     ["오늘 배운 것", "줄기세포(재료) + 3D 환경(집) + 성장인자(신호)"],
-    ["다음 회 예고", "금쪽이가 혈관을 갖고 싶대요!?"]
+    ["다음 회 예고", "우리 금쪽이가 “우리” 금쪽이가 아니라고요!?"]
   ].map(([a, b]) => `<div><small>${a}</small><b>${b}</b></div>`).join("");
   render(`<div class="end screen-in" style="flex:1">
     ${logo("small")}
