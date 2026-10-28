@@ -374,6 +374,7 @@ const FIREBASE_VERSION = "10.12.2";
 const CASES = [
   {
     title: "납작하게 퍼지기만 해요",
+    quote: "금쪽이는 눕고 싶은 게 아니에요.<br><em>설 자리가 필요했던 거예요.</em>",
     parent: "mom", parentName: "금쪽이 엄마 · 3년 차 연구원",
     story: ["선생님, 저희 금쪽이가요…", "동그랗게 자라야 하는데", "바닥에 납작하게 퍼지기만 해요.", "벌써 2주째예요. 😭"],
     scope: "flat",
@@ -402,6 +403,7 @@ const CASES = [
   },
   {
     title: "장이 돼야 하는데 엉뚱한 게 됐어요",
+    quote: "금쪽이가 길을 잃은 게 아니에요.<br><em>길을 알려 준 적이 없었던 거예요.</em>",
     parent: "dad", parentName: "금쪽이 아빠 · 소화기 연구실",
     story: ["장 오가노이드를 만들려고 했어요.", "그런데 장은커녕…", "정체를 알 수 없는 덩어리가 됐어요.", "금쪽아, 넌 대체 뭐가 되고 싶니? 🥲"],
     scope: "wrong",
@@ -430,6 +432,7 @@ const CASES = [
   },
   {
     title: "가운데가 까맣게 죽어요",
+    quote: "속이 아픈 건 금쪽이 탓이 아니에요.<br><em>숨 쉴 길부터 열어 주세요.</em>",
     parent: "mom", parentName: "금쪽이 엄마 · 뇌 오가노이드 연구실",
     story: ["처음엔 정말 잘 자랐어요.", "그런데 커질수록", "가운데가 까맣게 변해요.", "겉은 멀쩡한데 속이 아파요. 😢"],
     scope: "necro",
@@ -458,6 +461,7 @@ const CASES = [
   },
   {
     title: "접시가 뿌옇게 흐려졌어요",
+    quote: "금쪽이를 혼낼 일이 아니에요.<br><em>집부터 깨끗이 치워 주세요.</em>",
     parent: "dad", parentName: "금쪽이 아빠 · 신입 연구원",
     story: ["아침에 인큐베이터를 열었는데…", "맑던 배양액이 뿌옇게 흐려졌어요.", "색깔도 노랗게 변했어요.", "금쪽이가 안 보여요! 😱"],
     scope: "contam",
@@ -486,6 +490,7 @@ const CASES = [
   },
   {
     title: "형제들끼리 크기랑 모양이 다 달라요",
+    quote: "형제끼리 비교하지 마세요.<br><em>같은 환경부터 주세요.</em>",
     parent: "mom", parentName: "금쪽이 엄마 · 신약 개발팀",
     story: ["같은 날, 같은 방법으로 키웠어요.", "그런데 형제들이 다 제각각이에요.", "크고, 작고, 찌그러지고…", "실험 결과를 믿을 수가 없어요. 🤯"],
     scope: "uneven",
@@ -514,6 +519,7 @@ const CASES = [
   },
   {
     title: "피부세포로 만들었는데 아무것도 안 돼요",
+    quote: "늦었다고 포기하지 마세요.<br><em>누구나 처음으로 돌아갈 수 있어요.</em>",
     parent: "dad", parentName: "금쪽이 아빠 · 맞춤 의학 연구실",
     story: ["환자분 피부세포를 조금 받았어요.", "이걸로 장 오가노이드를 만들려고요.", "그런데 몇 주째 피부세포 그대로예요.", "금쪽이가 태어나질 않아요. 😢"],
     scope: "skin",
@@ -804,7 +810,7 @@ function showStep() {
     render(`${hud()}
       ${scope(c.after)}
       <div class="caps"><span class="sub">(완전히 달라진 금쪽이 ✨)</span></div>
-      <div class="quote">“이건 금쪽이 잘못이 아니에요.<br><em>환경의 문제예요.</em>”</div>
+      <div class="quote">“${c.quote}”</div>
       <div class="concept"><h4>오늘의 육아 포인트</h4>${c.concept}</div>
       <div class="gain">이번 사연 획득 점수 <span>+${S.caseScore}점</span></div>
       <button class="btn mint" onclick="nextCase()">${S.idx < CASES.length - 1 ? "다음 사연 받기" : "금쪽이 성장 영상 보기"}</button>`);
