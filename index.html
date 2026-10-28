@@ -710,7 +710,6 @@ function hud() {
 /* ===== 로딩 (3초) ===== */
 function loadingScreen() {
   render(`<div class="loading screen-in" style="flex:1">
-    ${logo("small")}
     ${ele("meh", "wave")}
     <div class="ltip" id="ltip">${LOAD_TIPS[0]}</div>
     <div class="lbar"><i></i></div>
@@ -979,7 +978,7 @@ function endScreen() {
     ["출연", "금쪽이 3남매 · 연구원 엄마 아빠"],
     ["특별 출연", "마트리겔 · 바이오리액터 · 야마나카 인자"],
     ["오늘 배운 것", "3D 지지체 · 혈관화 · 역분화(iPSC)"],
-    ["다음 회 예고", "금쪽이, 드디어 혈관이 생기다?!"]
+    ["다음 회 예고", "우리 금쪽이가 ‘우리’ 금쪽이가 아니라고요!?"]
   ].map(([a, b]) => `<div><small>${a}</small><b>${b}</b></div>`).join("");
   render(`<div class="end screen-in" style="flex:1">
     ${logo("small")}
