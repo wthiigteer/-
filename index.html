@@ -90,53 +90,55 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.5);color:var(--coral)}100%{transform:scale(1)}}
 
 /* ===== 코끼리 캐릭터 (em 단위, font-size로 크기 조절) ===== */
-.ele{--face:#c4e2fb;--trunk:#c4e2fb;--earc:#a6d0f6;--earin:#f8bfd0;--line:var(--ink);position:relative;width:10em;height:8.6em;flex:none}
-/* 주변 방울 */
-.ele::before,.ele::after{content:"";position:absolute;border-radius:50%;animation:bubble 2.4s ease-in-out infinite}
-.ele::before{right:1.1em;top:.7em;width:.6em;height:.6em;background:#8ec4f2;opacity:.8}
-.ele::after{right:1.6em;top:1.6em;width:.38em;height:.38em;background:var(--earin);animation-delay:.6s}
-@keyframes bubble{50%{transform:translateY(-.35em)}}
-.ele .ear{position:absolute;top:1.7em;width:3.8em;height:4.2em;border-radius:50%;border:.25em solid var(--line);background:var(--earc);animation:earwiggle 3.2s ease-in-out infinite}
-.ele .ear.l{left:.15em;background:radial-gradient(ellipse 28% 38% at 42% 54%,var(--earin) 98%,transparent 100%),var(--earc);transform-origin:85% 50%}
-.ele .ear.r{right:.15em;background:radial-gradient(ellipse 28% 38% at 58% 54%,var(--earin) 98%,transparent 100%),var(--earc);transform-origin:15% 50%;animation-delay:.25s}
-@keyframes earwiggle{0%,80%,100%{rotate:0deg}88%{rotate:-6deg}94%{rotate:4deg}}
-.ele .head{position:absolute;left:1.9em;top:1.05em;width:6.2em;height:5.7em;border-radius:50% 50% 46% 46%/52% 52% 48% 48%;border:.25em solid var(--line);background:var(--face)}
-/* 머리 위 노란 구슬 */
-.ele .head::before{content:"";position:absolute;top:-1.05em;left:50%;width:1.15em;height:1.15em;margin-left:-.58em;border-radius:50%;border:.22em solid var(--line);background:radial-gradient(circle at 35% 32%,#fff 0 .14em,transparent .17em),#ffcf33;z-index:3}
-.ele .eye{position:absolute;top:2.0em;width:.7em;height:.85em;border-radius:50%;background:var(--line)}
-.ele .eye::after{content:"";position:absolute;top:.12em;right:.1em;width:.22em;height:.22em;border-radius:50%;background:#fff}
-.ele .eye.l{left:1.25em}.ele .eye.r{right:1.25em}
-.ele .brow{position:absolute;top:1.5em;width:.8em;height:.18em;border-radius:.1em;background:var(--line);opacity:0}
-.ele .brow.l{left:1.15em}.ele .brow.r{right:1.15em}
-.ele .cheek{position:absolute;top:3.0em;width:.95em;height:.8em;border-radius:50%;background:#f7a9c2}
-.ele .cheek.l{left:.4em}.ele .cheek.r{right:.4em}
-/* 코: 남색 굵은 선 위에 얼굴색 선을 겹쳐 외곽선 있는 튜브로 그려요 */
-.ele .trunk{position:absolute;left:2.07em;top:2.6em;width:2.6em;height:2.6em;overflow:hidden;z-index:2}
+.ele{--fc:#c4e2fb;--trunk:#c4e2fb;--earc:#b5daf9;--earin:#f8bfd0;--line:#3f7fc2;--eyec:var(--ink);
+  --face:radial-gradient(circle at 28% 72%,rgba(255,255,255,.55) 0 .34em,transparent .38em),radial-gradient(circle at 74% 64%,rgba(255,255,255,.45) 0 .24em,transparent .28em),radial-gradient(circle at 58% 84%,rgba(255,255,255,.4) 0 .3em,transparent .34em),radial-gradient(ellipse at 50% 30%,#e6f4ff 0,#c4e2fb 55%,#9ccbf3 100%);
+  position:relative;width:10em;height:8.6em;flex:none}
+/* 발 두 개 (몸 뒤에서 살짝 보여요) */
+.ele::before,.ele::after{content:"";position:absolute;bottom:.25em;width:1.7em;height:1.1em;border-radius:50% 50% 45% 45%;border:.2em solid var(--line);background:var(--fc)}
+.ele::before{left:2.7em}.ele::after{right:2.7em}
+.ele .ear{position:absolute;top:2.3em;width:3em;height:3.5em;border-radius:50% 50% 50% 50%/45% 45% 55% 55%;border:.2em solid var(--line);background:var(--earc);animation:earwiggle 3.2s ease-in-out infinite}
+.ele .ear.l{left:.25em;background:radial-gradient(ellipse 30% 34% at 48% 52%,var(--earin) 96%,transparent 100%),var(--earc);transform:rotate(-14deg);transform-origin:90% 40%}
+.ele .ear.r{right:.25em;background:radial-gradient(ellipse 30% 34% at 52% 52%,var(--earin) 96%,transparent 100%),var(--earc);transform:rotate(14deg);transform-origin:10% 40%;animation-delay:.25s}
+@keyframes earwiggle{0%,80%,100%{rotate:0deg}88%{rotate:-8deg}94%{rotate:5deg}}
+.ele .head{position:absolute;z-index:1;left:1.5em;top:1.35em;width:7em;height:6.7em;border-radius:50% 50% 44% 44%/60% 60% 40% 40%;border:.2em solid var(--line);background:var(--face);box-shadow:inset 0 -.5em .8em rgba(63,127,194,.18)}
+/* 젤리 광택 */
+.ele .head::before{content:"";position:absolute;top:.55em;left:1.05em;width:1.6em;height:.8em;border-radius:50%;background:rgba(255,255,255,.85);transform:rotate(-25deg)}
+.ele .head::after{content:"";position:absolute;top:1.45em;left:.85em;width:.35em;height:.35em;border-radius:50%;background:rgba(255,255,255,.8)}
+.ele .eye{position:absolute;top:2.6em;width:.64em;height:.76em;border-radius:50%;background:var(--eyec)}
+.ele .eye::after{content:"";position:absolute;top:.12em;right:.1em;width:.24em;height:.24em;border-radius:50%;background:#fff}
+.ele .eye.l{left:2em}.ele .eye.r{right:2em}
+.ele .brow{position:absolute;top:2.1em;width:.75em;height:.17em;border-radius:.1em;background:var(--eyec);opacity:0}
+.ele .brow.l{left:1.9em}.ele .brow.r{right:1.9em}
+.ele .cheek{position:absolute;top:3.5em;width:.95em;height:.7em;border-radius:50%;background:#f7a9c2;opacity:.9}
+.ele .cheek.l{left:1.05em}.ele .cheek.r{right:1.05em}
+/* 짧고 통통한 코 */
+.ele .trunk{position:absolute;left:2.5em;top:2.95em;width:2.6em;height:2.6em;overflow:hidden;z-index:2}
 .ele .trunk path{fill:none;stroke-linecap:round;stroke-linejoin:round}
-.ele .trunk .t1{stroke:var(--line);stroke-width:10}
+.ele .trunk .t1{stroke:var(--line);stroke-width:9.5}
 .ele .trunk .t2{stroke:var(--trunk);stroke-width:5.6}
-.ele .tear{position:absolute;left:1.3em;top:2.8em;width:.45em;height:.62em;border-radius:50% 50% 50% 50%/40% 40% 60% 60%;background:#5fb8f0;opacity:0;z-index:3}
+.ele .tear{position:absolute;left:1.95em;top:3.35em;width:.42em;height:.58em;border-radius:50% 50% 50% 50%/40% 40% 60% 60%;background:#5fb8f0;opacity:0;z-index:3}
 .ele .acc{position:absolute;pointer-events:none}
 /* 표정 */
-.ele.sad{--face:#d3e4f0;--trunk:#d3e4f0;--earc:#b8cfe0}
+.ele.sad{--fc:#d5e3ee;--trunk:#d5e3ee;--earc:#c7d8e6;--line:#7896b3;
+  --face:radial-gradient(circle at 28% 72%,rgba(255,255,255,.4) 0 .34em,transparent .38em),radial-gradient(ellipse at 50% 30%,#eef3f7 0,#d5e3ee 55%,#b3c8d9 100%)}
 .ele.sad .brow{opacity:1}
 .ele.sad .brow.l{transform:rotate(-22deg)}.ele.sad .brow.r{transform:rotate(22deg)}
-.ele.sad .eye{height:.7em;top:2.1em}
+.ele.sad .eye{height:.62em;top:2.7em}
 .ele.sad .tear{opacity:1;animation:drop 1.6s ease-in infinite}
 @keyframes drop{0%{transform:translateY(0);opacity:0}15%{opacity:1}100%{transform:translateY(1.5em);opacity:0}}
-.ele.happy .eye{background:transparent;width:.85em;height:.48em;top:2.15em;border:.22em solid var(--line);border-bottom:none;border-radius:.8em .8em 0 0}
+.ele.happy .eye{background:transparent;width:.78em;height:.44em;top:2.7em;border:.2em solid var(--eyec);border-bottom:none;border-radius:.8em .8em 0 0}
 .ele.happy .eye::after{display:none}
 .ele.happy .cheek{transform:scale(1.15)}
 /* 소품 */
-.ele.mom .acc{top:-.55em;left:4em;width:2em;height:1.3em;z-index:3;transform:rotate(18deg)}
-.ele.mom .acc::before,.ele.mom .acc::after{content:"";position:absolute;top:0;width:1em;height:1.2em;background:var(--coral);border:.18em solid var(--line);border-radius:50% 10% 50% 10%}
+.ele.mom .acc{top:-.35em;left:4.4em;width:2em;height:1.3em;z-index:3;transform:rotate(18deg)}
+.ele.mom .acc::before,.ele.mom .acc::after{content:"";position:absolute;top:0;width:1em;height:1.2em;background:var(--coral);border:.18em solid var(--ink);border-radius:50% 10% 50% 10%}
 .ele.mom .acc::before{left:0}.ele.mom .acc::after{right:0;transform:scaleX(-1)}
-.ele.dad .acc{top:1.72em;left:.9em;width:3.9em;height:1.4em;z-index:3}
-.ele.dad .acc::before,.ele.dad .acc::after{content:"";position:absolute;top:0;width:1.4em;height:1.4em;border:.18em solid var(--line);border-radius:50%;background:rgba(255,255,255,.3)}
+.ele.dad .acc{top:2.31em;left:1.66em;width:3.24em;height:1.3em;z-index:3}
+.ele.dad .acc::before,.ele.dad .acc::after{content:"";position:absolute;top:0;width:1.3em;height:1.3em;border:.17em solid var(--ink);border-radius:50%;background:rgba(255,255,255,.3)}
 .ele.dad .acc::before{left:0}.ele.dad .acc::after{right:0}
-/* 움직임 */
-.ele.bouncy{animation:bob 1.5s ease-in-out infinite}
-@keyframes bob{0%,100%{transform:translateY(0) scale(1,1)}45%{transform:translateY(-.55em) scale(.98,1.03)}90%{transform:translateY(0) scale(1.04,.96)}}
+/* 움직임: 말랑말랑 젤리 */
+.ele.bouncy{animation:jelly 1.6s ease-in-out infinite;transform-origin:50% 100%}
+@keyframes jelly{0%,100%{transform:scale(1,1)}25%{transform:scale(1.06,.93)}50%{transform:translateY(-.5em) scale(.95,1.06)}75%{transform:scale(1.03,.97)}}
 .ele.wave .ear.r{animation:flap .5s ease-in-out infinite alternate}
 @keyframes flap{to{rotate:24deg}}
 
@@ -185,14 +187,14 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 @keyframes spread{from{transform:scale(1.25,.38)}to{transform:scale(1.7,.3)}}
 .flatcell{position:absolute;width:15%;height:5%;border-radius:50%;background:var(--ele);border:2px solid var(--ele-line);opacity:.6}
 /* 2 정체성 혼란 */
-.ele.wrong{--trunk:#d6c6ff;--face:conic-gradient(from 30deg,#b8f2a1,#c9a7ff,#ffd59e,#9ad7ff,#b8f2a1);--earc:#c9a7ff;--earin:#b8f2a1}
+.ele.wrong{--trunk:#d6c6ff;--fc:#d6c6ff;--face:conic-gradient(from 30deg,#b8f2a1,#c9a7ff,#ffd59e,#9ad7ff,#b8f2a1);--earc:#c9a7ff;--earin:#b8f2a1}
 .ele.wrong{animation:wobble 2.2s ease-in-out infinite}
 @keyframes wobble{25%{transform:rotate(-6deg) scale(1.03,.97)}75%{transform:rotate(6deg) scale(.97,1.03)}}
 .float{position:absolute;font-family:var(--font-display);font-size:clamp(15px,4.6vw,20px);background:var(--paper);border:2px solid var(--ink);border-radius:12px;padding:1px 7px;animation:fl 1.8s ease-in-out infinite}
 .float.f1{left:9%;top:15%}.float.f2{right:8%;top:20%;animation-delay:.4s}.float.f3{left:10%;bottom:16%;animation-delay:.8s}.float.f4{right:10%;bottom:14%;animation-delay:1.2s}
 @keyframes fl{50%{transform:translateY(-7px) rotate(4deg)}}
 /* 3 괴사 */
-.ele.necro .head{background:radial-gradient(circle at 50% 58%,#111 0 1em,#3b2c33 1.6em,#7b7f9a 2.2em,var(--face) 3em)}
+.ele.necro .head{background:radial-gradient(circle at 50% 56%,#111 0 1em,#3b2c33 1.6em,#7b7f9a 2.2em,var(--fc) 3em)}
 .ray{position:absolute;inset:0;transform:rotate(var(--a));pointer-events:none}
 .ray i{position:absolute;top:calc(50% - 5px);left:95%;width:10px;height:10px;border-radius:50%;background:var(--blue);box-shadow:0 0 6px var(--blue);animation:diffuse 2.4s linear infinite;animation-delay:var(--d)}
 @keyframes diffuse{0%{left:95%;opacity:1}65%{opacity:.9}100%{left:70%;opacity:0}}
@@ -557,7 +559,7 @@ const LOAD_TIPS = ["줄기세포 깨우는 중…", "3D 지지체 말랑하게 �
 
 /* ===== 코끼리 캐릭터 ===== */
 function ele(mood = "meh", cls = "", style = "") {
-  return `<div class="ele ${mood} ${cls}" style="${style}" aria-hidden="true"><i class="ear l"></i><i class="ear r"></i><div class="head"><i class="brow l"></i><i class="brow r"></i><i class="eye l"></i><i class="eye r"></i><i class="cheek l"></i><i class="cheek r"></i><svg class="trunk" viewBox="0 0 30 30"><path class="t1" d="M9 -4 C9 10 8.5 18 13 22 C17 25.5 23.5 23 23.5 18.5 C23.5 15.5 20.5 14.5 18.8 16.6"/><path class="t2" d="M9 -4 C9 10 8.5 18 13 22 C17 25.5 23.5 23 23.5 18.5 C23.5 15.5 20.5 14.5 18.8 16.6"/></svg><i class="tear"></i><i class="acc"></i></div></div>`;
+  return `<div class="ele ${mood} ${cls}" style="${style}" aria-hidden="true"><i class="ear l"></i><i class="ear r"></i><div class="head"><i class="brow l"></i><i class="brow r"></i><i class="eye l"></i><i class="eye r"></i><i class="cheek l"></i><i class="cheek r"></i><svg class="trunk" viewBox="0 0 30 30"><path class="t1" d="M9 -4 C9 7 9 13 12.5 15.5 C14 16.6 16 16.4 17 15.2"/><path class="t2" d="M9 -4 C9 7 9 13 12.5 15.5 C14 16.6 16 16.4 17 15.2"/></svg><i class="tear"></i><i class="acc"></i></div></div>`;
 }
 
 const SCENES = [
