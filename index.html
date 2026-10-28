@@ -155,9 +155,18 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 /* ===== 시작 ===== */
 .start{justify-content:center;text-align:center;gap:16px}
 .start .ele{font-size:16px;margin:0 auto}
+.talk{display:flex;flex-direction:column;align-items:center;gap:10px}
+.say{position:relative;font-family:"Black Han Sans",var(--font-display);font-size:clamp(1.15rem,5.4vw,1.4rem);line-height:1.4;background:var(--yellow);color:var(--ink);border:3px solid var(--ink);border-radius:20px;padding:12px 18px;box-shadow:4px 4px 0 var(--ink);
+  animation:sayIn .6s cubic-bezier(.3,1.6,.5,1) both,sayPulse 1.6s ease-in-out .8s infinite}
+.say::after{content:"";position:absolute;left:50%;bottom:-17px;margin-left:-10px;border:10px solid transparent;border-top:14px solid var(--ink)}
+.say::before{content:"";position:absolute;left:50%;bottom:-11px;margin-left:-7px;border:7px solid transparent;border-top:10px solid var(--yellow);z-index:1}
+.say b{font-weight:400;color:#e0463c;font-size:1.25em}
+@keyframes sayIn{from{opacity:0;transform:scale(.3) rotate(-8deg)}}
+@keyframes sayPulse{0%,100%{transform:scale(1) rotate(-1.5deg);box-shadow:4px 4px 0 var(--ink),0 0 0 0 rgba(255,189,18,.7)}50%{transform:scale(1.06) rotate(1.5deg);box-shadow:4px 4px 0 var(--ink),0 0 0 12px rgba(255,189,18,0)}}
 .desc{font-size:1rem;line-height:1.65;text-align:left}
 .desc small{display:block;margin-top:6px;color:#5d7088;font-size:.86rem}
-.name-input{width:100%;padding:14px;font:inherit;font-size:1.05rem;font-weight:700;text-align:center;color:var(--ink);border:3px solid var(--ink);border-radius:14px;outline:none;background:var(--paper)}
+.name-input{display:block;width:100%;padding:12px 14px;font:inherit;font-size:1.05rem;font-weight:700;line-height:1.45;text-align:center;color:var(--ink);border:3px solid var(--ink);border-radius:14px;outline:none;background:var(--paper);resize:none}
+.name-input::placeholder{color:#c0392b;font-size:.9rem;font-weight:600}
 .meta{font-size:.86rem;color:#4d6178}
 
 /* ===== 사연 접수 ===== */
@@ -575,7 +584,7 @@ function render(html, wide) {
 function logo(cls = "") {
   const rot = [-5, 3, -2, 4, -4, 2, -3, 5];
   const chars = (t, o) => [...t].map((c, i) => c === " " ? `<span style="width:.3em"></span>` : `<span style="transform:rotate(${rot[(i + o) % rot.length]}deg)">${c}</span>`).join("");
-  return `<div class="logo ${cls}"><div class="l1">${chars("금쪽같은 내", 0)}</div><div class="l2">${chars("세포", 3)}</div></div>`;
+  return `<div class="logo ${cls}"><div class="l1">${chars("금쪽같은", 0)}</div><div class="l2">${chars("내 세포", 3)}</div></div>`;
 }
 
 /* ===== 회차(room) / 기기 id ===== */
@@ -732,12 +741,12 @@ function startScreen() {
     <div class="start screen-in" style="flex:1">
       ${logo()}
       <div><span class="sub cyan">세포 육아 상담 쇼</span></div>
-      <div id="mascot">${ele("sad", "bouncy")}</div>
+      <div class="talk"><div class="say" role="note">상담 점수가 <b>100점</b> 넘으면<br>간식을 제공해 줘요! 😋</div><div id="mascot">${ele("sad", "bouncy")}</div></div>
       <div class="card desc">
         문제 행동을 보이는 <b>오가노이드</b>(줄기세포로 만든 미니 장기) 금쪽이를 관찰하고,
         원인을 진단해 솔루션을 처방해 주세요!
       </div>
-      <input class="name-input" id="nameInput" maxlength="10" autocomplete="off" placeholder="랭킹에 표시할 닉네임" value="${esc(S.name)}">
+      <textarea class="name-input" id="nameInput" rows="2" maxlength="12" autocomplete="off" aria-label="닉네임 (학번과 이름)" placeholder="자신의 학번과 이름으로 닉네임을 작성해주세요. 작성하지 않을 시, 간식이 제공되지 않습니다.">${esc(S.name)}</textarea>
       <button class="btn" id="startBtn">상담 시작</button>
       <button class="btn ghost" id="rankBtn">🏆 지금 랭킹 보기</button>
       <div class="meta">사연 3개 · 약 3~4분 · 첫 시도 정답 +20점, 두 번째 +10점</div>
@@ -748,13 +757,13 @@ function startScreen() {
     m.classList.remove(moods[f]); f = (f + 1) % 3; m.classList.add(moods[f]);
   }, 1100));
   const input = document.getElementById("nameInput");
-  input.addEventListener("keydown", e => { if (e.key === "Enter") begin(); });
+  input.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); begin(); } });
   document.getElementById("startBtn").onclick = begin;
   document.getElementById("rankBtn").onclick = () => rankingScreen("start");
 }
 
 function begin() {
-  S.name = (document.getElementById("nameInput").value.trim() || "익명").slice(0, 10);
+  S.name = (document.getElementById("nameInput").value.replace(/\s+/g, " ").trim() || "익명").slice(0, 12);
   store("gj-name", S.name);
   Object.assign(S, { idx: 0, step: 0, score: 0, caseScore: 0, first: 0, face: "😢", submitted: false, myId: null });
   showStep();
@@ -884,11 +893,9 @@ function resultScreen() {
       <div class="stats">첫 시도 정답 ${S.first} / ${CASES.length * 2}문제</div>
     </div>
     <div class="rank-status" id="rstat">랭킹에 등록하는 중…</div>
-    <div class="btn-row"><button class="btn yellow" id="toRank">🏆 랭킹판 보기</button><button class="btn cyan" id="share">결과 공유</button></div>
-    <div class="rnote" id="shareMsg"></div>`);
+    <button class="btn yellow" id="toRank">🏆 랭킹판 보기</button>`);
   sparkle();
   document.getElementById("toRank").onclick = () => rankingScreen("result");
-  document.getElementById("share").onclick = shareResult;
 
   const paint = () => {
     const el = document.getElementById("rstat"); if (!el || !S.myId) return;
@@ -911,20 +918,6 @@ function resultScreen() {
         const rb = document.getElementById("retry"); if (rb) rb.onclick = resultScreen;
       });
   } else paint();
-}
-
-async function shareResult() {
-  const g = gradeOf(S.score);
-  const text = `[금쪽같은 내 세포] ${S.name}님은 ${S.score}점, '${g.name}' ${g.emoji} 등급을 받았어요! 나도 도전하기 👉 ${joinUrl()}`;
-  const msg = document.getElementById("shareMsg");
-  try {
-    if (navigator.share) { await navigator.share({ title: "금쪽같은 내 세포", text }); return; }
-    await navigator.clipboard.writeText(text);
-    msg.textContent = "결과 문구를 복사했어요. 메신저에 붙여 넣어 보세요!";
-  } catch (e) {
-    if (e && e.name === "AbortError") return;
-    msg.textContent = text;
-  }
 }
 
 /* ===== 랭킹판 ===== */
