@@ -498,37 +498,12 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 .dome{width:120px;max-width:100%;height:96px;border-radius:50% 50% 0 0/100% 100% 0 0;background:rgba(191,224,247,.55);border:2px dashed var(--blue);border-bottom:none;display:flex;align-items:center;justify-content:center}
 .dome .ele{font-size:6.5px}
 
-/* 3단계: 인큐베이터 */
-.incu{background:linear-gradient(#f6f9fc,#dbe7f1);border:3px solid var(--ink);border-radius:20px;box-shadow:5px 5px 0 var(--ink);padding:12px}
-.incu-win{position:relative;height:160px;border-radius:14px;border:3px solid #7d93a8;background:radial-gradient(#ffffff,#e4f1fb);display:grid;place-items:center;transition:background .4s;margin-bottom:6px}
-.incu-win.cold{background:radial-gradient(#ffffff,#a9d2ff)}
-.incu-win.hot{background:radial-gradient(#ffffff,#ffb69c)}
-.incu-win.ok{background:radial-gradient(#ffffff,#bdeedd)}
-.incu-win .ele{font-size:11px}
-.ctl{padding:6px 0}
-.ctl label{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:700}
-.ctl output{font-family:ui-monospace,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;background:var(--ink);color:#8ff0c8;padding:2px 10px;border-radius:6px;min-width:76px;text-align:center}
-input[type=range]{width:100%;height:34px;accent-color:var(--blue)}
-
-/* 4단계 */
+/* 3단계 */
 .bowl{min-height:60px;background:var(--paper);border:3px dashed var(--ink);border-radius:0 0 70px 70px;text-align:center;padding:10px;font-weight:700;line-height:1.8}
 .chip{display:inline-block;font-family:var(--font-display);font-weight:400;background:var(--cyan);color:#fff;border:2px solid var(--ink);border-radius:999px;padding:0 10px;margin:2px;animation:enter .25s}
 .blob-lbl{font-family:var(--font-display);font-size:1.2rem;color:#7b5ab8}
 
-/* 5단계 */
-.well{position:relative;width:190px;height:190px;max-width:100%;margin:0 auto;border-radius:50%;border:7px solid #b9c6d0;display:grid;place-items:center;overflow:hidden;background:radial-gradient(circle,#ff8090,#d6334a);transition:background .6s;box-shadow:inset 0 0 22px rgba(0,0,0,.18)}
-.well.orange{background:radial-gradient(circle,#ffb26e,#e8742c)}
-.well.yellow{background:radial-gradient(circle,#ffe680,#f2c230)}
-.well.cloudy{background:radial-gradient(circle,#e8a3ab,#b9858c)}
-.well.cloudy::after{content:"";position:absolute;inset:0;z-index:4;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.78),rgba(225,225,225,.6))}
-.well .ele{font-size:8px}
-.germ{position:absolute;z-index:5;font-size:1.4rem;animation:wiggle .8s ease-in-out infinite}
-.mrow{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
-.chipbox{font-family:var(--font-display);background:var(--paper);border:3px solid var(--ink);border-radius:10px;padding:2px 12px;font-variant-numeric:tabular-nums}
-.mlog{max-height:120px;overflow:auto;font-size:.9rem;font-weight:700;line-height:1.6;background:var(--paper);border:2px dashed var(--ink);border-radius:12px;padding:8px 12px}
-.mlog:empty{display:none}
-
-/* 6단계 */
+/* 4단계 */
 .sibs{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px}
 .sibs .sib{animation:enter .5s backwards}
 .sibs .ele{font-size:5.2px}
@@ -580,22 +555,20 @@ const FIREBASE_CONFIG = {
 const FIREBASE_VERSION = "10.12.2";
 
 /* ===== 게임 데이터 ===== */
-const MAX = { 1: 20, 2: 20, 3: 20, 4: 20, 5: 60, 6: 20, 8: 80 };
-const MAX_SCORE = 240;
+const MAX = { 1: 20, 2: 20, 3: 20, 4: 20, 6: 80 };
+const MAX_SCORE = 160;
 const STAGES = {
   1: { name: "재료 고르기", tag: "사연 “피부세포로 만들었는데 아무것도 안 돼요”" },
   2: { name: "집 짓기", tag: "사연 “납작하게 퍼지기만 해요”" },
-  3: { name: "방 온도 맞추기", tag: "춥다고 울고 덥다고 우는 금쪽이" },
-  4: { name: "이유식 만들기", tag: "편식 대장 금쪽이의 이유식 대작전" },
-  5: { name: "돌보기", tag: "하루도 눈을 뗄 수 없는 금쪽이" },
-  6: { name: "독립시키기", tag: "사연 “가운데가 까맣게 죽어요”" },
-  7: { name: "다 큰 금쪽이", tag: "키워서 어디에 쓰냐고요?" },
-  8: { name: "총정리 퀴즈", tag: "금쪽이 졸업 시험" }
+  3: { name: "이유식 만들기", tag: "편식 대장 금쪽이의 이유식 대작전" },
+  4: { name: "독립시키기", tag: "사연 “가운데가 까맣게 죽어요”" },
+  5: { name: "다 큰 금쪽이", tag: "키워서 어디에 쓰냐고요?" },
+  6: { name: "총정리 퀴즈", tag: "금쪽이 졸업 시험" }
 };
 const GRADES = [
-  { min: 204, name: "세포 육아 마스터", emoji: "👑", msg: "완벽한 육아! 금쪽이가 당신을 자랑스러워해요." },
-  { min: 156, name: "육아 고수", emoji: "🥇", msg: "금쪽이가 아주 건강하게 자랐어요. 거의 전문가 수준이에요!" },
-  { min: 96, name: "육아 새내기", emoji: "🌱", msg: "기본은 잡았어요! 헷갈린 부분만 다시 보면 금방 고수가 돼요." },
+  { min: 136, name: "세포 육아 마스터", emoji: "👑", msg: "완벽한 육아! 금쪽이가 당신을 자랑스러워해요." },
+  { min: 104, name: "육아 고수", emoji: "🥇", msg: "금쪽이가 아주 건강하게 자랐어요. 거의 전문가 수준이에요!" },
+  { min: 64, name: "육아 새내기", emoji: "🌱", msg: "기본은 잡았어요! 헷갈린 부분만 다시 보면 금방 고수가 돼요." },
   { min: 0, name: "초보 부모", emoji: "🍼", msg: "괜찮아요, 모든 부모는 처음이에요. 다시 하면 금쪽이가 더 잘 클 거예요!" }
 ];
 const gradeOf = s => GRADES.find(g => s >= g.min);
@@ -641,7 +614,7 @@ function setMood(root, mood) {
 
 /* ===== 화면 조각 ===== */
 function hud() {
-  const dots = [1, 2, 3, 4, 5, 6, 7, 8].map(i => `<i class="${i < S.stage ? "done" : i === S.stage ? "now" : ""}">${i}</i>`).join("");
+  const dots = [1, 2, 3, 4, 5, 6].map(i => `<i class="${i < S.stage ? "done" : i === S.stage ? "now" : ""}">${i}</i>`).join("");
   return `<div class="hud"><span class="tag">${S.stage}단계</span><div class="dots">${dots}</div><span class="score" id="score">⭐ ${S.score}점</span></div>`;
 }
 function epbar(day) { return `<div class="epbar"><b>금쪽이 육아 ${day}</b><span>${STAGES[S.stage].tag}</span></div>`; }
@@ -714,7 +687,7 @@ function dayFlip(to, cb) {
     if (cur < to) { cur++; $("#fd").textContent = cur; return; }
     clearInterval(id);
     setTimeout(() => { f.remove(); S.lastDay = to; cb(); }, 500);
-  }, 240);
+  }, Math.max(80, Math.min(240, 1800 / Math.max(1, to - cur))));
 }
 
 /* ===== 4지선다: 첫 시도 +20, 두 번째 +10, 두 번 틀리면 정답 공개 ===== */
@@ -888,7 +861,7 @@ function startScreen() {
       <div class="name-err" id="nameErr" role="alert"></div>
       <button class="btn" id="startBtn">🍼 육아 시작</button>
       <button class="btn ghost" id="rankBtn">🏆 지금 랭킹 보기</button>
-      <div class="meta">8단계 · 약 8~10분 · 첫 시도 정답 +20점, 두 번째 +10점 · 미니게임 0~20점</div>
+      <div class="meta">6단계 · 약 5분 · 첫 시도 정답 +20점, 두 번째 +10점 · 미니게임 0~20점</div>
     </div>`);
   const moods = ["sad", "meh", "happy"]; let f = 0;
   every(() => { const m = $("#mascot .ele"); if (!m) return; m.classList.remove(moods[f]); f = (f + 1) % 3; m.classList.add(moods[f]); }, 1100);
@@ -1093,76 +1066,9 @@ function s2Compare() {
   });
 }
 
-/* ===== 3단계: 인큐베이터 ===== */
+/* ===== 3단계: 이유식(성장인자) ===== */
 function stage3() {
-  S.stage = 3;
-  let first = true;
-  render(`${head("1일차 · 밤")}
-    <div class="tvsub">금쪽이 방, <em>몇 도</em>가 좋을까요?</div>
-    ${sit("금쪽이 방은 <b>인큐베이터</b>(세포를 키우는 따뜻한 상자)예요. 금쪽이가 편히 자라도록 <b>온도·이산화탄소·습도</b>를 사람 몸속처럼 맞춰 주세요.")}
-    ${howto("인큐베이터 맞추기", [
-      "슬라이더 3개를 움직여 <b>온도·이산화탄소·습도</b>를 맞춰요.",
-      "움직이는 동안 금쪽이 <b>표정</b>이 바로 바뀌어요. 힌트로 써 보세요!",
-      "다 맞췄다 싶으면 <b>[설정 완료!]</b>를 눌러요.",
-      "틀린 항목은 이유를 알려 줘요. 모두 맞춰야 다음 단계로 가요."
-    ], "점수: 처음 [설정 완료!]를 눌렀을 때 맞힌 항목 수로 매겨요 (3개 20점 · 2개 13점 · 1개 7점).")}
-    <div class="play" id="play" hidden>
-    <div class="incu">
-      <div class="incu-win" id="iwin">${org("meh")}</div>
-      <div class="ctl"><label for="rT">🌡️ 온도 <output id="vT"></output></label><input type="range" id="rT" min="25" max="45" step="0.5" value="25"></div>
-      <div class="ctl"><label for="rC">🫧 이산화탄소(CO₂) <output id="vC"></output></label><input type="range" id="rC" min="0" max="10" step="0.5" value="0"></div>
-      <div class="ctl"><label for="rH">💧 습도 <output id="vH"></output></label><input type="range" id="rH" min="30" max="100" step="1" value="40"></div>
-    </div>
-    <button class="btn" id="ok">✅ 설정 완료!</button>
-    <div id="fb"></div>
-    </div>`);
-  onHowGo();
-  const rT = $("#rT"), rC = $("#rC"), rH = $("#rH"), win = $("#iwin"), fb = $("#fb");
-  const vals = () => [+rT.value, +rC.value, +rH.value];
-  function issues(t, c, h) {
-    const r = [];
-    if (t < 37) r.push(["cold", "🌡️ <b>온도가 낮아요</b> → 성장이 느려져요. 금쪽이가 추워서 잘 안 자라요."]);
-    else if (t > 37) r.push(["hot", "🌡️ <b>온도가 높아요</b> → 세포가 손상돼요. 사람도 고열이 오래가면 위험하죠."]);
-    if (c !== 5) r.push(["ph", "🫧 <b>CO₂가 5%가 아니에요</b> → 배양액의 pH(산성·염기성 정도)가 이상해져요."]);
-    if (h < 90) r.push(["dry", "💧 <b>습도가 낮아요</b> → 배양액이 증발해요. 금쪽이 집이 말라 버려요."]);
-    return r;
-  }
-  function live() {
-    const [t, c, h] = vals();
-    $("#vT").textContent = t.toFixed(1) + "℃"; $("#vC").textContent = c.toFixed(1) + "%"; $("#vH").textContent = h + "%";
-    const is = issues(t, c, h), k = is.map(x => x[0]);
-    win.className = "incu-win " + (k.includes("cold") ? "cold" : k.includes("hot") ? "hot" : is.length ? "" : "ok");
-    setMood(win, k.includes("cold") ? "sad cold" : k.includes("hot") ? "sad hot" : is.length ? "meh" : "happy");
-  }
-  [rT, rC, rH].forEach(r => r.oninput = live); live();
-  $("#ok").onclick = () => {
-    const is = issues(...vals());
-    let hdr = "";
-    if (first) {
-      first = false;
-      const pts = Math.round((3 - is.length) / 3 * 20); addScore(pts, is.length === 0);
-      hdr = `<div class="gain">첫 설정 정확도 <span>${3 - is.length} / 3</span> → +${pts}점</div>`;
-    }
-    if (is.length) {
-      crisis("방 환경이 안 맞아요!");
-      fb.innerHTML = hdr + fbBox("bad", "❌ 금쪽이가 힘들어해요", "<ul>" + is.map(x => `<li>${x[1]}</li>`).join("") + "</ul>")
-        + `<div style="height:12px"></div>` + expert("이건 금쪽이 잘못이 아니에요. 환경의 문제예요. 다시 맞춰 볼까요?");
-    } else {
-      sparkle("딱 좋아요!"); $("#ok").disabled = true; [rT, rC, rH].forEach(r => r.disabled = true);
-      fb.innerHTML = hdr + fbBox("good", "⭕ 완벽해요!", "37℃ · CO₂ 5% · 높은 습도. 금쪽이가 새근새근 자라요.");
-      addNext(fb, () => result({
-        day: "1일차 · 밤", title: "새근새근 <em>꿀잠</em> 자는 금쪽이", mood: "happy", cls: "bouncy",
-        text: "따뜻하고 촉촉한 방에서 금쪽이가 쑥쑥 자라기 시작했어요.",
-        coach: "사람 몸속과 비슷하게 맞추는 게 핵심이에요. <b>CO₂ 5%</b>는 배양액의 pH를 일정하게 지켜 주고, <b>높은 습도</b>는 배양액이 마르지 않게 해 줘요.",
-        next: stage4
-      }));
-    }
-  };
-}
-
-/* ===== 4단계: 이유식(성장인자) ===== */
-function stage4() {
-  S.stage = 4; S.lastDay = 2;
+  S.stage = 3; S.lastDay = 2;
   const ING = [
     { id: "rsp", e: "🧪", n: "R-스폰딘", d: "Wnt 신호 켜기" },
     { id: "egf", e: "🧪", n: "EGF", d: "세포 증식 돕기" },
@@ -1214,7 +1120,7 @@ function stage4() {
       done = true; const pts = tries === 0 ? 20 : 10; addScore(pts, tries === 0); sparkle("냠냠!"); S.level = 2;
       pv.innerHTML = org("happy", "bouncy"); $("#cook").disabled = true;
       fb.innerHTML = fbBox("good", `⭕ 완벽한 이유식! +${pts}점`, "R-스폰딘 + EGF + 노긴. 금쪽이가 냠냠 먹고 울퉁불퉁 자라기 시작해요!");
-      addNext(fb, s4Result);
+      addNext(fb, s3Result);
       return;
     }
     tries++; crisis("엉뚱한 세포 덩어리가 됐어요!");
@@ -1226,153 +1132,23 @@ function stage4() {
       $$(".rpicks .pick").forEach(b => { const ok = ["rsp", "egf", "nog"].includes(b.dataset.id); b.classList.remove("sel"); b.classList.toggle("right", ok); b.disabled = true; });
       fb.innerHTML += `<div style="height:10px"></div>` + fbBox("", "💡 정답 공개", "<b>R-스폰딘(Wnt 켜기) + EGF(증식) + 노긴(BMP 막기)</b>예요. 정답 레시피로 다시 키웠어요.");
       later(() => { pv.innerHTML = org("meh"); }, 1300);
-      addNext(fb, s4Result);
+      addNext(fb, s3Result);
     }
   };
 }
-function s4Result() {
+function s3Result() {
   S.level = 2;
   result({
     day: "2일차", title: "울퉁불퉁 <em>장 모양</em>으로 크는 중!", cls: "bouncy",
     text: "금쪽이 표면에 <b>돌기</b>가 생기기 시작했어요. 장 모양으로 자라는 중이에요!",
     coach: "R-스폰딘은 Wnt를 켜고, EGF는 증식을 돕고, 노긴은 BMP를 막아요. 장 오가노이드 이유식 3종 세트예요.",
-    next: stage5
+    next: stage4
   });
 }
 
-/* ===== 5단계: 돌보기 ===== */
-function stage5() {
-  S.stage = 5; S.day = 3;
-  const evs = shuffle([evColor, evMedium, evBench]);
-  let i = 0;
-  const go = () => {
-    if (i >= evs.length) return dayFlip(S.day, s5Result);
-    const f = evs[i++];
-    dayFlip(S.day, () => f(go));
-  };
-  render(`${head("2일차 · 밤")}
-    ${stageBox(org("happy", "bouncy"), "하루도 <em>눈을 뗄 수 없어요</em>")}
-    ${sit("이제 매일 금쪽이를 돌봐야 해요. 며칠이 빠르게 흘러갑니다! 그동안 <b>돌발 상황 3개</b>가 찾아와요. 침착하게 대처해 주세요.")}
-    ${expert("육아는 하루 이틀로 끝나지 않아요. 꾸준히 지켜봐 주세요.")}
-    <div id="nxw"></div>`);
-  addNext($("#nxw"), go, "⏩ 시간 빨리 감기");
-}
-function evColor(cb) {
-  const k = ["red", "yellow", "cloudy"][Math.floor(Math.random() * 3)];
-  const meaning = {
-    red: "빨간색은 pH(산성·염기성 정도)가 정상이라는 뜻이에요.",
-    yellow: "노란색은 금쪽이가 내놓은 노폐물 때문에 배양액이 산성이 됐다는 뜻이에요.",
-    cloudy: "뿌옇게 흐린 건 세균 같은 미생물이 자란 오염 신호예요."
-  };
-  const tail = { red: " 오늘은 그대로 두면 돼요.", yellow: " 새 배양액으로 갈아 주면 다시 빨개져요.", cloudy: " 오염은 퍼지니까 버리고 주변을 소독해요." };
-  const base = [
-    { t: "정상이에요. 그대로 키우기", k: "red", no: "그대로 두는 건 빨간색일 때만 맞아요." },
-    { t: "산성이에요. 배양액 교체하기", k: "yellow", no: "교체도 돌봄은 맞지만, 노랗게 변했을 때 하는 처치예요." },
-    { t: "오염이에요. 버리고 소독하기", k: "cloudy", no: "소독은 좋은 습관이지만, 버리는 건 흐릴 때만이에요." },
-    { t: "주스 같아요. 한 모금 맛보기", k: "x", no: "배양액은 음료가 아니에요! 실험실에선 무엇이든 맛보면 절대 안 돼요." }
-  ];
-  const opts = base.map(o => ({ t: o.t, ok: o.k === k, why: o.k === k ? meaning[k] + tail[k] : o.no + " " + meaning[k] }));
-  render(`${head(S.day + "일차 · 아침")}
-    <div class="tvsub alert">배양액 <em>색</em>이 수상해요</div>
-    ${sit("아침 점검 시간! 배양액 색을 보세요.<small>배양액에는 pH에 따라 색이 변하는 지시약(페놀레드)이 들어 있어요. 빨강 = 정상, 노랑 = 산성, 뿌옇게 흐림 = 오염</small>")}
-    <div class="well ${k}" id="w">${org(k === "red" ? "happy" : "sad", "", 8)}</div>
-    <div id="qz"></div>`);
-  quiz($("#qz"), "이 배양액, 어떻게 할까요?", opts, (pts, fb) => {
-    $("#w").className = "well"; setMood($("#w"), "happy");
-    S.day += 2;
-    fb.insertAdjacentHTML("beforeend", `<div style="height:12px"></div>` + expert("색은 금쪽이가 보내는 신호예요. 매일 눈으로 확인해 주세요."));
-    addNext(fb, cb);
-  });
-}
-function evMedium(cb) {
-  const base = S.day;
-  render(`${head(base + "일차")}
-    <div class="tvsub">배양액을 <em>갈 시간</em>이에요!</div>
-    ${sit("금쪽이는 <b>배양액</b>(세포의 먹이가 든 물약) 속 영양분을 먹고 노폐물을 내놔요. 오래 두면 배양액이 <b>산성</b>이 돼서 노랗게 변해요. 9일을 빨리 감는 동안 <b>알맞은 때</b>에 교체 버튼을 누르세요!")}
-    ${howto("배양액 교체 타이밍", [
-      "시작하면 <b>9일</b>이 빠르게 흘러요. (하루에 약 1초)",
-      "배양액 <b>색</b>과 <b>교체 후 며칠</b>이 지났는지 보면서 <b>[🔄 배양액 교체]</b>를 눌러요.",
-      "너무 늦으면 배양액이 노랗게 변하고, 너무 일찍 갈면 영양분이 아까워요."
-    ], "점수: 20점에서 너무 이른 교체 1번마다 −4점, 노랗게 둔 날 하루마다 −4점.")}
-    <div class="play" id="play" hidden>
-    <div class="mrow"><span class="chipbox">📅 <span id="dd">0</span>일째</span><span class="chipbox">교체 후 <span id="since">0</span>일</span></div>
-    <div class="well" id="mw">${org("happy", "", 8)}</div>
-    <button class="btn cyan" id="chg" disabled>🔄 배양액 교체</button>
-    <div class="mlog" id="mlog"></div>
-    <div id="fb"></div>
-    </div>`);
-  let d = 0, since = 0, early = 0, late = 0, good = 0, run = false;
-  const mw = $("#mw"), mlog = $("#mlog"), fb = $("#fb");
-  const log = t => { mlog.innerHTML = `<div>${t}</div>` + mlog.innerHTML; };
-  const paint = () => { mw.className = "well " + (since >= 4 ? "yellow" : since === 3 ? "orange" : ""); setMood(mw, since >= 4 ? "sad" : since === 3 ? "meh" : "happy"); };
-  onHowGo(() => {
-    $("#chg").disabled = false; run = true;
-    const id = every(() => {
-      d++; since++;
-      $("#dd").textContent = d; $("#since").textContent = since;
-      $(".epbar b").textContent = `금쪽이 육아 ${base + d}일차`;
-      paint();
-      if (since >= 4) { late++; log(`⚠️ ${d}일째: 배양액이 노래졌어요! 산성 상태예요.`); if (since === 4) crisis("배양액이 산성이 됐어요!"); }
-      if (d >= 9) { clearInterval(id); end(); }
-    }, 1200);
-  });
-  $("#chg").onclick = () => {
-    if (!run) return;
-    if (since <= 1) { early++; log(`⏩ ${d}일째: 너무 일러요. 아직 영양분이 충분해서 아까워요.`); }
-    else if (since <= 3) { good++; log(`✅ ${d}일째: 딱 좋아요! (${since}일 만에 교체)`); }
-    else log(`🕒 ${d}일째: 늦었어요… 이미 산성이 된 뒤였어요.`);
-    since = 0; $("#since").textContent = 0; paint();
-  };
-  function end() {
-    run = false; $("#chg").disabled = true;
-    let pts = Math.max(0, 20 - early * 4 - late * 4); if (good === 0) pts = 0;
-    addScore(pts, pts === 20); if (pts >= 16) sparkle("제때 교체!");
-    S.day = base + 9; S.lastDay = S.day;
-    fb.innerHTML = fbBox(pts >= 12 ? "good" : "bad", `${pts >= 12 ? "⭕" : "❌"} 배양액 교체 +${pts}점`, `제때 교체 ${good}번 · 너무 이른 교체 ${early}번 · 산성 방치 ${late}일`)
-      + `<div style="height:12px"></div>` + expert("배양액은 <b>2~3일마다</b> 새것으로 갈아 줘요. 늦으면 산성이 되고, 너무 자주 갈면 영양분이 아까워요.");
-    addNext(fb, cb);
-  }
-}
-function evBench(cb) {
-  const opts = [
-    { t: "클린벤치 안에서, 소독 후 열기", ok: true, why: "<b>클린벤치</b>(세균을 걸러 낸 공기가 흐르는 무균 작업대) 안에서, 손과 도구까지 소독하면 세균이 들어오지 못해요." },
-    { t: "클린벤치 안에서, 소독 없이 열기", germ: 2, why: "장소는 맞아요. 하지만 소독하지 않은 손과 도구에 묻은 세균이 그대로 들어가요." },
-    { t: "그냥 책상에서, 재빨리 열고 닫기", germ: 5, why: "빨리 하려는 마음은 좋아요. 하지만 책상 위 공기에는 세균과 곰팡이 포자가 떠다녀요." },
-    { t: "창문 옆 바람 부는 곳에서 열기", germ: 9, why: "바람은 먼지와 세균을 실어 와요! 금쪽이 집이 세균 놀이터가 돼요." }
-  ];
-  render(`${head(S.day + "일차")}
-    <div class="tvsub">뚜껑, <em>어디서</em> 열까요?</div>
-    ${sit("금쪽이가 잘 크는지 현미경으로 보려고 해요. 배양 접시 <b>뚜껑</b>을 열어야 하는데… 어디서, 어떻게 열까요?")}
-    <div class="well" id="w">${org("meh", "", 8)}</div>
-    <div id="qz"></div>`);
-  const w = $("#w");
-  quiz($("#qz"), "뚜껑을 여는 가장 좋은 방법은?", opts, (pts, fb) => {
-    $$(".germ", w).forEach(g => g.remove()); setMood(w, "happy");
-    S.day += 2;
-    fb.insertAdjacentHTML("beforeend", `<div style="height:12px"></div>` + expert("금쪽이 방은 늘 깨끗해야 해요. 뚜껑은 클린벤치 안에서만 여는 거예요."));
-    addNext(fb, cb);
-  }, o => {
-    setMood(w, "sad");
-    for (let i = 0; i < (o.germ || 3); i++) {
-      const g = document.createElement("span"); g.className = "germ"; g.textContent = "🦠";
-      g.style.left = (8 + Math.random() * 72) + "%"; g.style.top = (8 + Math.random() * 72) + "%";
-      g.style.animationDelay = (Math.random() * .4) + "s"; w.appendChild(g);
-    }
-  });
-}
-function s5Result() {
-  S.level = 2;
-  result({
-    day: S.day + "일차", title: "무럭무럭 <em>잘 컸어요!</em>", cls: "bouncy",
-    text: `${S.day}일 동안 잘 돌본 덕분에 금쪽이가 무럭무럭 컸어요! 이제 꽤 묵직해졌어요.`,
-    coach: "세포 육아의 기본은 꾸준함이에요. 색 확인하기, 제때 배양액 갈기, 깨끗하게 열기!",
-    next: stage6
-  });
-}
-
-/* ===== 6단계: 계대 배양 ===== */
-function stage6() {
-  S.stage = 6; S.day += 2;
+/* ===== 4단계: 계대 배양 ===== */
+function stage4() {
+  S.stage = 4; S.day = 14;
   dayFlip(S.day, () => {
     const opts = [
       { t: "잘게 쪼개서 새 마트리겔에 옮겨 심기", ok: true, why: "작게 나누면 조각마다 산소와 영양분이 중심까지 닿아요. 이렇게 나눠서 새 집에 옮겨 키우는 걸 <b>계대 배양</b>(나눠서 옮겨 키우기)이라고 해요." },
@@ -1392,15 +1168,15 @@ function stage6() {
         vis: `<div class="sibs">${Array.from({ length: 6 }, (_, i) => `<div class="sib" style="animation-delay:${i * .15}s">${ele("happy", "lv3 bouncy", "font-size:5.6px")}</div>`).join("")}</div>`,
         text: (pts ? "" : "정답대로 잘게 나눠 심었더니… ") + "금쪽이가 <b>형제 6명</b>으로 늘었어요! 각자 새 집에서 <b>주름진 장 모양</b>으로 자라요.<br>📮 사연 <b>“가운데가 까맣게 죽어요”</b> 해결법: 너무 커지기 전에 <b>잘게 나눠 옮겨 심기</b>!",
         coach: "금쪽이한테는 혈관이 없어요. 너무 커지면 나눠 주는 게 사랑이에요.",
-        next: stage7, btn: "🎬 엔딩 보기 →"
+        next: stage5, btn: "🎬 엔딩 보기 →"
       }));
     });
   });
 }
 
-/* ===== 7단계: 엔딩 영상 ===== */
-function stage7() {
-  S.stage = 7; S.day += 7;
+/* ===== 5단계: 엔딩 영상 ===== */
+function stage5() {
+  S.stage = 5; S.day += 7;
   dayFlip(S.day, () => {
     const win = Math.floor(Math.random() * 3), L = ["A", "B", "C"];
     const scenes = [
@@ -1431,7 +1207,7 @@ function stage7() {
   });
 }
 function finale() {
-  S.stage = 7;
+  S.stage = 5;
   render(`${head(S.day + "일차 · 다 큰 금쪽이")}
     <div class="tvsub">금쪽같은 내 세포,<br>이제 <em>어디에 쓰는지</em> 아시겠죠?</div>
     ${stageBox(ele("happy", "lv3 bouncy wave", "font-size:14px"))}
@@ -1444,10 +1220,10 @@ function finale() {
     <div class="quote">“이건 금쪽이 잘못이 아니에요.<br><em>환경</em>만 맞으면 훌륭하게 자라요.”</div>
     <button class="btn yellow" id="toRes">📝 총정리 퀴즈 풀기</button>`);
   sparkle("졸업!");
-  $("#toRes").onclick = stage8;
+  $("#toRes").onclick = stage6;
 }
 
-/* ===== 8단계: 총정리 퀴즈 (발표 자료 내용) ===== */
+/* ===== 6단계: 총정리 퀴즈 (발표 자료 내용) ===== */
 const FINAL_MC = [
   {
     q: "금쪽이(오가노이드)가 신약 개발 기간과 비용을 줄여 주는 이유는?",
@@ -1481,8 +1257,8 @@ const FINAL_OX = [
   { q: "<b>자기 조직화</b>란 세포가 스스로 배열돼 조직을 이루는 현상을 뜻한다.", a: true, why: "맞아요! 줄기세포가 3D 환경에서 스스로 모여 장 모양을 만드는 것도 자기 조직화예요." },
   { q: "오가노이드는 <b>실제 장기의 모든 기능</b>을 갖춘다.", a: false, why: "아니에요. 오가노이드는 장기의 <b>일부 특징</b>만 재현해요. 혈관도 없어서 완벽한 장기 기능은 아직 어려워요." }
 ];
-function stage8() {
-  S.stage = 8;
+function stage6() {
+  S.stage = 6;
   const all = [...FINAL_MC.map(x => ({ kind: "mc", ...x })), ...FINAL_OX.map(x => ({ kind: "ox", ...x }))];
   let i = 0;
   next();
