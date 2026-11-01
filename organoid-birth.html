@@ -759,6 +759,9 @@ function result({ title, mood = "happy", cls = "", vis, text, coach, next, btn =
 const params = new URLSearchParams(location.search);
 const today = (() => { const d = new Date(); return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`; })();
 const ROOM = ((params.get("room") || today).replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 40)) || today;
+// 랭킹 초기화: 숫자를 1 올리면 모든 회차의 랭킹과 닉네임 기록이 새로 시작돼요. (이전 기록은 데이터베이스에 남지만 보이지 않아요)
+const RANK_ROUND = 2;
+const ROOM_KEY = `${ROOM}_r${RANK_ROUND}`;
 let DEVICE = store("gjb-device");
 if (!DEVICE) { DEVICE = "d" + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); store("gjb-device", DEVICE); }
 function joinUrl() { const u = new URL(location.href); u.hash = ""; u.search = ""; u.searchParams.set("room", ROOM); return u.toString(); }
@@ -797,7 +800,7 @@ const Rank = {
           if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
           const fs = firebase.firestore();
           this.fv = firebase.firestore.FieldValue;
-          this.col = fs.collection("birth_rooms").doc(ROOM).collection("scores");
+          this.col = fs.collection("birth_rooms").doc(ROOM_KEY).collection("scores");
           this.mode = "firebase";
           this.col.orderBy("score", "desc").limit(300).onSnapshot(snap => {
             this.list = snap.docs.map(d => { const x = d.data(); return { id: d.id, name: String(x.name || "익명").slice(0, 12), score: +x.score || 0, first: +x.first || 0, at: x.at && x.at.toMillis ? x.at.toMillis() : Date.now() }; });
@@ -812,7 +815,7 @@ const Rank = {
     return this.ready;
   },
   me() { return this.mode === "claude" ? this.uid : DEVICE; },
-  key() { return "gjb-rank-v1-" + ROOM; },
+  key() { return "gjb-rank-v1-" + ROOM_KEY; },
   loadLocal() { this.mode = "local"; try { this.list = JSON.parse(store(this.key()) || "[]"); } catch (e) { this.list = []; } this.emit(); },
   sorted() { return this.list.slice().sort((a, b) => b.score - a.score || a.at - b.at); },
   emit() { this.listeners.forEach(f => f()); },
