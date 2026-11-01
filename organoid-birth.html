@@ -496,19 +496,19 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 .chip{display:inline-block;font-family:var(--font-display);font-weight:400;background:var(--cyan);color:#fff;border:2px solid var(--ink);border-radius:999px;padding:0 10px;margin:2px;font-variant-numeric:tabular-nums}
 .got{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
 
-/* 5단계: 진로 분류 */
-.sortcard{background:var(--paper);border:3px solid var(--ink);border-radius:18px;box-shadow:5px 5px 0 var(--ink);min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:14px;text-align:center;animation:enter .3s ease both}
-.sortcard .se{font-size:2.3rem}
-.sortcard b{font-family:var(--font-display);font-weight:400;font-size:1.4rem;line-height:1.3}
-.sortcard small{color:#4d6178;font-weight:700}
-.bins{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.bin{display:flex;flex-direction:column;gap:6px;padding:10px;font:inherit;color:var(--ink);background:var(--sky);border:3px solid var(--ink);border-radius:16px;box-shadow:0 4px 0 var(--ink);cursor:pointer;text-align:center}
-.bin:active:not(:disabled){transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
-.bin h4{font-family:var(--font-display);font-weight:400;font-size:1.15rem}
-.bin ul{list-style:none;display:flex;flex-direction:column;gap:4px;font-size:.8rem;font-weight:700;min-height:64px}
-.bin li{background:var(--paper);border:2px solid var(--ink);border-radius:8px;padding:3px 4px;animation:enter .25s}
-.bin li.x{border-color:var(--red);color:#9b2c2c}
-.bin:disabled{cursor:default}
+/* 5단계: 진로 카드 짝 맞추기 */
+.mem{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.mcard{position:relative;aspect-ratio:4/5;border:3px solid var(--ink);border-radius:14px;box-shadow:0 4px 0 var(--ink);font:inherit;color:var(--ink);cursor:pointer;padding:0;background:transparent;perspective:600px}
+.mcard .in{position:absolute;inset:0;transition:transform .35s;transform-style:preserve-3d}
+.mcard.open .in,.mcard.done .in{transform:rotateY(180deg)}
+.mcard .bk,.mcard .fr{position:absolute;inset:0;border-radius:11px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;backface-visibility:hidden;-webkit-backface-visibility:hidden;padding:6px;text-align:center}
+.mcard .bk{background:repeating-linear-gradient(45deg,var(--cyan) 0 10px,#6fd3e3 10px 20px);color:#fff;font-family:var(--font-display);font-size:1.8rem}
+.mcard .fr{background:var(--paper);transform:rotateY(180deg)}
+.mcard .fr .pic{font-size:2.3rem;line-height:1}
+.mcard .fr b{font-weight:700;font-size:.86rem;line-height:1.35;word-break:keep-all}
+.mcard.done .fr{background:#dcf6ec}
+.mcard.done{border-color:#1d8a62;box-shadow:0 4px 0 #1d8a62;cursor:default}
+.mcard.bad .fr{background:#ffe6e6}
 
 /* 6단계: 고민 말풍선 */
 .round-q{font-family:var(--font-display);font-size:1.5rem;text-align:center;text-wrap:balance}
@@ -577,7 +577,7 @@ const STAGES = {
   2: { name: "금쪽이 탄생", tag: "오가노이드는 어떻게 생길까요?" },
   3: { name: "3요소 잡기", tag: "오가노이드의 배양 환경" },
   4: { name: "사연 상담", tag: "“납작하게 퍼지기만 해요” “피부세포로 만들었는데 아무것도 안 돼요”" },
-  5: { name: "진로 상담", tag: "오가노이드가 왜 필요할까요? 어디에 쓰일까요?" },
+  5: { name: "진로 카드", tag: "금쪽이는 커서 무슨 일을 할까?" },
   6: { name: "고민 상담", tag: "한계 · 함께 고민할 점 · 앞으로의 연구" },
   7: { name: "총정리 퀴즈", tag: "금쪽이 졸업 시험" },
   8: { name: "다 큰 금쪽이", tag: "키워서 어디에 쓰냐고요?" }
@@ -911,7 +911,7 @@ async function begin() {
 
 /* =========================================================
    게임 내용은 발표 자료(PPT)에 나온 내용만 써요.
-   정의 · 생성 과정 · 배양 환경 3요소 · 사연 · 필요성 · 활용 · 한계 · 윤리/미래 · O/X
+   정의 · 생성 과정 · 배양 환경 3요소 · 사연 · 금쪽이가 하는 일 · 한계 · 윤리/미래 · O/X
    ========================================================= */
 const vv = (...xs) => xs.map((x, i) => `<span class="v" style="animation-delay:${i * .3}s">${x}</span>`).join("");
 
@@ -1150,63 +1150,67 @@ function stage4() {
   }
 }
 
-/* ===== 5단계: 진로 상담 (필요성 · 활용 분야) ===== */
+/* ===== 5단계: 진로 카드 짝 맞추기 (금쪽이가 하는 일) ===== */
 function stage5() {
   S.stage = 5;
-  const CARDS = [
-    { t: "동물실험의 대안", e: "🐰", k: "need" },
-    { t: "정밀의료 · 환자 맞춤형 치료", e: "🩺", k: "need" },
-    { t: "신약 개발 기간 · 비용 단축", e: "💊", k: "need" },
-    { t: "생물학적 컴퓨터 개발", e: "🧠", k: "use" },
-    { t: "헬리코박터균 위 질환 연구", e: "🦠", k: "use" },
-    { t: "우주병 치료제 개발", e: "🚀", k: "use" }
+  const PAIRS = [
+    { id: "ani", pic: "🐰", t: "동물실험의 대안" },
+    { id: "pt", pic: "🩺", t: "정밀의료 · 환자 맞춤형 치료" },
+    { id: "drug", pic: "💊", t: "신약 개발 기간 · 비용 단축" },
+    { id: "bio", pic: "🧠", t: "생물학적 컴퓨터 개발" },
+    { id: "hp", pic: "🦠", t: "헬리코박터균 위 질환 연구" },
+    { id: "space", pic: "🚀", t: "우주병 치료제 개발" }
   ];
-  const q = shuffle(CARDS); let i = 0, mist = 0;
+  const deck = shuffle([
+    ...PAIRS.map(x => ({ id: x.id, face: `<span class="pic">${x.pic}</span>` })),
+    ...PAIRS.map(x => ({ id: x.id, face: `<b>${x.t}</b>` }))
+  ]);
+  let open = [], matched = 0, miss = 0, busy = false;
   render(`${head("7일차")}
-    ${stageBox(org("happy", "bouncy"), "금쪽아, <em>커서 뭐가 될래?</em>")}
-    ${sit("금쪽이가 쑥쑥 컸어요! 금쪽이가 <b>왜 필요한지</b>, <b>어디에 쓰이는지</b> 진로 상담을 해 볼까요?")}
-    ${howto("진로 상담 분류", [
-      "카드가 <b>한 장씩</b> 나와요.",
-      "<b>💡 왜 필요할까?</b>(필요성)와 <b>🚀 어디에 쓸까?</b>(활용 분야) 중 알맞은 상자를 눌러요.",
-      "6장을 모두 나누면 끝!"
-    ], "점수: 20점에서 틀릴 때마다 −4점")}
+    ${stageBox(org("happy", "bouncy"), "금쪽이는 커서 <em>무슨 일</em>을 할까?")}
+    ${sit("금쪽이가 쑥쑥 컸어요! 금쪽이(오가노이드)가 하는 일을 <b>그림 카드</b>와 <b>이름 카드</b>로 짝지어 볼까요?")}
+    ${howto("진로 카드 짝 맞추기", [
+      "뒤집힌 카드 <b>12장</b> 중 2장을 골라 뒤집어요.",
+      "<b>그림</b>과 그 그림에 맞는 <b>이름</b>이 나오면 짝 성공!",
+      "짝이 아니면 카드가 다시 뒤집혀요. 위치를 기억해 두세요."
+    ], "점수: 6짝을 모두 맞히면 끝. 짝이 틀린 횟수가 4번까지는 20점, 그 뒤로 1번마다 −2점")}
     <div class="play" id="play" hidden>
-      <div class="gain" id="left"></div>
-      <div id="card"></div>
-      <div class="bins">
-        <button class="bin" data-k="need"><h4>💡 왜 필요할까?</h4><ul id="b-need"></ul></button>
-        <button class="bin" data-k="use"><h4>🚀 어디에 쓸까?</h4><ul id="b-use"></ul></button>
-      </div>
+      <div class="gain" id="mstat">찾은 짝 0 / 6 · 틀린 횟수 0</div>
+      <div class="mem">${deck.map((c, i) => `<button class="mcard" data-i="${i}" aria-label="카드 ${i + 1}"><span class="in"><span class="bk">?</span><span class="fr">${c.face}</span></span></button>`).join("")}</div>
       <div id="fb"></div>
     </div>`);
   onHowGo();
-  const fb = $("#fb");
-  const showCard = () => {
-    const c = q[i];
-    $("#card").innerHTML = `<div class="sortcard"><span class="se">${c.e}</span><b>${c.t}</b><small>어느 상자일까요?</small></div>`;
-    $("#left").textContent = `남은 카드 ${q.length - i}장`;
-  };
-  showCard();
-  $$(".bin").forEach(b => b.onclick = () => {
-    if (i >= q.length) return;
-    const c = q[i], ok = b.dataset.k === c.k;
-    const where = c.k === "need" ? "<b>💡 왜 필요할까?</b>(필요성)" : "<b>🚀 어디에 쓸까?</b>(활용 분야)";
-    $("#b-" + c.k).insertAdjacentHTML("beforeend", `<li class="${ok ? "" : "x"}">${c.e} ${c.t}</li>`);
-    if (ok) fb.innerHTML = fbBox("good", "⭕ 딩동댕!", `「${c.t}」는 ${where} 상자예요.`);
-    else { mist++; crisis("상자가 달라요!"); fb.innerHTML = fbBox("bad", "❌ 땡!", `「${c.t}」는 ${where} 상자예요.`); }
-    i++;
-    if (i < q.length) return showCard();
-    $("#card").innerHTML = ""; $("#left").textContent = "분류 끝!";
-    $$(".bin").forEach(x => x.disabled = true);
-    const pts = Math.max(0, 20 - mist * 4); addScore(pts, mist === 0); if (pts >= 16) sparkle("진로 확정!");
-    fb.innerHTML = fbBox(pts >= 12 ? "good" : "bad", `${pts >= 12 ? "⭕" : "❌"} 진로 상담 +${pts}점`, `틀린 카드 ${mist}장`);
+  const cards = $$(".mcard"), fb = $("#fb");
+  const stat = () => { $("#mstat").textContent = `찾은 짝 ${matched} / 6 · 틀린 횟수 ${miss}`; };
+  cards.forEach(b => b.onclick = () => {
+    if (busy || b.classList.contains("open") || b.classList.contains("done")) return;
+    b.classList.add("open"); open.push(b);
+    if (open.length < 2) return;
+    const [a, c] = open; open = [];
+    const da = deck[+a.dataset.i], dc = deck[+c.dataset.i];
+    if (da.id === dc.id) {
+      [a, c].forEach(x => { x.classList.remove("open"); x.classList.add("done"); x.disabled = true; });
+      matched++; stat();
+      const pr = PAIRS.find(x => x.id === da.id);
+      fb.innerHTML = fbBox("good", "⭕ 짝 성공!", `${pr.pic} 금쪽이는 <b>${pr.t}</b>에 쓰여요.`);
+      if (matched === PAIRS.length) finish();
+    } else {
+      miss++; stat(); busy = true;
+      [a, c].forEach(x => x.classList.add("bad"));
+      later(() => { [a, c].forEach(x => x.classList.remove("open", "bad")); busy = false; }, 800);
+    }
+  });
+  function finish() {
+    const pts = Math.max(0, 20 - Math.max(0, miss - 4) * 2);
+    addScore(pts, miss <= 4); sparkle("짝 완성!");
+    fb.innerHTML = fbBox(pts >= 12 ? "good" : "bad", `⭕ 6짝 완성! +${pts}점`, `틀린 횟수 ${miss}번`);
     addNext(fb, () => result({
       day: "7일차", title: "금쪽이 <em>진로</em> 확정!", cls: "bouncy",
-      text: "💡 <b>필요성</b>: 동물실험의 대안 · 정밀의료 및 환자 맞춤형 치료 · 신약 개발 기간 및 비용 단축<br>🚀 <b>활용 분야</b>: 생물학적 컴퓨터 개발 · 헬리코박터균 위 질환 연구 · 우주병 치료제 개발",
+      text: PAIRS.map(x => `${x.pic} ${x.t}`).join("<br>"),
       coach: "키워서 어디에 쓰냐고요? 이제 자신 있게 대답할 수 있죠?",
       next: stage6
     }));
-  });
+  }
 }
 
 /* ===== 6단계: 고민 상담 (한계 · 윤리 · 앞으로의 연구) ===== */
@@ -1218,9 +1222,9 @@ function stage6() {
     fut: ["더 정교한 조직 모델", "장기 간 상호작용 연구", "맞춤형 의학의 발전"]
   };
   const ROUNDS = [
-    { k: "lim", q: "😥 금쪽이의 <em>한계</em>는?", decoy: ["세포 제공자의 동의", "더 정교한 조직 모델", "동물실험의 대안"] },
-    { k: "eth", q: "🤝 함께 <em>고민할 점</em>(윤리)은?", decoy: ["장기 배양의 부담", "맞춤형 의학의 발전", "우주병 치료제 개발"] },
-    { k: "fut", q: "🔭 <em>앞으로의 연구</em>는?", decoy: ["유전정보의 보호", "대량 공급 표준 공급망의 부족", "신약 개발 기간 · 비용 단축"] }
+    { k: "lim", q: "😥 금쪽이의 <em>한계</em>는?", decoy: ["세포 제공자의 동의", "더 정교한 조직 모델", "유전정보의 보호"] },
+    { k: "eth", q: "🤝 함께 <em>고민할 점</em>(윤리)은?", decoy: ["장기 배양의 부담", "맞춤형 의학의 발전", "장기 간 상호작용 연구"] },
+    { k: "fut", q: "🔭 <em>앞으로의 연구</em>는?", decoy: ["유전정보의 보호", "대량 공급 표준 공급망의 부족", "공정한 이용 기회"] }
   ];
   let r = 0, score = 0;
   render(`${head("14일차")}
@@ -1315,8 +1319,8 @@ function ending() {
     { v: vv(ele("happy", "lv3 bouncy", "font-size:8px")), c: "금쪽이 = <b>살아 있는 세포</b>로 만든 <b>3차원 조직</b><small>장기의 일부 특징을 재현해요</small>" },
     { v: vv("🧫", "➡️", "📡", "➡️", "✨"), c: "줄기세포 → 유도 신호 → 오가노이드<small>금쪽이는 이렇게 태어났어요</small>" },
     { v: vv("📦", "🧫", "📡"), c: "배양 환경 3요소<small>3D 배양 · 줄기세포 · 성장인자</small>" },
-    { v: vv("🐰", "🩺", "💊"), c: "금쪽이가 필요한 이유<small>동물실험의 대안 · 정밀의료 및 환자 맞춤형 치료 · 신약 개발 기간 및 비용 단축</small>" },
-    { v: vv("🧠", "🦠", "🚀"), c: "금쪽이의 활용 분야<small>생물학적 컴퓨터 개발 · 헬리코박터균 위 질환 연구 · 우주병 치료제 개발</small>" },
+    { v: vv("🐰", "🩺", "💊"), c: "금쪽이가 하는 일 ①<small>동물실험의 대안 · 정밀의료 및 환자 맞춤형 치료 · 신약 개발 기간 및 비용 단축</small>" },
+    { v: vv("🧠", "🦠", "🚀"), c: "금쪽이가 하는 일 ②<small>생물학적 컴퓨터 개발 · 헬리코박터균 위 질환 연구 · 우주병 치료제 개발</small>" },
     { v: vv("🔬", "✨"), c: "앞으로의 금쪽이<small>더 정교한 조직 모델 · 장기 간 상호작용 연구 · 맞춤형 의학의 발전</small>" }
   ];
   let i = 0;
@@ -1449,7 +1453,7 @@ function endScreen() {
     ["오늘의 초보 연구원 부모", `${esc(S.name)} (${g.name})`],
     ["출연", "금쪽이(오가노이드) · 초보 연구원 부모 · 세포 육아 전문가"],
     ["특별 출연", "줄기세포 · 유도 신호 · 3D 배양 · 성장인자"],
-    ["오늘 배운 것", "정의 · 생성 과정 · 3요소 · 필요성 · 활용 분야 · 한계 · 윤리"],
+    ["오늘 배운 것", "정의 · 생성 과정 · 3요소 · 금쪽이가 하는 일 · 한계 · 윤리"],
     ["다음 회 예고", "우리 금쪽이가 “우리” 금쪽이가 아니라고요!?"]
   ].map(([a, b]) => `<div><small>${a}</small><b>${b}</b></div>`).join("");
   render(`<div class="end screen-in" style="flex:1">
