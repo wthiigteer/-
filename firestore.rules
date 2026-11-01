@@ -47,5 +47,25 @@ service cloud.firestore {
         && request.resource.data.device.size() <= 40;
       allow update, delete: if false;
     }
+    // 탄생 편 랭킹 회차: 누구나 읽고, 관리자 코드를 아는 사람만 올려요
+    match /birth_meta/round {
+      allow read: if true;
+      allow write: if request.resource.data.keys().hasOnly(['round', 'at'])
+        && request.resource.data.round is int
+        && getAfter(/databases/$(database)/documents/birth_admin_ops/last).data.round == request.resource.data.round
+        && exists(/databases/$(database)/documents/birth_admin/$(getAfter(/databases/$(database)/documents/birth_admin_ops/last).data.code));
+    }
+    // 초기화 기록: 관리자 코드가 birth_admin에 있을 때만 쓸 수 있고, 아무도 읽을 수 없어요
+    match /birth_admin_ops/last {
+      allow read: if false;
+      allow write: if request.resource.data.keys().hasOnly(['code', 'round', 'at'])
+        && request.resource.data.code is string
+        && request.resource.data.round is int
+        && exists(/databases/$(database)/documents/birth_admin/$(request.resource.data.code));
+    }
+    // 관리자 코드: Firebase 콘솔에서만 만들 수 있고, 아무도 읽거나 쓸 수 없어요
+    match /birth_admin/{code} {
+      allow read, write: if false;
+    }
   }
 }

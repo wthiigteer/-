@@ -392,6 +392,13 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 .hud .dots{gap:3px}
 .hud .dots i{width:19px;height:19px;font-size:.62rem}
 .hud .score,.hud .tag{font-size:1.05rem}
+.admin{width:100%;max-width:340px;text-align:left;background:var(--paper);border:2px dashed var(--ink);border-radius:14px;padding:8px 12px}
+.admin summary{cursor:pointer;font-weight:700;font-size:.9rem;color:#4d6178}
+.admin[open]{display:flex;flex-direction:column;gap:8px}
+.admin label{font-weight:700;font-size:.9rem;margin-top:6px}
+.admin input{font:inherit;padding:10px 12px;border:3px solid var(--ink);border-radius:12px}
+.admin .btn{font-size:1.05rem;padding:11px}
+.admin-msg{font-size:.85rem;color:#4d6178;line-height:1.5}
 .ox{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .ox button{height:110px;font-family:var(--font-display);font-size:3.4rem;line-height:1;background:var(--paper);border:3px solid var(--ink);border-radius:18px;box-shadow:0 5px 0 var(--ink);cursor:pointer}
 .ox .o{color:#1d8a8a}.ox .x{color:var(--coral)}
@@ -795,14 +802,19 @@ const Rank = {
           await loadScript(`https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-app-compat.js`);
           await loadScript(`https://www.gstatic.com/firebasejs/${FIREBASE_VERSION}/firebase-firestore-compat.js`);
           if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-          const fs = firebase.firestore();
+          this.fs = firebase.firestore();
           this.fv = firebase.firestore.FieldValue;
-          this.col = fs.collection("birth_rooms").doc(ROOM).collection("scores");
           this.mode = "firebase";
-          this.col.orderBy("score", "desc").limit(300).onSnapshot(snap => {
-            this.list = snap.docs.map(d => { const x = d.data(); return { id: d.id, name: String(x.name || "익명").slice(0, 12), score: +x.score || 0, first: +x.first || 0, at: x.at && x.at.toMillis ? x.at.toMillis() : Date.now() }; });
-            this.emit();
-          }, err => { console.warn("랭킹 연결 오류", err); this.mode = "error"; this.emit(); });
+          // 랭킹 회차(birth_meta/round)를 따라가요. 진행자가 초기화하면 회차가 올라가고 모든 화면이 새 랭킹으로 바뀌어요.
+          await new Promise(done => {
+            let first = true;
+            const ready = () => { if (first) { first = false; done(); } };
+            this.fs.collection("birth_meta").doc("round").onSnapshot(d => {
+              const r = d.exists ? Math.max(1, +(d.data() || {}).round || 1) : 1;
+              if (r !== this.round) this.useRound(r);
+              ready();
+            }, err => { console.warn("랭킹 회차를 읽지 못했어요", err); if (this.round == null) this.useRound(1); ready(); });
+          });
           return;
         } catch (e) { console.warn("Firebase를 불러오지 못했어요", e); }
       }
@@ -812,6 +824,31 @@ const Rank = {
     return this.ready;
   },
   me() { return this.mode === "claude" ? this.uid : DEVICE; },
+  // 회차 1은 날짜 방 그대로, 2회차부터는 '날짜_r회차' 방을 써요
+  useRound(r) {
+    this.round = r;
+    this.roomKey = r > 1 ? `${ROOM}_r${r}` : ROOM;
+    if (this.unsubScores) this.unsubScores();
+    this.list = [];
+    this.col = this.fs.collection("birth_rooms").doc(this.roomKey).collection("scores");
+    this.unsubScores = this.col.orderBy("score", "desc").limit(300).onSnapshot(snap => {
+      this.list = snap.docs.map(d => { const x = d.data(); return { id: d.id, name: String(x.name || "익명").slice(0, 12), score: +x.score || 0, first: +x.first || 0, at: x.at && x.at.toMillis ? x.at.toMillis() : Date.now() }; });
+      this.emit();
+    }, err => { console.warn("랭킹 연결 오류", err); this.mode = "error"; this.emit(); });
+    this.emit();
+  },
+  // 진행자 전용 초기화: 관리자 코드가 데이터베이스(birth_admin)에 있어야만 규칙이 허락해요
+  async reset(code) {
+    await this.init();
+    if (this.mode === "local") { this.list = []; store(this.key(), "[]"); this.emit(); return "local"; }
+    if (this.mode !== "firebase") throw new Error("unavailable");
+    const next = (this.round || 1) + 1;
+    const batch = this.fs.batch();
+    batch.set(this.fs.collection("birth_admin_ops").doc("last"), { code, round: next, at: this.fv.serverTimestamp() });
+    batch.set(this.fs.collection("birth_meta").doc("round"), { round: next, at: this.fv.serverTimestamp() });
+    await batch.commit();
+    return next;
+  },
   key() { return "gjb-rank-v1-" + ROOM; },
   loadLocal() { this.mode = "local"; try { this.list = JSON.parse(store(this.key()) || "[]"); } catch (e) { this.list = []; } this.emit(); },
   sorted() { return this.list.slice().sort((a, b) => b.score - a.score || a.at - b.at); },
@@ -1442,7 +1479,7 @@ function rankingHtml(list, myId, limit) {
 }
 function liveBadge() {
   if (Rank.mode === "claude") return `<span class="live"><i></i>실시간 공유 랭킹</span>`;
-  if (Rank.mode === "firebase") return `<span class="live"><i></i>실시간 · ${esc(ROOM)}</span>`;
+  if (Rank.mode === "firebase") return `<span class="live"><i></i>실시간 · ${esc(ROOM)}${Rank.round > 1 ? ` · ${Rank.round}회차` : ""}</span>`;
   if (Rank.mode === "error") return `<span class="live local"><i></i>연결 오류</span>`;
   return `<span class="live local"><i></i>이 기기 기록</span>`;
 }
@@ -1503,6 +1540,13 @@ function boardScreen() {
         <div class="qr" id="qr"><div style="width:220px;padding:20px;text-align:center">QR 준비 중…</div></div>
         <div class="url" id="url"></div>
         <div class="count" id="count">참가자 0명</div>
+        <details class="admin">
+          <summary>🔒 진행자 전용 · 랭킹 초기화</summary>
+          <label for="adminCode">관리자 코드</label>
+          <input type="password" id="adminCode" autocomplete="off" maxlength="40" placeholder="Firebase에 저장한 관리자 코드">
+          <button class="btn coral" id="resetBtn">랭킹 초기화</button>
+          <p class="admin-msg" id="adminMsg">초기화하면 지금 랭킹과 닉네임 기록이 사라지고 새 랭킹이 시작돼요.</p>
+        </details>
       </div>
       <div style="display:flex;flex-direction:column;gap:14px;min-width:0">
         <div class="rank-head"><h2>🏆 실시간 랭킹</h2><span id="badge">${liveBadge()}</span></div>
@@ -1510,6 +1554,23 @@ function boardScreen() {
         <div class="rnote" id="rnote"></div>
       </div>
     </div>`, true);
+  let armed = false;
+  $("#resetBtn").onclick = async () => {
+    const btn = $("#resetBtn"), msg = $("#adminMsg"), code = $("#adminCode").value.trim();
+    if (!code) { msg.textContent = "관리자 코드를 입력해 주세요."; return; }
+    if (!/^[A-Za-z0-9_-]+$/.test(code)) { msg.textContent = "관리자 코드는 영문, 숫자, -, _ 만 쓸 수 있어요."; return; }
+    if (!armed) { armed = true; btn.textContent = "정말 초기화할까요? 한 번 더 누르세요"; msg.textContent = "되돌릴 수 없어요. 계속하려면 버튼을 한 번 더 눌러 주세요."; return; }
+    armed = false; btn.disabled = true; btn.textContent = "초기화하는 중…";
+    try {
+      const r = await Rank.reset(code);
+      msg.textContent = r === "local" ? "이 기기의 랭킹 기록을 지웠어요." : `초기화 완료! 지금부터 ${r}회차 랭킹이에요.`;
+      $("#adminCode").value = "";
+    } catch (e) {
+      console.warn(e);
+      msg.textContent = Rank.mode === "claude" ? "이 화면에서는 초기화할 수 없어요. GitHub Pages 주소의 #board에서 해 주세요." : "초기화하지 못했어요. 관리자 코드가 맞는지 확인해 주세요.";
+    }
+    btn.disabled = false; btn.textContent = "랭킹 초기화";
+  };
   Rank.init().then(() => {
     const box = $("#qr"), url = $("#url"); if (!box) return;
     if (Rank.mode === "claude") {
