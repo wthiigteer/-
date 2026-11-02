@@ -332,17 +332,36 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 .live i{width:8px;height:8px;border-radius:50%;background:var(--red);animation:blink 1s infinite}
 .live.local i{background:#9aa9b9;animation:none}
 .snack{align-self:center;justify-self:center;text-align:center;font-family:var(--font-display);font-size:1.05rem;color:var(--red);background:var(--paper);border:3px solid var(--red);border-radius:10px;padding:2px 12px;margin:0 auto 6px;width:max-content;max-width:100%}
-.near-row{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-top:10px}
-@media (min-width:700px){.near-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
-.near{display:flex;align-items:center;gap:6px;min-width:0;background:var(--paper);border:3px solid var(--ink);border-radius:14px;padding:6px 10px;box-shadow:0 3px 0 var(--ink)}
-.near .no{flex:none;width:28px;height:28px;border-radius:50%;background:var(--mint);color:#fff;border:2px solid var(--ink);display:grid;place-items:center;font-family:var(--font-display);font-size:1.05rem}
-.near .ele{font-size:3.6px;flex:none;margin:-4px -2px}
-.near .nm{flex:1;min-width:0;font-weight:700;font-size:.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.near .nm small{font-weight:600;color:#5d7088;margin-left:3px}
-.near .sc{flex:none;font-family:var(--font-display);font-size:1.1rem;font-variant-numeric:tabular-nums}
-.near.me{background:#fff4d1;outline:2px solid var(--yellow)}
-.near.empty{opacity:.6}
-.near.empty .no{background:#9aa9b9}
+.chart{list-style:none;display:flex;flex-direction:column;gap:8px;padding:0}
+.crow{display:grid;grid-template-columns:40px minmax(0,1fr) auto;align-items:center;gap:10px;background:var(--paper);border:3px solid var(--ink);border-radius:16px;padding:9px 12px;box-shadow:0 4px 0 var(--ink)}
+.crow.r1{background:#fff4d1;padding:13px 12px;box-shadow:0 5px 0 var(--ink)}
+.crow.r1 .md{font-size:2.3rem}
+.crow.r1 .nm{font-size:1.15rem}
+.crow.r1 .sc{font-size:1.9rem}
+.crow .md{font-size:1.8rem;line-height:1;text-align:center}
+.crow .info{min-width:0;display:flex;flex-direction:column;gap:6px}
+.crow .nm{font-weight:700;font-size:1rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.crow .nm small{font-weight:600;color:#5d7088;margin-left:4px}
+.crow .rk{display:inline-block;font-family:var(--font-display);font-weight:400;background:var(--ink);color:var(--yellow);border-radius:6px;padding:0 7px;margin-right:6px;font-size:.85rem;vertical-align:1px}
+.crow .bar{display:block;height:12px;margin:0;border:2px solid var(--ink);border-radius:999px;background:var(--sky-2);overflow:hidden}
+.crow .bar i{display:block;height:100%;width:var(--w);background:linear-gradient(90deg,var(--cyan),var(--yellow))}
+.crow .sc{font-family:var(--font-display);font-size:1.5rem;font-variant-numeric:tabular-nums;white-space:nowrap}
+.crow .sc small{font-size:.8rem;margin-left:1px}
+.crow.me{outline:3px solid var(--coral);outline-offset:1px}
+.crow.empty{opacity:.55;border-style:dashed;box-shadow:none}
+.crow.empty .nm{color:#7b8fa6;font-weight:600}
+.chart.anim .crow{animation:reveal .5s ease-out backwards}
+.chart.anim .crow .bar i{animation:fillw .9s ease-out backwards}
+@keyframes reveal{from{opacity:0;transform:translateX(-28px) scale(.96)}}
+@keyframes fillw{from{width:0}}
+.board .crow{padding:12px 16px;grid-template-columns:52px minmax(0,1fr) auto}
+.board .crow .md{font-size:2.4rem}
+.board .crow .nm{font-size:1.35rem}
+.board .crow .sc{font-size:2rem}
+.board .crow .bar{height:16px}
+.board .crow.r1 .nm{font-size:1.55rem}
+.board .crow.r1 .sc{font-size:2.4rem}
+.chart-more{font-weight:700;font-size:.85rem;color:#5d7088;text-align:center;margin-top:4px}
 .podium{display:grid;grid-template-columns:1fr 1.15fr 1fr;align-items:end;gap:8px;margin-top:4px}
 .pod{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;min-width:0}
 .pod .ele{font-size:5.5px}
@@ -1478,24 +1497,23 @@ function resultScreen() {
 }
 
 /* ===== 랭킹판 ===== */
-function rankingHtml(list, myId, limit) {
-  const top = list.slice(0, 3);
-  const pod = (r, n) => r
-    ? `<div class="pod p${n}">${ele("happy", "lv3 " + (n === 1 ? "bouncy" : ""))}<div class="nm">${esc(r.name)}</div><div class="sc">${r.score}점</div><div class="block">${n}</div></div>`
-    : `<div class="pod p${n} empty">${ele("meh", "lv1")}<div class="nm">비어 있어요</div><div class="sc">-</div><div class="block">${n}</div></div>`;
-  // 4·5위는 늘 자리를 보여 줘요 (발표 자료: 랭킹 1~5위 간식 증정)
-  const near = n => { const r = list[n - 1]; return r
-    ? `<div class="near${r.id === myId ? " me" : ""}"><span class="no">${n}</span>${ele("happy", "lv2")}<span class="nm">${esc(r.name)}${r.id === myId ? "<small>(나)</small>" : ""}</span><span class="sc">${r.score}점</span></div>`
-    : `<div class="near empty"><span class="no">${n}</span>${ele("meh", "lv1")}<span class="nm">비어 있어요</span><span class="sc">-</span></div>`; };
+// 예능 순위 발표: 1~5위는 큰 줄 + 점수 막대, 6위부터는 목록 (발표 자료: 랭킹 1~5위 간식 증정)
+function rankingHtml(list, myId, limit, anim) {
+  const MEDAL = ["🥇", "🥈", "🥉", "🍪", "🍪"];
+  const row = n => {
+    const r = list[n - 1], d = `animation-delay:${(5 - n) * .35}s`;
+    if (!r) return `<li class="crow empty r${n}" style="${d}"><span class="md">${MEDAL[n - 1]}</span><span class="info"><span class="nm"><b class="rk">${n}위</b>비어 있어요</span><span class="bar"><i style="--w:0%"></i></span></span><span class="sc">-</span></li>`;
+    const w = Math.max(4, Math.min(100, r.score / MAX_SCORE * 100));
+    return `<li class="crow r${n}${r.id === myId ? " me" : ""}" style="${d}"><span class="md">${MEDAL[n - 1]}</span><span class="info"><span class="nm"><b class="rk">${n}위</b>${esc(r.name)}${r.id === myId ? "<small>(나)</small>" : ""}</span><span class="bar"><i style="--w:${w}%;${d}"></i></span></span><span class="sc">${r.score}<small>점</small></span></li>`;
+  };
   const rest = list.slice(5, limit);
-  const rows = rest.map((r, i) => `<li class="${r.id === myId ? "me" : ""}"><span class="no">${i + 6}</span><span class="who2">${esc(r.name)}${r.id === myId ? "<small>(나)</small>" : ""}</span><span class="pt">${r.score}</span></li>`).join("");
+  const rows = rest.map((r, k) => `<li class="${r.id === myId ? "me" : ""}"><span class="no">${k + 6}</span><span class="who2">${esc(r.name)}${r.id === myId ? "<small>(나)</small>" : ""}</span><span class="pt">${r.score}</span></li>`).join("");
   const me = myId ? list.findIndex(r => r.id === myId) : -1;
   const meRow = me >= limit ? `<li class="me"><span class="no">${me + 1}</span><span class="who2">${esc(list[me].name)}<small>(나)</small></span><span class="pt">${list[me].score}</span></li>` : "";
   return `<div class="snack">🍪 랭킹 1~5위 간식 증정!</div>
-    <div class="podium">${pod(top[1], 2)}${pod(top[0], 1)}${pod(top[2], 3)}</div><div class="podium-base"></div>
-    <div class="near-row">${near(4)}${near(5)}</div>
-    ${list.length === 0 ? `<div class="rlist"><div class="rempty">아직 기록이 없어요.<br>첫 번째 세포 육아 마스터가 되어 보세요!</div></div>`
-      : (rows || meRow) ? `<ol class="rlist">${rows}${meRow}</ol>` : ""}`;
+    <ol class="chart${anim ? " anim" : ""}">${[1, 2, 3, 4, 5].map(row).join("")}</ol>
+    ${list.length === 0 ? `<div class="rempty">아직 기록이 없어요. 첫 번째 세포 육아 마스터가 되어 보세요!</div>`
+      : (rows || meRow) ? `<div class="chart-more">6위부터</div><ol class="rlist">${rows}${meRow}</ol>` : ""}`;
 }
 function liveBadge() {
   if (Rank.mode === "claude") return `<span class="live"><i></i>실시간 공유 랭킹</span>`;
@@ -1516,9 +1534,10 @@ function rankingScreen(from) {
       ? `<button class="btn" id="back">육아 시작하러 가기</button>`
       : `<button class="btn coral" id="end">🎬 육아 마치기</button><button class="btn ghost" id="back">성적표로 돌아가기</button>`}`);
   Rank.init().then(() => {
+    let firstPaint = true;
     S.cleanups.push(Rank.on(() => {
       const body = $("#rbody"); if (!body) return;
-      body.innerHTML = rankingHtml(Rank.sorted(), S.myId, 50);
+      body.innerHTML = rankingHtml(Rank.sorted(), S.myId, 50, firstPaint); firstPaint = false;
       $("#badge").innerHTML = liveBadge();
       $("#rnote").textContent = rankNote();
     }));
@@ -1603,9 +1622,10 @@ function boardScreen() {
       if (window.QRCode) draw();
       else window.addEventListener("load", () => { if (window.QRCode) draw(); else box.innerHTML = `<div style="width:220px;padding:20px;text-align:center">QR을 불러오지 못했어요.<br>아래 주소로 접속해 주세요.</div>`; }, { once: true });
     }
+    let firstPaint = true;
     S.cleanups.push(Rank.on(() => {
       const body = $("#rbody"); if (!body) return;
-      body.innerHTML = rankingHtml(Rank.sorted(), null, 30);
+      body.innerHTML = rankingHtml(Rank.sorted(), null, 30, firstPaint); firstPaint = false;
       $("#badge").innerHTML = liveBadge();
       $("#count").textContent = `참가자 ${Rank.list.length}명`;
       $("#rnote").textContent = Rank.mode === "local" ? "공유 랭킹에 연결되지 않아 이 기기 기록만 보여요." : "점수가 들어오면 자동으로 갱신돼요.";
