@@ -361,7 +361,12 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 .board .crow .bar{height:16px}
 .board .crow.r1 .nm{font-size:1.55rem}
 .board .crow.r1 .sc{font-size:2.4rem}
-.chart-more{font-weight:700;font-size:.85rem;color:#5d7088;text-align:center;margin-top:4px}
+.more{margin-top:4px}
+.more summary{list-style:none;cursor:pointer;text-align:center;font-weight:700;font-size:.95rem;color:var(--ink);background:var(--paper);border:3px solid var(--ink);border-radius:999px;padding:8px 14px;box-shadow:0 3px 0 var(--ink);width:max-content;max-width:100%;margin:0 auto}
+.more summary::-webkit-details-marker{display:none}
+.more summary::after{content:" ▾"}
+.more[open] summary::after{content:" ▴"}
+.more[open] summary{margin-bottom:10px}
 .podium{display:grid;grid-template-columns:1fr 1.15fr 1fr;align-items:end;gap:8px;margin-top:4px}
 .pod{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;min-width:0}
 .pod .ele{font-size:5.5px}
@@ -1510,10 +1515,12 @@ function rankingHtml(list, myId, limit, anim) {
   const rows = rest.map((r, k) => `<li class="${r.id === myId ? "me" : ""}"><span class="no">${k + 6}</span><span class="who2">${esc(r.name)}${r.id === myId ? "<small>(나)</small>" : ""}</span><span class="pt">${r.score}</span></li>`).join("");
   const me = myId ? list.findIndex(r => r.id === myId) : -1;
   const meRow = me >= limit ? `<li class="me"><span class="no">${me + 1}</span><span class="who2">${esc(list[me].name)}<small>(나)</small></span><span class="pt">${list[me].score}</span></li>` : "";
+  // 6위부터는 '더보기'를 눌러야 보여요. 다시 그려도 열림 상태를 기억해요.
+  const myNote = me >= 5 ? ` · 내 순위 ${me + 1}위` : "";
   return `<div class="snack">🍪 랭킹 1~5위 간식 증정!</div>
     <ol class="chart${anim ? " anim" : ""}">${[1, 2, 3, 4, 5].map(row).join("")}</ol>
     ${list.length === 0 ? `<div class="rempty">아직 기록이 없어요. 첫 번째 세포 육아 마스터가 되어 보세요!</div>`
-      : (rows || meRow) ? `<div class="chart-more">6위부터</div><ol class="rlist">${rows}${meRow}</ol>` : ""}`;
+      : (rows || meRow) ? `<details class="more"${rankingHtml.open ? " open" : ""} ontoggle="rankingHtml.open = this.open"><summary>6위부터 더보기 (${list.length - 5}명${myNote})</summary><ol class="rlist">${rows}${meRow}</ol></details>` : ""}`;
 }
 function liveBadge() {
   if (Rank.mode === "claude") return `<span class="live"><i></i>실시간 공유 랭킹</span>`;
@@ -1527,6 +1534,7 @@ function rankNote() {
     : "공유 랭킹에 연결되지 않아 이 기기에서 한 기록만 보여요.";
 }
 function rankingScreen(from) {
+  rankingHtml.open = false;
   render(`<div class="rank-head"><h2>🏆 명예의 전당</h2><span id="badge">${liveBadge()}</span></div>
     <div id="rbody"><div class="rlist"><div class="rempty">랭킹을 불러오는 중…</div></div></div>
     <div class="rnote" id="rnote"></div>
@@ -1572,6 +1580,7 @@ function endScreen() {
 
 /* ===== 진행자용 랭킹판 (주소 끝에 #board) ===== */
 function boardScreen() {
+  rankingHtml.open = false;
   render(`<div class="board">
       <div class="left">
         ${logo()}
