@@ -476,9 +476,10 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 .flow span{background:var(--paper);border:2px solid var(--ink);border-radius:8px;padding:2px 9px;color:#7b8fa6}
 .flow span.on{background:var(--yellow);color:var(--ink)}
 .flow i{font-style:normal}
-.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .stepc{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px;font:inherit;color:var(--ink);background:var(--paper);border:3px solid var(--ink);border-radius:16px;box-shadow:0 4px 0 var(--ink);cursor:pointer}
 .stepc .img{width:100%;max-width:84px;aspect-ratio:1;border-radius:12px;border:2px solid var(--ink);display:grid;place-items:center;font-size:2rem}
+.stepc .img.s0{background:radial-gradient(circle,#ffd3dc 0 30%,#f08aa0 70%,#b0506a)}
 .stepc .img.s1{background:radial-gradient(circle,#f6e7a8 0 30%,#c9ab55 70%,#8c7330)}
 .stepc .img.s2{background:radial-gradient(circle,#a5b4f0 0 35%,#4b5bb0 70%,#2b3578)}
 .stepc .img.s3{background:radial-gradient(circle,#ff8a8a 0 30%,#6a3aa8 65%,#1e7a45)}
@@ -590,10 +591,10 @@ const MAX_SCORE = 160;
 const STAGES = {
   1: { name: "금쪽이 프로필", tag: "오가노이드란?" },
   2: { name: "금쪽이 탄생", tag: "오가노이드는 어떻게 생길까요?" },
-  3: { name: "3요소 잡기", tag: "오가노이드의 배양 환경" },
+  3: { name: "배양환경 잡기", tag: "오가노이드는 잘 자라려면?" },
   4: { name: "사연 상담", tag: "“납작하게 퍼지기만 해요” “피부세포로 만들었는데 아무것도 안 돼요”" },
-  5: { name: "금쪽이 뉴스", tag: "금쪽이 뉴스 속보" },
-  6: { name: "고민 상담", tag: "한계 · 함께 고민할 점 · 앞으로의 연구" },
+  5: { name: "금쪽이 뉴스", tag: "왜 필요할까요? 어디에 활용될까요?" },
+  6: { name: "고민 상담", tag: "기술의 발전과 함께 고민할 것" },
   7: { name: "총정리 퀴즈", tag: "금쪽이 졸업 시험" },
   8: { name: "다 큰 금쪽이", tag: "키워서 어디에 쓰냐고요?" }
 };
@@ -604,7 +605,7 @@ const GRADES = [
   { min: 0, name: "초보 부모", emoji: "🍼", msg: "괜찮아요, 모든 부모는 처음이에요. 다시 하면 금쪽이가 더 잘 클 거예요!" }
 ];
 const gradeOf = s => GRADES.find(g => s >= g.min);
-const LOAD_TIPS = ["줄기세포 깨우는 중…", "유도 신호 보내는 중…", "3D 배양 준비하는 중…", "금쪽이 육아 일기 펴는 중…"];
+const LOAD_TIPS = ["체세포 깨우는 중…", "재프로그래밍 하는 중…", "입체적인 3D 환경 준비하는 중…", "금쪽이 육아 일기 펴는 중…"];
 
 /* ===== 기본 도구 ===== */
 const app = document.getElementById("app");
@@ -916,7 +917,7 @@ function startScreen() {
       <div><span class="sub cyan">키워서 어디에 쓰냐고요?</span></div>
       <div class="talk"><div class="say" role="note">오늘은 금쪽이가 <b>태어나는 날</b>이에요!<br>잘 키워 주실 거죠? 🍼</div><div id="mascot">${ele("sad", "bouncy lv0", "font-size:13px")}</div></div>
       <div class="card desc">
-        당신은 <b>초보 연구원 부모</b>! 줄기세포에서 <b>오가노이드</b> 금쪽이를 직접 탄생시키고 키워 주세요.<small>오가노이드 = 살아 있는 세포로 만든 <b>3차원 조직</b>. 진짜 장기의 <b>일부 특징</b>을 재현해요.</small>
+        당신은 <b>초보 연구원 부모</b>! 체세포에서 <b>오가노이드</b> 금쪽이를 직접 탄생시키고 키워 주세요.<small>오가노이드(Organoid) = 장기의 <b>구조와 기능 일부</b>를 재현한 <b>3차원 조직 모델</b></small>
         <small>단계마다 세포 육아 전문가가 코칭해 드려요.</small>
       </div>
       <textarea class="name-input" id="nameInput" rows="2" maxlength="12" autocomplete="off" aria-label="닉네임 (학번과 이름)" placeholder="(자신의 학번과 이름으로 닉네임을 작성해주세요. 작성하지 않을 시, 간식이 제공되지 않습니다.)">${esc(S.name)}</textarea>
@@ -956,7 +957,7 @@ async function begin() {
 
 /* =========================================================
    게임 내용은 발표 자료(PPT)에 나온 내용만 써요.
-   정의 · 생성 과정 · 배양 환경 3요소 · 사연 · 금쪽이가 하는 일 · 한계 · 윤리/미래 · O/X
+   오가노이드란? · 필요성 · 생성과정 · 배양환경 · 사연 · 활용 분야 · 한계 · 윤리 및 미래연구 · O/X
    ========================================================= */
 const vv = (...xs) => xs.map((x, i) => `<span class="v" style="animation-delay:${i * .3}s">${x}</span>`).join("");
 
@@ -964,18 +965,18 @@ const vv = (...xs) => xs.map((x, i) => `<span class="v" style="animation-delay:$
 function stage1() {
   S.stage = 1; S.level = 0;
   const TAGS = [
-    { t: "살아 있는 세포", ok: true },
-    { t: "3차원 조직", ok: true },
-    { t: "장기의 일부 특징 재현", ok: true },
-    { t: "평평한 2차원 막", why: "금쪽이는 납작한 막이 아니라 <b>3차원 조직</b>이에요." },
-    { t: "장기의 모든 기능 재현", why: "금쪽이는 장기의 <b>일부 특징</b>만 재현해요. 모든 기능을 갖춘 건 아니에요." },
-    { t: "움직이는 로봇 장난감", why: "금쪽이는 기계가 아니라 <b>살아 있는 세포</b>예요!" }
+    { t: "살아있는 세포", ok: true },
+    { t: "3차원 구조", ok: true },
+    { t: "일부 기능 재현", ok: true },
+    { t: "평평한 2차원 구조", why: "금쪽이는 납작한 막이 아니라 <b>3차원 구조</b>예요." },
+    { t: "모든 기능 재현", why: "금쪽이는 장기의 <b>기능 일부</b>만 재현해요. 모든 기능을 갖춘 건 아니에요." },
+    { t: "움직이는 로봇 장난감", why: "금쪽이는 기계가 아니라 <b>살아있는 세포</b>예요!" }
   ];
   const sel = []; let tries = 0, done = false;
   const toResult = () => result({
     day: "0일차", title: "금쪽이 <em>프로필</em> 완성!", vis: ele("happy", "lv0 bouncy", "font-size:10px"),
-    text: "<b>이름</b>: 오가노이드<br><b>소개</b>: 살아 있는 세포 · 3차원 조직 · 장기의 일부 특징 재현",
-    coach: "금쪽이는 진짜 장기의 <b>일부 특징</b>을 닮았어요. <b>모든 기능</b>을 다 가진 건 아니라는 것, 꼭 기억해 주세요.",
+    text: "<b>이름</b>: 오가노이드(Organoid)<br><b>소개</b>: 장기의 구조와 기능 일부를 재현한 3차원 조직 모델<br>살아있는 세포 · 3차원 구조 · 일부 기능 재현",
+    coach: "금쪽이는 장기의 <b>구조와 기능 일부</b>를 재현해요. <b>모든 기능</b>을 다 가진 건 아니라는 것, 꼭 기억해 주세요.",
     next: stage2
   });
   render(`${head("0일차")}
@@ -1015,7 +1016,7 @@ function stage1() {
       done = true; paint(true); $$(".ptag").forEach(b => b.disabled = true);
       const pts = tries === 0 ? 20 : 10; addScore(pts, tries === 0); sparkle("완성!");
       $("#orgs").innerHTML = ele("happy", "lv0 bouncy", "font-size:10px");
-      fb.innerHTML = fbBox("good", `⭕ 프로필 완성! +${pts}점`, "금쪽이(오가노이드)는 <b>살아 있는 세포</b>로 만든 <b>3차원 조직</b>이에요. 진짜 장기의 <b>일부 특징</b>을 재현해요.");
+      fb.innerHTML = fbBox("good", `⭕ 프로필 완성! +${pts}점`, "금쪽이(오가노이드)는 장기의 <b>구조와 기능 일부</b>를 재현한 <b>3차원 조직 모델</b>이에요.");
       addNext(fb, toResult);
       return;
     }
@@ -1024,7 +1025,7 @@ function stage1() {
     if (tries >= 2) {
       done = true; sel.splice(0, 3, ...TAGS.filter(x => x.ok).map(x => x.t)); paint(true);
       $$(".ptag").forEach(b => b.disabled = true);
-      fb.innerHTML = fbBox("bad", "❌ 아쉬워요", body) + `<div style="height:10px"></div>` + fbBox("", "💡 정답 공개", "살아 있는 세포 · 3차원 조직 · 장기의 일부 특징 재현");
+      fb.innerHTML = fbBox("bad", "❌ 아쉬워요", body) + `<div style="height:10px"></div>` + fbBox("", "💡 정답 공개", "살아있는 세포 · 3차원 구조 · 일부 기능 재현");
       addNext(fb, toResult);
     } else {
       fb.innerHTML = fbBox("bad", "❌ 땡!", body + `<p class="hint">틀린 태그를 빼고 다시 골라 보세요! (두 번째 성공 +10점)</p>`);
@@ -1036,30 +1037,31 @@ function stage1() {
 function stage2() {
   S.stage = 2;
   const ST = [
-    { n: 1, t: "줄기세포", e: "🧫", c: "s1" },
-    { n: 2, t: "유도 신호", e: "📡", c: "s2" },
-    { n: 3, t: "오가노이드", e: "✨", c: "s3" }
+    { n: 1, t: "체세포", e: "🧫", c: "s0" },
+    { n: 2, t: "유도만능줄기세포(iPSC)", e: "🔮", c: "s1" },
+    { n: 3, t: "분화 유도", e: "📡", c: "s2" },
+    { n: 4, t: "오가노이드", e: "✨", c: "s3" }
   ];
-  const NUM = "①②③";
+  const NUM = "①②③④";
   let next = 1, mist = 0;
   render(`${head("탄생일")}
     ${stageBox(ele("meh", "lv0 ghost", "font-size:10px"), "금쪽이는 <em>어떻게</em> 태어날까요?")}
     ${sit("오가노이드는 어떻게 생길까요? 금쪽이가 태어나는 과정을 <b>순서대로</b> 맞혀 주세요.")}
     ${howto("금쪽이 탄생 순서", [
-      "금쪽이(오가노이드)가 생기는 과정 카드 <b>3장</b>이 섞여 있어요.",
+      "금쪽이(오가노이드)가 생기는 과정 카드 <b>4장</b>이 섞여 있어요.",
       "<b>처음 → 끝</b> 순서대로 카드를 눌러요.",
-      "순서가 틀리면 금쪽이 위기! 한 번 틀릴 때마다 −7점이에요."
+      "순서가 틀리면 금쪽이 위기! 한 번 틀릴 때마다 −5점이에요."
     ], "점수: 실수 없이 맞히면 20점")}
     <div class="play" id="play" hidden>
-      <div class="flow">${[1, 2, 3].map(n => `<span id="f${n}">${NUM[n - 1]} ?</span>`).join("<i>→</i>")}</div>
+      <div class="flow">${[1, 2, 3, 4].map(n => `<span id="f${n}">${NUM[n - 1]} ?</span>`).join("<i>→</i>")}</div>
       <div class="steps">${shuffle(ST).map(x => `<button class="stepc" data-n="${x.n}"><span class="no">${x.n}</span><span class="img ${x.c}">${x.e}</span><b>${x.t}</b></button>`).join("")}</div>
       <div id="fb"></div>
     </div>`);
   onHowGo();
   const fb = $("#fb");
-  const HINT = ["금쪽이는 무엇에서 출발할까요?", "출발한 세포에게 무엇을 줘야 금쪽이로 자랄까요?", "마지막엔 무엇이 될까요?"];
+  const HINT = ["금쪽이는 어떤 세포에서 출발할까요?", "체세포를 재프로그래밍하면 무엇이 될까요?", "만능 세포를 원하는 세포로 바꾸려면?", "3차원 배양·자기조직화를 거치면 무엇이 될까요?"];
   $$(".stepc").forEach(b => b.onclick = () => {
-    if (next > 3 || b.disabled) return;
+    if (next > 4 || b.disabled) return;
     const n = +b.dataset.n;
     if (n !== next) {
       mist++; crisis("순서가 달라요!");
@@ -1069,17 +1071,17 @@ function stage2() {
     }
     b.classList.add("done"); b.disabled = true;
     const f = $("#f" + n); f.textContent = `${NUM[n - 1]} ${ST[n - 1].t}`; f.classList.add("on");
-    if (n === 3) S.level = 1;
-    $("#orgs").innerHTML = n === 3 ? org("happy", "bouncy") : ele("meh", "lv0", "font-size:10px");
+    if (n === 4) S.level = 1;
+    $("#orgs").innerHTML = n === 4 ? org("happy", "bouncy") : ele("meh", "lv0", "font-size:10px");
     fb.innerHTML = "";
     next++;
-    if (next <= 3) return;
-    const pts = Math.max(0, 20 - mist * 7); addScore(pts, mist === 0); sparkle("탄생!");
-    fb.innerHTML = fbBox(pts >= 13 ? "good" : "bad", `⭕ 금쪽이 탄생! +${pts}점`, `실수 ${mist}번<br><b>줄기세포</b>에 <b>유도 신호</b>를 주면 <b>오가노이드</b>가 생겨요.`);
+    if (next <= 4) return;
+    const pts = Math.max(0, 20 - mist * 5); addScore(pts, mist === 0); sparkle("탄생!");
+    fb.innerHTML = fbBox(pts >= 13 ? "good" : "bad", `⭕ 금쪽이 탄생! +${pts}점`, `실수 ${mist}번<br><b>체세포</b>를 재프로그래밍해 <b>유도만능줄기세포(iPSC)</b>를 만들고, <b>분화를 유도</b>해 3차원 배양하면 <b>오가노이드</b>가 생겨요.`);
     addNext(fb, () => result({
       day: "탄생일", title: "금쪽이 <em>탄생!</em>", cls: "bouncy",
-      text: "① 줄기세포 → ② 유도 신호 → ③ 오가노이드<br>금쪽이가 세상에 나왔어요!",
-      coach: "금쪽이의 출발은 <b>줄기세포</b>예요. 여기에 <b>유도 신호</b>를 줘야 오가노이드로 자라요.",
+      text: "① 체세포 → ② 유도만능줄기세포(iPSC) → ③ 분화 유도 → ④ 오가노이드<br>금쪽이가 세상에 나왔어요!",
+      coach: "<b>재프로그래밍</b>으로 체세포를 iPSC로 되돌리고, <b>분화 유도</b> 뒤 <b>3차원 배양·자기조직화</b>를 거치면 오가노이드가 돼요.",
       next: stage3
     }));
   });
@@ -1088,18 +1090,18 @@ function stage2() {
 /* ===== 3단계: 3요소 잡기 (배양 환경) ===== */
 function stage3() {
   S.stage = 3;
-  const GOOD = [{ t: "3D 배양", e: "📦" }, { t: "줄기세포", e: "🧫" }, { t: "성장인자", e: "📡" }];
+  const GOOD = [{ t: "입체적인 3D 환경", e: "🧊" }, { t: "성장·분화 신호", e: "📡" }, { t: "영양·산소 공급", e: "💧" }];
   const BAD = [{ t: "평평한 2D", e: "📄" }, { t: "사탕", e: "🍬" }, { t: "장난감", e: "🧸" }];
-  const cnt = { "3D 배양": 0, "줄기세포": 0, "성장인자": 0 };
+  const cnt = { "입체적인 3D 환경": 0, "성장·분화 신호": 0, "영양·산소 공급": 0 };
   let hits = 0, miss = 0, over = false;
   render(`${head("1일차")}
-    ${stageBox(org("meh"), "금쪽이 <em>배양 환경</em> 3요소!")}
-    ${sit("금쪽이가 잘 자라려면 알맞은 <b>배양 환경</b>이 필요해요. 배양 환경의 <b>3요소</b>를 잔뜩 모아 주세요!")}
-    ${howto("3요소 잡기", [
+    ${stageBox(org("meh"), "금쪽이는 잘 <em>자라려면?</em>")}
+    ${sit("오가노이드가 잘 자라려면 알맞은 <b>배양환경</b>이 필요해요. 금쪽이에게 필요한 <b>3가지</b>를 잔뜩 모아 주세요!")}
+    ${howto("배양환경 잡기", [
       "구멍에서 카드가 잠깐씩 튀어나와요. <b>15초</b> 동안 이어져요.",
-      "<b>배양 환경 3요소</b> 카드만 재빨리 눌러 모아요.",
+      "<b>배양환경</b>에 필요한 카드만 재빨리 눌러 모아요.",
       "엉뚱한 카드를 누르면 감점이에요!"
-    ], "점수: 3요소 카드 1장에 +2점(최대 20점), 엉뚱한 카드 1장에 −3점")}
+    ], "점수: 배양환경 카드 1장에 +2점(최대 20점), 엉뚱한 카드 1장에 −3점")}
     <div class="play" id="play" hidden>
       <div class="mole-top"><span>⏱️</span><div class="tbar"><i id="tb"></i></div><span id="hitc">0장</span></div>
       <div class="holes">${Array.from({ length: 9 }, () => `<div class="hole"></div>`).join("")}</div>
@@ -1140,11 +1142,11 @@ function stage3() {
     const pts = Math.max(0, Math.min(20, hits * 2) - miss * 3);
     addScore(pts, pts === 20); if (pts >= 14) sparkle("다 모았다!");
     S.level = 2; $("#orgs").innerHTML = org("happy", "bouncy");
-    fb.innerHTML = fbBox(pts >= 12 ? "good" : "bad", `${pts >= 12 ? "⭕" : "❌"} 3요소 잡기 +${pts}점`, `3요소 ${hits}장 · 엉뚱한 카드 ${miss}장`);
+    fb.innerHTML = fbBox(pts >= 12 ? "good" : "bad", `${pts >= 12 ? "⭕" : "❌"} 배양환경 잡기 +${pts}점`, `배양환경 카드 ${hits}장 · 엉뚱한 카드 ${miss}장`);
     addNext(fb, () => result({
-      day: "1일차", title: "금쪽이 <em>배양 환경</em> 완성!", cls: "bouncy",
-      text: "<b>3D 배양</b> + <b>줄기세포</b> + <b>성장인자</b>를 모두 갖췄어요. 금쪽이가 쑥쑥 자라기 시작했어요!",
-      coach: "이 세 가지가 금쪽이의 <b>배양 환경 3요소</b>예요. 금쪽이는 <b>3차원 조직</b>이라 평평한 2D가 아니라 <b>3D</b>로 키워요.",
+      day: "1일차", title: "금쪽이 <em>배양환경</em> 완성!", cls: "bouncy",
+      text: "<b>입체적인 3D 환경</b> + <b>성장·분화 신호</b> + <b>영양·산소 공급</b>을 모두 갖췄어요. 금쪽이가 쑥쑥 자라기 시작했어요!",
+      coach: "이 세 가지가 금쪽이가 잘 자라는 <b>배양환경</b>이에요. 금쪽이는 <b>3차원 구조</b>라 평평한 2D가 아니라 <b>입체적인 3D 환경</b>에서 키워요.",
       next: stage4
     }));
   }
@@ -1157,11 +1159,11 @@ function stage4() {
     {
       story: "선생님, 저희 금쪽이가 <b>납작하게 퍼지기만 해요</b>.",
       vis: ele("sad", "lv2 squash", "font-size:11px"),
-      q: "사연 ① 금쪽이에게 빠진 배양 환경 요소는?",
+      q: "사연 ① 금쪽이에게 빠진 배양환경은?",
       opts: [
-        { t: "입체로 키우는 3D 배양이 빠졌다", ok: true, why: "금쪽이는 <b>3차원 조직</b>이에요. 입체로 키우는 <b>3D 배양</b>이 없으면 납작하게 퍼져요." },
-        { t: "성장인자가 부족해서 덜 자랐다", why: "성장인자도 3요소인 건 맞아요. 하지만 모양이 납작한 건 <b>3D 배양</b>이 빠졌기 때문이에요." },
-        { t: "줄기세포가 아닌 세포로 시작했다", why: "출발 재료가 중요한 건 맞아요. 하지만 이 금쪽이는 자라긴 하는데 모양이 납작해요. <b>3D 배양</b> 문제예요." },
+        { t: "입체적인 3D 환경이 빠졌다", ok: true, why: "금쪽이는 <b>3차원 구조</b>예요. <b>입체적인 3D 환경</b>이 없으면 납작하게 퍼져요." },
+        { t: "성장·분화 신호가 부족했다", why: "성장·분화 신호도 배양환경인 건 맞아요. 하지만 모양이 납작한 건 <b>입체적인 3D 환경</b>이 빠졌기 때문이에요." },
+        { t: "영양·산소 공급이 부족했다", why: "영양·산소 공급도 배양환경인 건 맞아요. 하지만 이 금쪽이는 자라긴 하는데 모양이 납작해요. <b>입체적인 3D 환경</b> 문제예요." },
         { t: "금쪽이가 누워 있는 걸 좋아한다", why: "금쪽이 잘못이 아니에요! <b>배양 환경</b>의 문제예요." }
       ]
     },
@@ -1170,10 +1172,10 @@ function stage4() {
       vis: ele("sad", "lv0 ghost", "font-size:11px"),
       q: "사연 ② 금쪽이가 생기지 않은 까닭은?",
       opts: [
-        { t: "출발 재료가 줄기세포가 아니었다", ok: true, why: "금쪽이는 <b>줄기세포</b>에서 출발해요. (줄기세포 → 유도 신호 → 오가노이드)" },
-        { t: "유도 신호를 주지 않아 자라지 못했다", why: "유도 신호도 꼭 필요한 건 맞아요. 하지만 이 사연은 출발 재료부터 <b>줄기세포</b>가 아니었어요." },
-        { t: "3D 배양을 하지 않아 납작해졌다", why: "3D 배양도 3요소인 건 맞아요. 하지만 이 사연은 모양이 아니라 <b>재료</b>가 문제예요." },
-        { t: "피부에 보습 크림을 안 발라서", why: "금쪽이는 피부 관리가 필요한 게 아니에요! 출발은 <b>줄기세포</b>예요." }
+        { t: "체세포를 재프로그래밍하지 않았다", ok: true, why: "피부세포 같은 <b>체세포</b>는 먼저 <b>재프로그래밍</b>해서 <b>유도만능줄기세포(iPSC)</b>로 만들어야 해요. (체세포 → iPSC → 분화 유도 → 오가노이드)" },
+        { t: "분화 유도를 하지 않아 자라지 못했다", why: "분화 유도도 꼭 필요한 건 맞아요. 하지만 그 전에 체세포를 <b>재프로그래밍</b>해 iPSC로 만드는 단계가 빠졌어요." },
+        { t: "3D 환경이 없어 납작해졌다", why: "입체적인 3D 환경도 필요한 건 맞아요. 하지만 이 사연은 모양이 아니라 <b>출발 세포</b>가 문제예요." },
+        { t: "피부에 보습 크림을 안 발라서", why: "금쪽이는 피부 관리가 필요한 게 아니에요! 체세포는 먼저 <b>재프로그래밍</b>해야 해요." }
       ]
     }
   ];
@@ -1182,8 +1184,8 @@ function stage4() {
   function show() {
     if (k >= CASES4.length) return result({
       day: "사연 접수", title: "사연 <em>해결!</em>", cls: "bouncy",
-      text: "📮 “납작하게 퍼지기만 해요” → <b>3D 배양</b>이 필요해요<br>📮 “피부세포로 만들었는데 아무것도 안 돼요” → 출발은 <b>줄기세포</b>예요",
-      coach: "금쪽이에게 문제가 생기면 <b>배양 환경 3요소</b>부터 점검해 보세요. 3D 배양, 줄기세포, 성장인자!",
+      text: "📮 “납작하게 퍼지기만 해요” → <b>입체적인 3D 환경</b>이 필요해요<br>📮 “피부세포로 만들었는데 아무것도 안 돼요” → 체세포는 먼저 <b>재프로그래밍</b>해서 iPSC로!",
+      coach: "금쪽이에게 문제가 생기면 <b>생성과정</b>과 <b>배양환경</b>부터 점검해 보세요. 입체적인 3D 환경, 성장·분화 신호, 영양·산소 공급!",
       next: stage5
     });
     const c = CASES4[k++];
@@ -1195,23 +1197,23 @@ function stage4() {
   }
 }
 
-/* ===== 5단계: 금쪽이 뉴스 속보 (금쪽이가 하는 일) ===== */
+/* ===== 5단계: 금쪽이 뉴스 속보 (필요성 · 활용 분야) ===== */
 function stage5() {
   S.stage = 5;
   // 헤드라인의 ___ 자리에 들어갈 낱말 고르기. 정답 낱말은 모두 발표 자료의 표현이에요.
   const NEWS = [
-    { pic: "🐰", h: "[속보] 금쪽이, ___의 대안으로 떠올라", a: "동물실험", f: "동물실험의 대안", w: ["수학 시험", "체력 검사"] },
-    { pic: "🩺", h: "금쪽이 덕분에 정밀의료 · ___ 맞춤형 치료", a: "환자", f: "정밀의료 및 환자 맞춤형 치료", w: ["자동차", "날씨"] },
-    { pic: "💊", h: "신약 개발 ___ · 비용 확 줄인 금쪽이", a: "기간", f: "신약 개발 기간 및 비용 단축", w: ["색깔", "포장"] },
-    { pic: "🧠", h: "금쪽이, 생물학적 ___ 개발에 도전", a: "컴퓨터", f: "생물학적 컴퓨터 개발", w: ["냉장고", "자전거"] },
-    { pic: "🦠", h: "___균 위 질환 연구에 금쪽이 출동", a: "헬리코박터", f: "헬리코박터균 위 질환 연구", w: ["유산", "비피더스"] },
-    { pic: "🚀", h: "금쪽이, ___병 치료제 개발 나선다", a: "우주", f: "우주병 치료제 개발", w: ["상사", "꾀"] }
+    { cat: "필요성", pic: "🐰", h: "[속보] 금쪽이, ___의 보완·일부 대체로 떠올라", a: "동물실험", f: "동물실험의 보완·일부 대체", w: ["수학 시험", "체력 검사"] },
+    { cat: "필요성", pic: "🩺", h: "금쪽이 덕분에 정밀의료 · ___ 맞춤형 치료", a: "환자", f: "정밀의료·환자 맞춤형 치료", w: ["자동차", "날씨"] },
+    { cat: "필요성", pic: "💊", h: "금쪽이 덕분에 약물 평가의 ___ 향상", a: "효율", f: "약물 평가의 효율 향상", w: ["색깔", "포장"] },
+    { cat: "활용 분야", pic: "🧠", h: "금쪽이, 생물학적 ___ 개발에 도전", a: "컴퓨터", f: "생물학적 컴퓨터 개발", w: ["냉장고", "자전거"] },
+    { cat: "활용 분야", pic: "🦠", h: "___균 위 질환 연구에 금쪽이 출동", a: "헬리코박터", f: "헬리코박터균 위 질환 연구", w: ["유산", "비피더스"] },
+    { cat: "활용 분야", pic: "🚀", h: "금쪽이, ___병 치료제 개발 나선다", a: "우주", f: "우주병 치료제 개발", w: ["상사", "꾀"] }
   ];
   const LIMIT = 7000;
   let k = 0, correct = 0, tick = null;
   render(`${head("7일차")}
     ${stageBox(org("happy", "bouncy"), "금쪽이, <em>뉴스</em>에 나왔어요!")}
-    ${sit("다 커 가는 금쪽이가 뉴스에 나왔어요! 그런데 자막에 <b>빈칸</b>이 생겼네요. 금쪽이가 하는 일을 떠올리며 빈칸을 채워 주세요.")}
+    ${sit("다 커 가는 금쪽이가 뉴스에 나왔어요! 그런데 자막에 <b>빈칸</b>이 생겼네요. 오가노이드가 <b>왜 필요한지</b>, <b>어디에 활용되는지</b> 떠올리며 빈칸을 채워 주세요.")}
     ${howto("금쪽이 뉴스 속보", [
       "뉴스 헤드라인이 <b>6개</b> 나와요. 헤드라인마다 빈칸이 하나 있어요.",
       "아래 낱말 3개 중 빈칸에 맞는 것을 <b>7초 안에</b> 눌러요.",
@@ -1222,7 +1224,7 @@ function stage5() {
         <div class="news-top"><span>📺 금쪽 뉴스</span><span class="live">● LIVE</span></div>
         <div class="news-scr" id="nscr">${org("happy", "bouncy")}</div>
         <div class="headline"><span class="tag" id="ntag">속보 1/6</span><p id="nhead"></p></div>
-        <div class="ticker"><span>금쪽같은 내 세포 · 오늘의 금쪽이 소식 · 살아 있는 세포로 만든 3차원 조직 · 줄기세포 → 유도 신호 → 오가노이드</span></div>
+        <div class="ticker"><span>금쪽같은 내 세포 · 오늘의 금쪽이 소식 · 장기의 구조와 기능 일부를 재현한 3차원 조직 모델 · 체세포 → iPSC → 분화 유도 → 오가노이드</span></div>
       </div>
       <div class="mole-top"><span>⏱️</span><div class="tbar"><i id="tb"></i></div><span id="nscore">0 / 6</span></div>
       <div class="words" id="words"></div>
@@ -1250,7 +1252,7 @@ function stage5() {
       $("#nhead").innerHTML = headline(n, n.a, ok ? "ok" : "no");
       if (ok) { correct++; $("#nscore").textContent = `${correct} / ${NEWS.length}`; }
       else { app.classList.remove("shake"); void app.offsetWidth; app.classList.add("shake"); }
-      fb.innerHTML = fbBox(ok ? "good" : "bad", ok ? "⭕ 정답!" : (t ? "❌ 땡!" : "⏰ 시간 초과!"), `${n.pic} 금쪽이가 하는 일: <b>${n.f}</b>`);
+      fb.innerHTML = fbBox(ok ? "good" : "bad", ok ? "⭕ 정답!" : (t ? "❌ 땡!" : "⏰ 시간 초과!"), `${n.pic} ${n.cat}: <b>${n.f}</b>`);
       later(show, ok ? 1100 : 1700);
     };
     $$(".word").forEach(b => b.onclick = () => answer(b.dataset.t));
@@ -1267,7 +1269,7 @@ function stage5() {
     fb.innerHTML = fbBox(pts >= 12 ? "good" : "bad", `${pts >= 12 ? "⭕" : "❌"} 금쪽 뉴스 +${pts}점`, `맞힌 헤드라인 ${correct} / ${NEWS.length}`);
     addNext(fb, () => result({
       day: "7일차", title: "금쪽이 <em>특종</em> 보도!", cls: "bouncy",
-      text: "🐰 동물실험의 대안<br>🩺 정밀의료 및 환자 맞춤형 치료<br>💊 신약 개발 기간 및 비용 단축<br>🧠 생물학적 컴퓨터 개발<br>🦠 헬리코박터균 위 질환 연구<br>🚀 우주병 치료제 개발",
+      text: "💡 <b>필요성</b><br>🐰 동물실험의 보완·일부 대체<br>🩺 정밀의료·환자 맞춤형 치료<br>💊 약물 평가의 효율 향상<br>🚀 <b>활용 분야</b><br>🧠 생물학적 컴퓨터 개발<br>🦠 헬리코박터균 위 질환 연구<br>🚀 우주병 치료제 개발",
       coach: "키워서 어디에 쓰냐고요? 이제 자신 있게 대답할 수 있죠?",
       next: stage6
     }));
@@ -1278,14 +1280,14 @@ function stage5() {
 function stage6() {
   S.stage = 6;
   const ITEMS = {
-    lim: ["완벽한 장기기능 구현의 어려움", "장기 배양의 부담", "대량 공급 표준 공급망의 부족"],
-    eth: ["세포 제공자의 동의", "유전정보의 보호", "공정한 이용 기회"],
-    fut: ["더 정교한 조직 모델", "장기 간 상호작용 연구", "맞춤형 의학의 발전"]
+    lim: ["장기 기능 재현의 한계", "배양 시간·비용 부담", "결과의 차이"],
+    eth: ["세포 제공자의 동의", "유전정보 보호", "공정한 이용기회"],
+    fut: ["더 정교한 조직모델", "장기 간의 상호작용", "맞춤형 의학"]
   };
   const ROUNDS = [
-    { k: "lim", q: "😥 금쪽이의 <em>한계</em>는?", decoy: ["세포 제공자의 동의", "더 정교한 조직 모델", "유전정보의 보호"] },
-    { k: "eth", q: "🤝 함께 <em>고민할 점</em>(윤리)은?", decoy: ["장기 배양의 부담", "맞춤형 의학의 발전", "장기 간 상호작용 연구"] },
-    { k: "fut", q: "🔭 <em>앞으로의 연구</em>는?", decoy: ["유전정보의 보호", "대량 공급 표준 공급망의 부족", "공정한 이용 기회"] }
+    { k: "lim", q: "😥 아직 <em>해결해야 할 문제들</em>(한계)은?", decoy: ["세포 제공자의 동의", "더 정교한 조직모델", "유전정보 보호"] },
+    { k: "eth", q: "🤝 함께 <em>지킬 원칙</em>은?", decoy: ["배양 시간·비용 부담", "맞춤형 의학", "장기 간의 상호작용"] },
+    { k: "fut", q: "🔭 <em>앞으로의 연구</em>는?", decoy: ["유전정보 보호", "결과의 차이", "공정한 이용기회"] }
   ];
   let r = 0, score = 0;
   render(`${head("14일차")}
@@ -1335,8 +1337,8 @@ function stage6() {
     S.level = 3;
     result({
       day: "14일차", title: "금쪽이 <em>고민</em> 해결!", cls: "bouncy",
-      text: `😥 <b>한계</b>: ${ITEMS.lim.join(" · ")}<br>🤝 <b>함께 고민할 점</b>: ${ITEMS.eth.join(" · ")}<br>🔭 <b>앞으로의 연구</b>: ${ITEMS.fut.join(" · ")}`,
-      coach: "금쪽이도 아직 완벽하지 않아요. 한계를 알고, 함께 고민할 점을 지키면서 키워 가요.",
+      text: `😥 <b>아직 해결해야 할 문제들</b>: ${ITEMS.lim.join(" · ")}<br>🤝 <b>함께 지킬 원칙</b>: ${ITEMS.eth.join(" · ")}<br>🔭 <b>앞으로의 연구</b>: ${ITEMS.fut.join(" · ")}`,
+      coach: "기술의 발전과 함께 고민할 것! 한계를 알고, 함께 지킬 원칙을 지키면서 키워 가요.",
       next: stage7
     });
   }
@@ -1344,8 +1346,8 @@ function stage6() {
 
 /* ===== 7단계: 총정리 O/X (발표 자료 퀴즈) ===== */
 const FINAL_OX = [
-  { q: "<b>자기 조직화</b>란 세포가 스스로 배열돼 조직을 이루는 현상을 뜻한다.", a: true, why: "맞아요! 세포가 스스로 배열돼 조직을 이루는 현상을 <b>자기 조직화</b>라고 해요." },
-  { q: "오가노이드는 <b>실제 장기의 모든 기능</b>을 갖춘다.", a: false, why: "아니에요. 오가노이드는 장기의 <b>일부 특징</b>만 재현해요. <b>완벽한 장기기능 구현</b>은 아직 어려운 한계예요." }
+  { q: "<b>자기조직화</b>란 세포가 스스로 배열돼 조직을 이루는 현상을 뜻한다.", a: true, why: "맞아요! 세포가 스스로 배열돼 조직을 이루는 현상을 <b>자기조직화</b>라고 해요. 분화 유도 뒤 3차원 배양·자기조직화를 거쳐 오가노이드가 돼요." },
+  { q: "오가노이드는 <b>실제 장기의 모든 기능</b>을 갖춘다.", a: false, why: "아니에요. 오가노이드는 장기의 <b>구조와 기능 일부</b>만 재현해요. <b>장기 기능 재현의 한계</b>는 아직 해결해야 할 문제예요." }
 ];
 function stage7() {
   S.stage = 7;
@@ -1377,12 +1379,12 @@ function stage7() {
 function ending() {
   S.stage = 8; S.level = 3;
   const scenes = [
-    { v: vv(ele("happy", "lv3 bouncy", "font-size:8px")), c: "금쪽이 = <b>살아 있는 세포</b>로 만든 <b>3차원 조직</b><small>장기의 일부 특징을 재현해요</small>" },
-    { v: vv("🧫", "➡️", "📡", "➡️", "✨"), c: "줄기세포 → 유도 신호 → 오가노이드<small>금쪽이는 이렇게 태어났어요</small>" },
-    { v: vv("📦", "🧫", "📡"), c: "배양 환경 3요소<small>3D 배양 · 줄기세포 · 성장인자</small>" },
-    { v: vv("🐰", "🩺", "💊"), c: "금쪽이가 하는 일 ①<small>동물실험의 대안 · 정밀의료 및 환자 맞춤형 치료 · 신약 개발 기간 및 비용 단축</small>" },
-    { v: vv("🧠", "🦠", "🚀"), c: "금쪽이가 하는 일 ②<small>생물학적 컴퓨터 개발 · 헬리코박터균 위 질환 연구 · 우주병 치료제 개발</small>" },
-    { v: vv("🔬", "✨"), c: "앞으로의 금쪽이<small>더 정교한 조직 모델 · 장기 간 상호작용 연구 · 맞춤형 의학의 발전</small>" }
+    { v: vv(ele("happy", "lv3 bouncy", "font-size:8px")), c: "금쪽이 = <b>오가노이드(Organoid)</b><small>장기의 구조와 기능 일부를 재현한 3차원 조직 모델</small>" },
+    { v: vv("🧫", "🔮", "📡", "✨"), c: "체세포 → iPSC → 분화 유도 → 오가노이드<small>재프로그래밍 · 3차원 배양 · 자기조직화</small>" },
+    { v: vv("🧊", "📡", "💧"), c: "잘 자라려면?<small>입체적인 3D 환경 · 성장·분화 신호 · 영양·산소 공급</small>" },
+    { v: vv("🐰", "🩺", "💊"), c: "왜 필요할까요?<small>동물실험의 보완·일부 대체 · 정밀의료·환자 맞춤형 치료 · 약물 평가의 효율 향상</small>" },
+    { v: vv("🧠", "🦠", "🚀"), c: "어디에 활용될까요?<small>생물학적 컴퓨터 개발 · 헬리코박터균 위 질환 연구 · 우주병 치료제 개발</small>" },
+    { v: vv("🔬", "✨"), c: "앞으로의 연구<small>더 정교한 조직모델 · 장기 간의 상호작용 · 맞춤형 의학</small>" }
   ];
   let i = 0;
   render(`${head("졸업")}
@@ -1407,9 +1409,9 @@ function finale() {
     ${stageBox(ele("happy", "lv3 bouncy wave", "font-size:14px"))}
     ${expert("다 컸네요, 금쪽이. 정말 수고 많으셨어요!")}
     <div class="three">
-      <h3>📌 오가노이드의 배양 환경 3요소</h3>
-      <div class="eq"><span>📦<b>3D 배양</b></span>+<span>🧫<b>줄기세포</b></span>+<span>📡<b>성장인자</b></span></div>
-      <p>줄기세포 → 유도 신호 → 오가노이드</p>
+      <h3>📌 오가노이드는 잘 자라려면?</h3>
+      <div class="eq"><span>🧊<b>입체적인 3D 환경</b></span>+<span>📡<b>성장·분화 신호</b></span>+<span>💧<b>영양·산소 공급</b></span></div>
+      <p>체세포 → 유도만능줄기세포(iPSC) → 분화 유도 → 오가노이드</p>
     </div>
     <div class="quote">“금쪽같은 내 세포,<br>이제 <em>어디에 쓰는지</em> 아시겠죠?”</div>
     <button class="btn yellow" id="toRes">📜 육아 성적표 받기</button>`);
@@ -1513,8 +1515,8 @@ function endScreen() {
   const credits = [
     ["오늘의 초보 연구원 부모", `${esc(S.name)} (${g.name})`],
     ["출연", "금쪽이(오가노이드) · 초보 연구원 부모 · 세포 육아 전문가"],
-    ["특별 출연", "줄기세포 · 유도 신호 · 3D 배양 · 성장인자"],
-    ["오늘 배운 것", "정의 · 생성 과정 · 3요소 · 금쪽이가 하는 일 · 한계 · 윤리"],
+    ["특별 출연", "체세포 · 유도만능줄기세포(iPSC) · 성장·분화 신호"],
+    ["오늘 배운 것", "오가노이드란? · 필요성 · 생성과정 · 배양환경 · 활용 분야 · 한계 · 윤리 및 미래연구"],
     ["다음 회 예고", "우리 금쪽이가 “우리” 금쪽이가 아니라고요!?"]
   ].map(([a, b]) => `<div><small>${a}</small><b>${b}</b></div>`).join("");
   render(`<div class="end screen-in" style="flex:1">
