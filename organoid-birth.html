@@ -527,7 +527,8 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 .flow{display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;font-family:var(--font-display);font-size:1.05rem}
 .flow span{background:var(--paper);border:2px solid var(--ink);border-radius:8px;padding:2px 9px;color:#7b8fa6}
 .flow span.on{background:var(--yellow);color:var(--ink)}
-.flow i{font-style:normal}
+.flow i{font-style:normal;font-family:var(--font-body);font-size:.72rem;font-weight:700;color:#1d8a8a}
+.small.center{text-align:center;font-size:.8rem;color:#4d6178;margin-top:-6px}
 .steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .stepc{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px;font:inherit;color:var(--ink);background:var(--paper);border:3px solid var(--ink);border-radius:16px;box-shadow:0 4px 0 var(--ink);cursor:pointer}
 .stepc .img{width:100%;max-width:84px;aspect-ratio:1;border-radius:12px;border:2px solid var(--ink);display:grid;place-items:center;font-size:2rem}
@@ -664,7 +665,7 @@ const GRADES = [
   { min: 0, name: "초보 부모", emoji: "🍼", msg: "괜찮아요, 모든 부모는 처음이에요. 다시 하면 금쪽이가 더 잘 클 거예요!" }
 ];
 const gradeOf = s => GRADES.find(g => s >= g.min);
-const LOAD_TIPS = ["체세포 깨우는 중…", "재프로그래밍 하는 중…", "입체적인 3D 환경 준비하는 중…", "금쪽이 육아 일기 펴는 중…"];
+const LOAD_TIPS = ["체세포 깨우는 중…", "역분화 하는 중…", "입체적인 3D 환경 준비하는 중…", "금쪽이 육아 일기 펴는 중…"];
 
 /* ===== 기본 도구 ===== */
 const app = document.getElementById("app");
@@ -1161,7 +1162,7 @@ function stage2() {
   const ST = [
     { n: 1, t: "체세포", e: "🧫", c: "s0" },
     { n: 2, t: "유도만능줄기세포(iPSC)", e: "🔮", c: "s1" },
-    { n: 3, t: "분화 유도", e: "📡", c: "s2" },
+    { n: 3, t: "분화 중인 세포", e: "📡", c: "s2" },
     { n: 4, t: "오가노이드", e: "✨", c: "s3" }
   ];
   const NUM = "①②③④";
@@ -1175,13 +1176,14 @@ function stage2() {
       "순서가 틀리면 금쪽이 위기! 한 번 틀릴 때마다 −5점이에요."
     ], "점수: 실수 없이 맞히면 20점")}
     <div class="play" id="play" hidden>
-      <div class="flow">${[1, 2, 3, 4].map(n => `<span id="f${n}">${NUM[n - 1]} ?</span>`).join("<i>→</i>")}</div>
+      <div class="flow">${[1, 2, 3, 4].map(n => `<span id="f${n}">${NUM[n - 1]} ?</span>`).map((x, k) => k ? `<i>${["역분화", "분화 유도", "3차원 배양·자기조직화"][k - 1]} →</i>${x}` : x).join("")}</div>
+      <p class="small center">iPSC를 이용한 오가노이드 생성 과정의 예</p>
       <div class="steps">${shuffle(ST).map(x => `<button class="stepc" data-n="${x.n}"><span class="no">${x.n}</span><span class="img ${x.c}">${x.e}</span><b>${x.t}</b></button>`).join("")}</div>
       <div id="fb"></div>
     </div>`);
   onHowGo();
   const fb = $("#fb");
-  const HINT = ["금쪽이는 어떤 세포에서 출발할까요?", "체세포를 재프로그래밍하면 무엇이 될까요?", "만능 세포를 원하는 세포로 바꾸려면?", "3차원 배양·자기조직화를 거치면 무엇이 될까요?"];
+  const HINT = ["금쪽이는 어떤 세포에서 출발할까요?", "체세포를 역분화하면 무엇이 될까요?", "iPSC에 분화를 유도하면 어떤 세포가 될까요?", "3차원 배양·자기조직화를 거치면 무엇이 될까요?"];
   $$(".stepc").forEach(b => b.onclick = () => {
     if (next > 4 || b.disabled) return;
     const n = +b.dataset.n;
@@ -1199,11 +1201,11 @@ function stage2() {
     next++;
     if (next <= 4) return;
     const pts = Math.max(0, 20 - mist * 5); addScore(pts, mist === 0); sparkle("탄생!");
-    fb.innerHTML = fbBox(pts >= 13 ? "good" : "bad", `⭕ 금쪽이 탄생! +${pts}점`, `실수 ${mist}번<br><b>체세포</b>를 재프로그래밍해 <b>유도만능줄기세포(iPSC)</b>를 만들고, <b>분화를 유도</b>해 3차원 배양하면 <b>오가노이드</b>가 생겨요.`);
+    fb.innerHTML = fbBox(pts >= 13 ? "good" : "bad", `⭕ 금쪽이 탄생! +${pts}점`, `실수 ${mist}번<br><b>체세포</b>를 <b>역분화</b>해 <b>유도만능줄기세포(iPSC)</b>를 만들고, <b>분화를 유도</b>한 <b>분화 중인 세포</b>를 3차원 배양하면 <b>오가노이드</b>가 생겨요.`);
     addNext(fb, () => result({
       day: "탄생일", title: "금쪽이 <em>탄생!</em>", cls: "bouncy",
-      text: "① 체세포 → ② 유도만능줄기세포(iPSC) → ③ 분화 유도 → ④ 오가노이드<br>금쪽이가 세상에 나왔어요!",
-      coach: "<b>재프로그래밍</b>으로 체세포를 iPSC로 되돌리고, <b>분화 유도</b> 뒤 <b>3차원 배양·자기조직화</b>를 거치면 오가노이드가 돼요.",
+      text: "① 체세포 →(역분화)→ ② 유도만능줄기세포(iPSC) →(분화 유도)→ ③ 분화 중인 세포 →(3차원 배양·자기조직화)→ ④ 오가노이드<br>금쪽이가 세상에 나왔어요!",
+      coach: "<b>역분화</b>로 체세포를 iPSC로 되돌리고, <b>분화를 유도</b>한 세포가 <b>3차원 배양·자기조직화</b>를 거치면 오가노이드가 돼요. iPSC를 이용한 오가노이드 생성 과정의 예예요.",
       next: stage3
     }));
   });
@@ -1300,10 +1302,10 @@ function stage4() {
       vis: ele("sad", "lv0 ghost", "font-size:11px"),
       q: "사연 ② 금쪽이가 생기지 않은 까닭은?",
       opts: [
-        { t: "체세포를 재프로그래밍하지 않았다", ok: true, why: "피부세포 같은 <b>체세포</b>는 먼저 <b>재프로그래밍</b>해서 <b>유도만능줄기세포(iPSC)</b>로 만들어야 해요. (체세포 → iPSC → 분화 유도 → 오가노이드)" },
-        { t: "분화 유도를 하지 않아 자라지 못했다", why: "분화 유도도 꼭 필요한 건 맞아요. 하지만 그 전에 체세포를 <b>재프로그래밍</b>해 iPSC로 만드는 단계가 빠졌어요." },
+        { t: "체세포를 역분화하지 않았다", ok: true, why: "피부세포 같은 <b>체세포</b>는 먼저 <b>역분화</b>해서 <b>유도만능줄기세포(iPSC)</b>로 만들어야 해요. (체세포 → iPSC → 분화 중인 세포 → 오가노이드)" },
+        { t: "분화 유도를 하지 않아 자라지 못했다", why: "분화 유도도 꼭 필요한 건 맞아요. 하지만 그 전에 체세포를 <b>역분화</b>해 iPSC로 만드는 단계가 빠졌어요." },
         { t: "3D 환경이 없어 납작해졌다", why: "입체적인 3D 환경도 필요한 건 맞아요. 하지만 이 사연은 모양이 아니라 <b>출발 세포</b>가 문제예요." },
-        { t: "피부에 보습 크림을 안 발라서", why: "금쪽이는 피부 관리가 필요한 게 아니에요! 체세포는 먼저 <b>재프로그래밍</b>해야 해요." }
+        { t: "피부에 보습 크림을 안 발라서", why: "금쪽이는 피부 관리가 필요한 게 아니에요! 체세포는 먼저 <b>역분화</b>해야 해요." }
       ]
     }
   ];
@@ -1312,7 +1314,7 @@ function stage4() {
   function show() {
     if (k >= CASES4.length) return result({
       day: "사연 접수", title: "사연 <em>해결!</em>", cls: "bouncy",
-      text: "📮 “납작하게 퍼지기만 해요” → <b>입체적인 3D 환경</b>이 필요해요<br>📮 “피부세포로 만들었는데 아무것도 안 돼요” → 체세포는 먼저 <b>재프로그래밍</b>해서 iPSC로!",
+      text: "📮 “납작하게 퍼지기만 해요” → <b>입체적인 3D 환경</b>이 필요해요<br>📮 “피부세포로 만들었는데 아무것도 안 돼요” → 체세포는 먼저 <b>역분화</b>해서 iPSC로!",
       coach: "금쪽이에게 문제가 생기면 <b>생성과정</b>과 <b>배양환경</b>부터 점검해 보세요. 입체적인 3D 환경, 성장·분화 신호, 영양·산소 공급!",
       next: stage5
     });
@@ -1352,7 +1354,7 @@ function stage5() {
         <div class="news-top"><span>📺 금쪽 뉴스</span><span class="live">● LIVE</span></div>
         <div class="news-scr" id="nscr">${org("happy", "bouncy")}</div>
         <div class="headline"><span class="tag" id="ntag">속보 1/6</span><p id="nhead"></p></div>
-        <div class="ticker"><span>금쪽같은 내 세포 · 오늘의 금쪽이 소식 · 장기의 구조와 기능 일부를 재현한 3차원 조직 모델 · 체세포 → iPSC → 분화 유도 → 오가노이드</span></div>
+        <div class="ticker"><span>금쪽같은 내 세포 · 오늘의 금쪽이 소식 · 장기의 구조와 기능 일부를 재현한 3차원 조직 모델 · 체세포 → iPSC → 분화 중인 세포 → 오가노이드</span></div>
       </div>
       <div class="mole-top"><span>⏱️</span><div class="tbar"><i id="tb"></i></div><span id="nscore">0 / 6</span></div>
       <div class="words" id="words"></div>
@@ -1474,7 +1476,7 @@ function stage6() {
 
 /* ===== 7단계: 총정리 O/X (발표 자료 퀴즈) ===== */
 const FINAL_OX = [
-  { q: "<b>자기조직화</b>란 세포가 스스로 배열돼 조직을 이루는 현상을 뜻한다.", a: true, why: "맞아요! 세포가 스스로 배열돼 조직을 이루는 현상을 <b>자기조직화</b>라고 해요. 분화 유도 뒤 3차원 배양·자기조직화를 거쳐 오가노이드가 돼요." },
+  { q: "<b>자기조직화</b>란 세포가 스스로 배열돼 조직을 이루는 현상을 뜻한다.", a: true, why: "맞아요! 세포가 스스로 배열돼 조직을 이루는 현상을 <b>자기조직화</b>라고 해요. 분화 중인 세포가 3차원 배양·자기조직화를 거쳐 오가노이드가 돼요." },
   { q: "오가노이드는 <b>실제 장기의 모든 기능</b>을 갖춘다.", a: false, why: "아니에요. 오가노이드는 장기의 <b>구조와 기능 일부</b>만 재현해요. <b>장기 기능 재현의 한계</b>는 아직 해결해야 할 문제예요." }
 ];
 function stage7() {
@@ -1508,7 +1510,7 @@ function ending() {
   S.stage = 8; S.level = 3;
   const scenes = [
     { v: vv(ele("happy", "lv3 bouncy", "font-size:8px")), c: "금쪽이 = <b>오가노이드(Organoid)</b><small>장기의 구조와 기능 일부를 재현한 3차원 조직 모델</small>" },
-    { v: vv("🧫", "🔮", "📡", "✨"), c: "체세포 → iPSC → 분화 유도 → 오가노이드<small>재프로그래밍 · 3차원 배양 · 자기조직화</small>" },
+    { v: vv("🧫", "🔮", "📡", "✨"), c: "체세포 → iPSC → 분화 중인 세포 → 오가노이드<small>역분화 · 분화 유도 · 3차원 배양·자기조직화</small>" },
     { v: vv("🧊", "📡", "💧"), c: "잘 자라려면?<small>입체적인 3D 환경 · 성장·분화 신호 · 영양·산소 공급</small>" },
     { v: vv("🐰", "🩺", "💊"), c: "왜 필요할까요?<small>동물실험의 보완·일부 대체 · 정밀의료·환자 맞춤형 치료 · 약물 평가의 효율 향상</small>" },
     { v: vv("🧠", "🦠", "🚀"), c: "어디에 활용될까요?<small>생물학적 컴퓨터 개발 · 헬리코박터균 위 질환 연구 · 우주병 치료제 개발</small>" },
@@ -1539,7 +1541,7 @@ function finale() {
     <div class="three">
       <h3>📌 오가노이드는 잘 자라려면?</h3>
       <div class="eq"><span>🧊<b>입체적인 3D 환경</b></span>+<span>📡<b>성장·분화 신호</b></span>+<span>💧<b>영양·산소 공급</b></span></div>
-      <p>체세포 → 유도만능줄기세포(iPSC) → 분화 유도 → 오가노이드</p>
+      <p>체세포 → 유도만능줄기세포(iPSC) → 분화 중인 세포 → 오가노이드</p>
     </div>
     <div class="quote">“금쪽같은 내 세포,<br>이제 <em>어디에 쓰는지</em> 아시겠죠?”</div>
     <button class="btn yellow" id="toRes">📜 육아 성적표 받기</button>`);
