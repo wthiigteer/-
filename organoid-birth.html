@@ -1684,12 +1684,11 @@ function endScreen() {
     <div class="sub big">금쪽이 육아를 모두 마쳤어요!</div>
     <div class="credits"><div class="roll">${credits}</div></div>
     <div class="quote">“금쪽같은 내 세포,<br>이제 <em>어디에 쓰는지</em> 아시겠죠?”</div>
-    <div class="btn-row"><button class="btn ghost" id="rank2">🏆 랭킹 보기</button><button class="btn ghost" id="again">🔁 다시 하기</button></div>
+    <button class="btn ghost" id="rank2" style="width:100%">🏆 랭킹 보기</button>
     <div class="disclaimer">이 게임은 TV 육아 상담 예능을 패러디한 교육용 게임이에요.<br>실제 방송·출연자와는 관계가 없어요.</div>
   </div>`);
   sparkle();
   $("#rank2").onclick = () => rankingScreen("result");
-  $("#again").onclick = startScreen;
 }
 
 /* ===== 진행자용 랭킹판 (주소 끝에 #board) ===== */
