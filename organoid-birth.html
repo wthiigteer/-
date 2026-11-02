@@ -550,8 +550,15 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 .mole{position:absolute;inset:7%;border-radius:50%;border:3px solid var(--ink);display:flex;flex-direction:column;align-items:center;justify-content:center;font:inherit;font-weight:700;font-size:.78rem;line-height:1.2;color:var(--ink);cursor:pointer;animation:moleUp .18s ease-out;padding:2px;text-align:center;touch-action:manipulation}
 .mole .me{font-size:1.6rem}
 .mole.good,.mole.bad{background:var(--paper)}
-.mole.hit{background:#bff0d8;transform:scale(.9)}
-.mole.miss{background:#ffc9c9;transform:scale(.9)}
+.mole.hit{background:#bff0d8;border-color:#1d8a62;color:#1d8a62;animation:moleOk .45s cubic-bezier(.3,1.8,.5,1) both}
+.mole.miss{background:#ffc9c9;border-color:#9b2c2c;color:#9b2c2c;animation:moleNo .4s ease both}
+.mole .mk{font-size:1.9rem;line-height:1}
+@keyframes moleOk{0%{transform:scale(.8)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes moleNo{25%{transform:translateX(-5px) rotate(-6deg)}75%{transform:translateX(5px) rotate(6deg)}}
+.popmark{position:fixed;z-index:65;transform:translate(-50%,0);font-family:var(--font-display);font-size:1.7rem;pointer-events:none;animation:popUp .9s ease-out forwards;
+  text-shadow:2px 0 0 #fff,-2px 0 0 #fff,0 2px 0 #fff,0 -2px 0 #fff}
+.popmark.plus{color:#1d8a62}.popmark.minus{color:var(--red)}
+@keyframes popUp{0%{opacity:0;transform:translate(-50%,10px) scale(.6)}20%{opacity:1;transform:translate(-50%,0) scale(1.15)}100%{opacity:0;transform:translate(-50%,-50px) scale(1)}}
 @keyframes moleUp{from{transform:translateY(100%)}to{transform:none}}
 .chip{display:inline-block;font-family:var(--font-display);font-weight:400;background:var(--cyan);color:#fff;border:2px solid var(--ink);border-radius:999px;padding:0 10px;margin:2px;font-variant-numeric:tabular-nums}
 .got{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
@@ -754,6 +761,13 @@ function sparkle(text) {
   document.body.append(layer, fl);
   setTimeout(() => { layer.remove(); fl.remove(); }, 1300);
 }
+// 칸 위로 '+2' 같은 글자가 떠올라요 (구멍 칸은 넘친 부분이 잘려서 화면에 따로 띄워요)
+function popMark(el, text, cls) {
+  const r = el.getBoundingClientRect(), d = document.createElement("div");
+  d.className = "popmark " + cls; d.textContent = text;
+  d.style.left = (r.left + r.width / 2) + "px"; d.style.top = (r.top + r.height * .2) + "px";
+  document.body.appendChild(d); setTimeout(() => d.remove(), 900);
+}
 function crisis(why) {
   app.classList.remove("shake"); void app.offsetWidth; app.classList.add("shake");
   const fl = document.createElement("div"); fl.className = "flash"; fl.style.background = "#ef5a5a";
@@ -808,6 +822,9 @@ const Sfx = {
     for (let x = 0; x < len; x += 0.05) { const k = x / len; this.noise(t0 + x, .07, .06 + .22 * k, 1800, "bandpass"); }
     for (let x = 0; x < len; x += 0.2) this.tone(t0 + x, 140, .18, .25 + .3 * (x / len), "sine", 60);
   },
+  // 정답 '딩동♪' / 오답 '삐-'
+  ding() { if (!this.ready()) return; const t = this.ctx.currentTime + .01; this.tone(t, 880, .12, .25, "triangle"); this.tone(t + .09, 1320, .25, .25, "triangle"); },
+  buzz() { if (!this.ready()) return; const t = this.ctx.currentTime + .01; this.tone(t, 190, .28, .16, "square", 120); },
   crash(t) { this.noise(t, 1.4, .45, 5000, "highpass"); this.tone(t, 110, .5, .7, "sine", 40); },
   pop(t, f) { this.tone(t, f, .16, .3, "triangle", f * 1.6); },
   fanfare(t) { [523, 659, 784, 1047].forEach((f, i) => this.tone(t + i * .13, f, i === 3 ? .7 : .2, .22, "square")); },
@@ -1234,9 +1251,15 @@ function stage3() {
       m.onpointerdown = e => {
         e.preventDefault();
         if (over || m.dataset.done) return; m.dataset.done = 1;
-        if (good) { hits++; cnt[it.t]++; m.classList.add("hit"); }
-        else { miss++; m.classList.add("miss"); app.classList.remove("shake"); void app.offsetWidth; app.classList.add("shake"); }
-        paintGot(); later(() => m.remove(), 180);
+        if (good) {
+          hits++; cnt[it.t]++; m.classList.add("hit"); m.innerHTML = `<span class="mk">⭕</span>정답!`;
+          popMark(h, "+2", "plus"); Sfx.ding(); setMood($("#orgs"), "happy");
+        } else {
+          miss++; m.classList.add("miss"); m.innerHTML = `<span class="mk">❌</span>땡!`;
+          popMark(h, "−3", "minus"); Sfx.buzz(); setMood($("#orgs"), "sad");
+          app.classList.remove("shake"); void app.offsetWidth; app.classList.add("shake");
+        }
+        paintGot(); later(() => m.remove(), 520);
       };
       h.appendChild(m); later(() => m.remove(), 1150);
     };
