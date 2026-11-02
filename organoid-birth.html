@@ -331,6 +331,18 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 .live{display:inline-flex;align-items:center;gap:6px;font-size:.85rem;font-weight:700;background:var(--paper);border:2px solid var(--ink);border-radius:999px;padding:3px 10px}
 .live i{width:8px;height:8px;border-radius:50%;background:var(--red);animation:blink 1s infinite}
 .live.local i{background:#9aa9b9;animation:none}
+.snack{align-self:center;justify-self:center;text-align:center;font-family:var(--font-display);font-size:1.05rem;color:var(--red);background:var(--paper);border:3px solid var(--red);border-radius:10px;padding:2px 12px;margin:0 auto 6px;width:max-content;max-width:100%}
+.near-row{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;margin-top:10px}
+@media (min-width:700px){.near-row{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.near{display:flex;align-items:center;gap:6px;min-width:0;background:var(--paper);border:3px solid var(--ink);border-radius:14px;padding:6px 10px;box-shadow:0 3px 0 var(--ink)}
+.near .no{flex:none;width:28px;height:28px;border-radius:50%;background:var(--mint);color:#fff;border:2px solid var(--ink);display:grid;place-items:center;font-family:var(--font-display);font-size:1.05rem}
+.near .ele{font-size:3.6px;flex:none;margin:-4px -2px}
+.near .nm{flex:1;min-width:0;font-weight:700;font-size:.9rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.near .nm small{font-weight:600;color:#5d7088;margin-left:3px}
+.near .sc{flex:none;font-family:var(--font-display);font-size:1.1rem;font-variant-numeric:tabular-nums}
+.near.me{background:#fff4d1;outline:2px solid var(--yellow)}
+.near.empty{opacity:.6}
+.near.empty .no{background:#9aa9b9}
 .podium{display:grid;grid-template-columns:1fr 1.15fr 1fr;align-items:end;gap:8px;margin-top:4px}
 .pod{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;min-width:0}
 .pod .ele{font-size:5.5px}
@@ -1471,11 +1483,17 @@ function rankingHtml(list, myId, limit) {
   const pod = (r, n) => r
     ? `<div class="pod p${n}">${ele("happy", "lv3 " + (n === 1 ? "bouncy" : ""))}<div class="nm">${esc(r.name)}</div><div class="sc">${r.score}점</div><div class="block">${n}</div></div>`
     : `<div class="pod p${n} empty">${ele("meh", "lv1")}<div class="nm">비어 있어요</div><div class="sc">-</div><div class="block">${n}</div></div>`;
-  const rest = list.slice(3, limit);
-  const rows = rest.map((r, i) => `<li class="${r.id === myId ? "me" : ""}"><span class="no">${i + 4}</span><span class="who2">${esc(r.name)}${r.id === myId ? "<small>(나)</small>" : ""}</span><span class="pt">${r.score}</span></li>`).join("");
+  // 4·5위는 늘 자리를 보여 줘요 (발표 자료: 랭킹 1~5위 간식 증정)
+  const near = n => { const r = list[n - 1]; return r
+    ? `<div class="near${r.id === myId ? " me" : ""}"><span class="no">${n}</span>${ele("happy", "lv2")}<span class="nm">${esc(r.name)}${r.id === myId ? "<small>(나)</small>" : ""}</span><span class="sc">${r.score}점</span></div>`
+    : `<div class="near empty"><span class="no">${n}</span>${ele("meh", "lv1")}<span class="nm">비어 있어요</span><span class="sc">-</span></div>`; };
+  const rest = list.slice(5, limit);
+  const rows = rest.map((r, i) => `<li class="${r.id === myId ? "me" : ""}"><span class="no">${i + 6}</span><span class="who2">${esc(r.name)}${r.id === myId ? "<small>(나)</small>" : ""}</span><span class="pt">${r.score}</span></li>`).join("");
   const me = myId ? list.findIndex(r => r.id === myId) : -1;
   const meRow = me >= limit ? `<li class="me"><span class="no">${me + 1}</span><span class="who2">${esc(list[me].name)}<small>(나)</small></span><span class="pt">${list[me].score}</span></li>` : "";
-  return `<div class="podium">${pod(top[1], 2)}${pod(top[0], 1)}${pod(top[2], 3)}</div><div class="podium-base"></div>
+  return `<div class="snack">🍪 랭킹 1~5위 간식 증정!</div>
+    <div class="podium">${pod(top[1], 2)}${pod(top[0], 1)}${pod(top[2], 3)}</div><div class="podium-base"></div>
+    <div class="near-row">${near(4)}${near(5)}</div>
     ${list.length === 0 ? `<div class="rlist"><div class="rempty">아직 기록이 없어요.<br>첫 번째 세포 육아 마스터가 되어 보세요!</div></div>`
       : (rows || meRow) ? `<ol class="rlist">${rows}${meRow}</ol>` : ""}`;
 }
