@@ -358,7 +358,7 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--coral);outline-
 .knames .tag.empty,.kcol.empty{opacity:.5}
 .kcol.empty .tower{background:repeating-linear-gradient(45deg,#eef3f8 0 6px,#fff 6px 12px);border-style:dashed}
 .kcol.me .pill{background:var(--coral);color:#fff}
-/* 등장 연출: 5위 → 1위 */
+/* 등장 연출: 3위 → 1위 */
 .kids.anim .tower{animation:kgrow .7s cubic-bezier(.3,1.5,.5,1) backwards;animation-delay:var(--d)}
 .kids.anim .kcol .ele,.kids.anim .kcol .pill{animation:kdrop .55s cubic-bezier(.3,1.6,.5,1) backwards;animation-delay:calc(var(--d) + .45s)}
 .kids.anim .kcol .crown{animation:kcrown .7s cubic-bezier(.3,1.8,.5,1) backwards;animation-delay:calc(var(--d) + .9s)}
@@ -834,7 +834,7 @@ const Sfx = {
     this.noise(t + .45, .5, .5, 1200, "bandpass");                    // 펑!
     for (let i = 0; i < 6; i++) this.noise(t + .55 + Math.random() * .4, .05, .15, 3000 + Math.random() * 3000, "highpass"); // 타닥타닥
   },
-  // 5위→2위는 '뿅' 하며 올라오고, 두구두구 끝에 1위와 함께 쾅 + 빠밤 + 폭죽
+  // 3위·2위는 '뿅' 하며 올라오고, 두구두구 끝에 1위와 함께 쾅 + 빠밤 + 폭죽
   reveal() {
     if (!this.ready()) return;
     const t = this.ctx.currentTime + .05;
@@ -1047,7 +1047,7 @@ function startScreen() {
       <div class="name-err" id="nameErr" role="alert"></div>
       <button class="btn" id="startBtn">🍼 육아 시작</button>
       <button class="btn ghost" id="rankBtn">🏆 지금 랭킹 보기</button>
-      <div class="meta">7단계 · 약 5분 · 미니게임 6개 + O/X 퀴즈</div>
+      <div class="meta">7단계 · 약 5분 · 미니게임 6개 + O/X 퀴즈 · 🍪 랭킹 1~3위 간식 증정</div>
     </div>`);
   const moods = ["sad", "meh", "happy"]; let f = 0;
   every(() => { const m = $("#mascot .ele"); if (!m) return; m.classList.remove(moods[f]); f = (f + 1) % 3; m.classList.add(moods[f]); }, 1100);
@@ -1612,7 +1612,7 @@ function rankingHtml(list, myId, limit, anim) {
   const meRow = me >= limit ? `<li class="me"><span class="no">${me + 1}</span><span class="who2">${esc(list[me].name)}<small>(나)</small></span><span class="pt">${list[me].score}</span></li>` : "";
   const myNote = me >= 3 ? ` · 내 순위 ${me + 1}위` : "";
   const ticks = [0, 40, 80, 120, 160].map(v => `<span style="bottom:${v / MAX_SCORE * 100}%">${v}</span>`).join("");
-  return `<div class="snack">🍪 상위권 간식 증정!</div>
+  return `<div class="snack">🍪 랭킹 1~3위 간식 증정!</div>
     <div class="kids${anim ? " anim" : ""}">
       <div class="ruler">${ticks}</div>
       <div class="kcols">${[1, 2, 3].map(col).join("")}</div>
@@ -1622,7 +1622,7 @@ function rankingHtml(list, myId, limit, anim) {
     ${list.length === 0 ? `<div class="rempty">아직 기록이 없어요. 첫 번째 세포 육아 마스터가 되어 보세요!</div>`
       : (rows || meRow) ? `<details class="more"${rankingHtml.open ? " open" : ""} ontoggle="rankingHtml.open = this.open"><summary>4위부터 더보기 (${list.length - 3}명${myNote})</summary><ol class="rlist">${rows}${meRow}</ol></details>` : ""}`;
 }
-// 랭킹을 그려요. 기록이 처음 보일 때(또는 '순위 발표' 버튼) 5위→1위 연출 + 효과음 + 폭죽
+// 랭킹을 그려요. 기록이 처음 보일 때(또는 '순위 발표' 버튼) 3위→1위 연출 + 효과음 + 폭죽
 function paintRanking(body, myId, limit, st) {
   const list = Rank.sorted();
   const reveal = !st.revealed && list.length > 0;
