@@ -107,6 +107,7 @@ window.TigerPet=function(opt){
   follow(){s.follow=!s.follow;save();report();say(s.follow?'졸졸 따라갈게!':'혼자 산책할래~')},
   roar,
   switch(){opt.onSwitch&&opt.onSwitch()},
+  margins(m){Object.assign(M,m)},
  };
  dlg.addEventListener('pointerdown',e=>{if(e.target===dlg)dlg.classList.remove('open')});
  dlg.querySelector('form').onsubmit=e=>{e.preventDefault();const v=dlg.querySelector('input').value.trim();if(v){s.name=v;const n=$('petName');if(n)n.textContent=v;save();report();say(`내 이름은 ${v}! 좋아!`);happy();fx('💖',3)}dlg.classList.remove('open')};

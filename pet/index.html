@@ -46,6 +46,10 @@ body{background:radial-gradient(circle,#ffe3e8 1.5px,transparent 2px) 0 0/34px 3
 .pip button.on{background:#ffc2cc}
 .pip .go{background:#ff8fab;color:#fff;border-color:#4a3b36}
 .pip .msg{font-size:14px;opacity:.75;min-height:1.4em}
+body.wall{background-size:cover!important;background-position:center!important}
+body.compact .hud,body.compact .toys,body.compact .hint{display:none}
+.menuBtn{display:none;position:fixed;right:10px;top:10px;z-index:30;width:44px;height:44px;border-radius:50%;border:2.5px solid var(--ink);background:#fff;color:var(--ink);font-size:20px;cursor:pointer;opacity:.7}
+body.compact .menuBtn{display:block}
 @media(max-width:600px){.hud{min-width:0;width:calc(100vw - 24px);padding:10px 14px}.name{font-size:20px}.hint{display:none}.toys button{font-size:15px;padding:0 12px}}
 </style>
 </head>
@@ -64,7 +68,11 @@ body{background:radial-gradient(circle,#ffe3e8 1.5px,transparent 2px) 0 0/34px 3
   <button id="roarBtn">🐱 냐앙 해봐</button>
   <button id="switchBtn">🔄 캐릭터 바꾸기</button>
   <button id="pipBtn">📺 다른 앱 위에 띄우기</button>
+  <button id="wallBtn">🖼️ 내 배경화면 넣기</button>
+  <button id="miniBtn">🙈 메뉴 숨기기</button>
+  <input type="file" id="wallFile" accept="image/*" hidden>
 </nav>
+<button class="menuBtn" id="menuBtn" aria-label="메뉴 보이기">☰</button>
 <div class="hint">마우스를 움직이거나 화면을 누르면 따라와요 · 끌어서 옮길 수 있어요<br>누르면 좋아하고, 문지르면 쓰다듬기 (너무 콕콕 찌르면 울어요)</div>
 <div class="pip" id="pip"><div>
   <h2>다른 앱 위에 띄우기</h2>
@@ -91,6 +99,13 @@ const pick=v=>{vid.src='pip/'+v+'.mp4';vid.play().catch(()=>{});document.querySe
 document.querySelectorAll('#pipPick button').forEach(b=>b.onclick=()=>pick(b.dataset.v));
 pick(ch);
 on('pipClose',()=>pip.classList.remove('open'));
+const setMini=v=>{document.body.classList.toggle('compact',v);a.margins(v?{top:10,bottom:10}:{top:120,bottom:70})};
+if(innerWidth<520||innerHeight<520)setMini(true);
+on('miniBtn',()=>setMini(true));on('menuBtn',()=>setMini(false));
+const applyWall=u=>{if(!u)return;document.body.style.background=`url("${u}")`;document.body.classList.add('wall')};
+try{applyWall(localStorage.getItem('petWall'))}catch(e){}
+on('wallBtn',()=>document.getElementById('wallFile').click());
+document.getElementById('wallFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const img=new Image();img.onload=()=>{const k=Math.min(1,1800/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=img.width*k;c.height=img.height*k;c.getContext('2d').drawImage(img,0,0,c.width,c.height);const u=c.toDataURL('image/jpeg',.85);applyWall(u);try{localStorage.setItem('petWall',u)}catch(err){}URL.revokeObjectURL(img.src)};img.src=URL.createObjectURL(f)};
 on('pipGo',async()=>{try{await vid.play()}catch(e){}
  try{if(vid.webkitSupportsPresentationMode&&vid.webkitSupportsPresentationMode('picture-in-picture')){vid.webkitSetPresentationMode('picture-in-picture');msg.textContent='떴어요! 이제 홈으로 나가도 계속 떠 있어요.';return}
   if(document.pictureInPictureEnabled){await vid.requestPictureInPicture();msg.textContent='떴어요! 이제 다른 앱으로 가도 계속 떠 있어요.';return}
