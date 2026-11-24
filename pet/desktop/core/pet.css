@@ -70,3 +70,12 @@
 .p-dlg input{font:inherit;font-size:18px;padding:10px 12px;border-radius:14px;border:2px solid #4a3b36;background:#fff;color:#4a3b36}
 .p-dlg button{font:inherit;font-size:16px;min-height:44px;border-radius:14px;border:2px solid #4a3b36;background:#ffc2cc;color:#4a3b36;cursor:pointer}
 @media(prefers-reduced-motion:reduce){#pet .bob,#pet .tail{animation:none!important}}
+#pet.nyang{--limb:#ff4f9a}
+#pet.nyang.naked{--limb:#ffe6d8}
+#pet.nyang .tail{transform-origin:138px 160px}
+#pet.nyang.cry .pawL{transform:translate(2px,-14px)}
+#pet.nyang.cry .pawR{transform:translate(-2px,-14px)}
+#pet.nyang.roar .pawL{transform:translate(-10px,-34px)}
+#pet.nyang.roar .pawR{transform:translate(10px,-34px)}
+#pet.nyang.peek .pawL{transform:translate(14px,-46px)}
+#pet.nyang.peek .pawR{transform:translate(-14px,-46px)}

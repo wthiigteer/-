@@ -4,7 +4,7 @@ const path=require('path');
 if(process.platform==='linux'){app.commandLine.appendSwitch('enable-transparent-visuals');app.disableHardwareAcceleration()}
 if(!app.requestSingleInstanceLock())app.quit();
 
-let win,tray,timer,state={naked:false,follow:true,name:'꼬미'};
+let win,tray,timer,state={naked:false,follow:true,name:'냥이',clothes:{on:'🎀 후드 입히기',off:'🎀 후드 벗기기'},roar:'🐱 냐앙 해봐'};
 
 function fit(){
   const {x,y,width,height}=screen.getPrimaryDisplay().workArea;
@@ -17,13 +17,14 @@ function menu(){
     {label:`${state.name}랑 놀기`,enabled:false},
     {type:'separator'},
     {label:'🍌 바나나 주기',click:()=>send('banana')},
-    {label:'🐯 어흥 해봐',click:()=>send('roar')},
-    {label:state.naked?'🐒 잠옷 입히기':'🐒 잠옷 벗기기',click:()=>send('onesie')},
+    {label:state.roar,click:()=>send('roar')},
+    {label:state.naked?state.clothes.on:state.clothes.off,click:()=>send('onesie')},
     {label:'☀️ 덥게',click:()=>send('sun')},
     {label:'🧊 시원하게',click:()=>send('ice')},
     {type:'separator'},
     {label:'졸졸 따라다니기',type:'checkbox',checked:state.follow,click:()=>send('follow')},
     {label:'✏️ 이름 바꾸기',click:()=>{win.focus();send('rename')}},
+    {label:'🔄 캐릭터 바꾸기 (냥이 ↔ 꼬미)',click:()=>send('switch')},
     ...(login?[{label:'컴퓨터 켜면 같이 시작',type:'checkbox',checked:app.getLoginItemSettings().openAtLogin,click:i=>app.setLoginItemSettings({openAtLogin:i.checked})}]:[]),
     {type:'separator'},
     {label:'잘 자~ (종료)',click:()=>app.quit()}
@@ -52,7 +53,7 @@ function create(){
 
   const icon=nativeImage.createFromPath(path.join(__dirname,'icon.png')).resize({width:18,height:18});
   tray=new Tray(icon);
-  tray.setToolTip('꼬미: 원숭이 잠옷 아기 호랑이');
+  tray.setToolTip('냥이 데스크톱 펫');
   tray.on('click',()=>tray.popUpContextMenu(menu()));
   tray.on('right-click',()=>tray.popUpContextMenu(menu()));
   if(process.platform==='linux')tray.setContextMenu(menu());

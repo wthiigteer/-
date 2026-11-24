@@ -10,6 +10,12 @@ html,body{margin:0;height:100%;overflow:hidden;background:transparent;user-selec
 </head>
 <body>
 <script src="core/pet.js"></script>
-<script>TigerPet({desktop:true,bridge:window.petBridge,margins:{top:60,bottom:0}});</script>
+<script src="core/nyang.js"></script>
+<script>
+{
+let ch='nyang';try{ch=localStorage.getItem('petChar')||'nyang'}catch(e){}
+TigerPet(Object.assign({desktop:true,bridge:window.petBridge,margins:{top:60,bottom:0}},ch==='tiger'?{}:NyangChar,{onSwitch(){try{localStorage.setItem('petChar',ch==='tiger'?'nyang':'tiger')}catch(e){}location.reload()}}));
+}
+</script>
 </body>
 </html>

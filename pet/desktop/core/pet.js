@@ -36,17 +36,17 @@ const SVG=`<svg viewBox="0 0 200 200" aria-hidden="true">
 
 window.TigerPet=function(opt){
  opt=opt||{};
- const desktop=!!opt.desktop,bridge=opt.bridge,M=Object.assign({top:20,bottom:20},opt.margins||{});
+ const desktop=!!opt.desktop,KEY=opt.key||'tigerPet2',CL=opt.clothes||{on:'🐒 잠옷 입히기',off:'🐒 잠옷 벗기기'},bridge=opt.bridge,M=Object.assign({top:20,bottom:20},opt.margins||{});
  const $=id=>document.getElementById(id);
  const mk=(t,c)=>{const e=document.createElement(t);if(c)e.className=c;document.body.appendChild(e);return e};
  const shadow=mk('div','p-shadow'),bubble=mk('div','p-bubble'),pet=mk('div','idle');
  pet.id='pet';pet.setAttribute('role','img');pet.setAttribute('aria-label','원숭이 잠옷을 입은 하얀 아기 호랑이');
- pet.innerHTML=`<div class="flip"><div class="bob">${SVG}</div></div>`;
+ pet.innerHTML=`<div class="flip"><div class="bob">${opt.svg||SVG}</div></div>`;if(opt.cls)pet.classList.add(opt.cls);if(opt.label)pet.setAttribute('aria-label',opt.label);
  const dlg=mk('div','p-dlg');dlg.innerHTML='<form><label for="pNameInput">아기 호랑이 이름</label><input id="pNameInput" maxlength="12" autocomplete="off"><button type="submit">이걸로 할래!</button></form>';
  const eyes=pet.querySelector('#pEyes');
  const S=150,R=(a,b)=>a+Math.random()*(b-a),pick=a=>a[Math.floor(Math.random()*a.length)];
- let store={};try{store=JSON.parse(localStorage.getItem('tigerPet2')||'{}')}catch(e){}
- const s={name:store.name||'꼬미',love:store.love??30,heat:10,naked:false,follow:store.follow??true,offAt:0};
+ let store={};try{store=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
+ const s={name:store.name||opt.name||'꼬미',love:store.love??30,heat:10,naked:false,follow:store.follow??true,offAt:0};
  let x=innerWidth/2-S/2,y=innerHeight*0.55-S/2,mx=x+S/2,my=y+S/2;
  let mode='idle',until=0,lastPointer=performance.now(),nextBored=performance.now()+R(2500,5000);
  let facing=1,bananas=[],eating=null,zoomA=0,rubs=0,bubbleT=0,blinkT=performance.now()+3000,hotSaid=0,pokes=[];
@@ -64,10 +64,12 @@ window.TigerPet=function(opt){
   off:['더워! 잠깐 벗을래~','휴~ 시원하다!'],
   on:['다시 원숭이 할래!','이제 시원해! 다시 입을래','짜잔! 원숭이 변신!'],
   sleep:['쿨쿨...','음냐음냐...'],wake:['앗! 왔다!','헤헤 깼어!'],
-  walk:['산책 가야지~','저기 뭐 있다!','룰루~']
+  walk:['산책 가야지~','저기 뭐 있다!','룰루~'],
+  roar:['어흥!!']
  };
- function save(){try{localStorage.setItem('tigerPet2',JSON.stringify({name:s.name,love:s.love,follow:s.follow}))}catch(e){}}
- function report(){bridge&&bridge.state&&bridge.state({naked:s.naked,follow:s.follow,name:s.name})}
+ Object.assign(L,opt.lines||{});
+ function save(){try{localStorage.setItem(KEY,JSON.stringify({name:s.name,love:s.love,follow:s.follow}))}catch(e){}}
+ function report(){bridge&&bridge.state&&bridge.state({naked:s.naked,follow:s.follow,name:s.name,clothes:CL,roar:opt.roarMenu||'🐯 어흥 해봐'})}
  function say(t,ms=1800){bubble.textContent=t;bubble.classList.add('show');bubbleT=performance.now()+ms}
  function fx(ch,n=1,ox=0,oy=0){for(let i=0;i<n;i++){const d=mk('div','p-fx');d.textContent=ch;d.style.left=(x+S/2+ox+R(-30,30))+'px';d.style.top=(y+oy+R(10,40))+'px';d.style.setProperty('--dx',R(-30,30)+'px');d.style.animationDelay=(i*.12)+'s';setTimeout(()=>d.remove(),1600+i*120)}}
  const ACTS=['idle','walk','run','jump','spin','wiggle','eat','sleep','peek','wave','roar','cry','drag'];
@@ -75,8 +77,8 @@ window.TigerPet=function(opt){
  function act(name,ms,line){mode='act';until=performance.now()+ms;setClass(name);if(line)say(line,Math.max(1600,ms))}
  function addLove(n){s.love=Math.min(100,s.love+n);save()}
  function happy(ms=1500){pet.classList.add('happy');clearTimeout(happy.t);happy.t=setTimeout(()=>pet.classList.remove('happy'),ms)}
- function setNaked(v,line){s.naked=v;s.offAt=performance.now();pet.classList.toggle('naked',v);fx('💨',3,0,30);fx('✨',3,0,20);const b=$('onesieBtn');if(b)b.textContent=v?'🐒 잠옷 입히기':'🐒 잠옷 벗기기';act('spin',900,line);report()}
- function roar(){act('roar',1300,'어흥!!');setTimeout(()=>{if(mode==='act')happy(1200)},1300)}
+ function setNaked(v,line){s.naked=v;s.offAt=performance.now();pet.classList.toggle('naked',v);fx('💨',3,0,30);fx('✨',3,0,20);const b=$('onesieBtn');if(b)b.textContent=v?CL.on:CL.off;act('spin',900,line);report()}
+ function roar(){act('roar',1300,pick(L.roar));setTimeout(()=>{if(mode==='act')happy(1200)},1300)}
  function cry(){act('cry',2800,pick(['흐에엥... 너무 콕콕 찔러','흑흑... 아파...']));setTimeout(()=>{if(mode!=='sleep'){act('wiggle',900,'헤헤 그래도 좋아!');happy();fx('💖',2)}},2900)}
 
  const tricks=[
@@ -104,6 +106,7 @@ window.TigerPet=function(opt){
   rename(){dlg.querySelector('input').value=s.name;dlg.classList.add('open');setTimeout(()=>dlg.querySelector('input').focus(),30)},
   follow(){s.follow=!s.follow;save();report();say(s.follow?'졸졸 따라갈게!':'혼자 산책할래~')},
   roar,
+  switch(){opt.onSwitch&&opt.onSwitch()},
  };
  dlg.addEventListener('pointerdown',e=>{if(e.target===dlg)dlg.classList.remove('open')});
  dlg.querySelector('form').onsubmit=e=>{e.preventDefault();const v=dlg.querySelector('input').value.trim();if(v){s.name=v;const n=$('petName');if(n)n.textContent=v;save();report();say(`내 이름은 ${v}! 좋아!`);happy();fx('💖',3)}dlg.classList.remove('open')};
@@ -184,10 +187,10 @@ window.TigerPet=function(opt){
   if(desktop&&bridge){const over=(mx>x+10&&mx<x+S-10&&my>y+10&&my<y+S-5)||!!press||dlg.classList.contains('open');if(over!==!ignoring){ignoring=!over;bridge.setIgnore(ignoring)}}
   const lb=$('loveBar'),hb=$('heatBar'),md=$('mood');
   if(lb)lb.style.width=s.love+'%';if(hb)hb.style.width=Math.min(100,s.heat)+'%';
-  if(md)md.textContent=eating?'바나나 냠냠 중 🍌':mode==='sleep'?'쿨쿨 자는 중':pet.classList.contains('cry')?'훌쩍훌쩍 우는 중':s.naked?'잠옷 벗고 시원해지는 중':hot?'땀 뻘뻘… 더워!':bananas.length?'바나나한테 달려가는 중':mode==='walk'?(s.follow?`${s.name}가 너를 따라가는 중`:'혼자 산책 중'):'너랑 노는 중 ❤';
+  if(md)md.textContent=eating?'바나나 냠냠 중 🍌':mode==='sleep'?'쿨쿨 자는 중':pet.classList.contains('cry')?'훌쩍훌쩍 우는 중':s.naked?(opt.offMood||'잠옷 벗고 시원해지는 중'):hot?'땀 뻘뻘… 더워!':bananas.length?'바나나한테 달려가는 중':mode==='walk'?(s.follow?`${s.name}가 너를 따라가는 중`:'혼자 산책 중'):'너랑 노는 중 ❤';
   requestAnimationFrame(loop);
  }
- const n=$('petName');if(n)n.textContent=s.name;
+ const n=$('petName');if(n)n.textContent=s.name;const ob=$('onesieBtn');if(ob)ob.textContent=CL.off;
  report();
  setTimeout(()=>{say(pick(L.hello));act('wave',1600);happy(1600)},400);
  requestAnimationFrame(loop);

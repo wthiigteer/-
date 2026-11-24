@@ -50,15 +50,19 @@ body{background:radial-gradient(circle,#ffe3e8 1.5px,transparent 2px) 0 0/34px 3
   <button id="sunBtn">☀️ 덥게</button>
   <button id="iceBtn">🧊 시원하게</button>
   <button id="onesieBtn">🐒 잠옷 벗기기</button>
-  <button id="roarBtn">🐯 어흥 해봐</button>
+  <button id="roarBtn">🐱 냐앙 해봐</button>
+  <button id="switchBtn">🔄 캐릭터 바꾸기</button>
 </nav>
 <div class="hint">마우스를 움직이면 따라와요 · 끌어서 옮길 수 있어요<br>클릭하면 좋아하고, 문지르면 쓰다듬기 (너무 콕콕 찌르면 울어요)</div>
 <script src="desktop/core/pet.js"></script>
+<script src="desktop/core/nyang.js"></script>
 <script>
 {
-const a=TigerPet({margins:{top:120,bottom:70}});
+let ch='nyang';try{ch=localStorage.getItem('petChar')||'nyang'}catch(e){}
+const a=TigerPet(Object.assign({margins:{top:120,bottom:70}},ch==='tiger'?{}:NyangChar,{onSwitch(){try{localStorage.setItem('petChar',ch==='tiger'?'nyang':'tiger')}catch(e){}location.reload()}}));
+document.getElementById('roarBtn').textContent=ch==='tiger'?'🐯 어흥 해봐':'🐱 냐앙 해봐';
 const on=(id,f)=>document.getElementById(id).onclick=f;
-on('bananaBtn',a.banana);on('sunBtn',a.sun);on('iceBtn',a.ice);on('onesieBtn',a.onesie);on('renameBtn',a.rename);on('roarBtn',a.roar);
+on('bananaBtn',a.banana);on('sunBtn',a.sun);on('iceBtn',a.ice);on('onesieBtn',a.onesie);on('renameBtn',a.rename);on('roarBtn',a.roar);on('switchBtn',a.switch);
 }
 </script>
 </body>
