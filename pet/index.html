@@ -6,295 +6,59 @@
 <title>원숭이 잠옷 아기호랑이</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="desktop/core/pet.css">
 <style>
-/* VOICE  playful, tender toy for one person
-   IDEA   a nursery playroom floor where a plush baby tiger lives
-   PICTURE the pet itself, drawn large in SVG, roaming the whole screen
-   COLOUR warm peach floor, monkey brown, tiger orange, banana yellow accent
-   TYPE   Jua for everything
-   LAYOUT full-screen playroom; status card top-left, toy buttons along the bottom */
-:root{color-scheme:light dark;--bg:light-dark(#ffe9d6,#2a1d2e);--bg2:light-dark(#ffd8bd,#1d1422);--ink:light-dark(#5a3a2a,#ffe9d6);--card:light-dark(#fffaf4,#3a2a40);--edge:light-dark(#f3c9a8,#5b4463);--brown:#8b5a3c;--beige:#f5d2a8;--orange:#ffa640;--yellow:#ffd84a;--pink:#ff9aa8}
-:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+/* VOICE  tender, doodle-sticker playful
+   IDEA   a sheet of hand-drawn stickers where a baby white tiger lives
+   PICTURE the pet itself, line-drawn, roaming the whole sheet
+   COLOUR paper white-pink ground, ink brown line, blush pink, banana yellow
+   TYPE   Jua
+   LAYOUT full-screen sheet; status sticker top-left, toy stickers along the bottom */
+:root{color-scheme:light;--ink:#4a3b36;--paper:#fff8f5;--pink:#ffc2cc}
 *{box-sizing:border-box;min-width:0}
 html,body{height:100%;margin:0;overflow:hidden}
-body{background:radial-gradient(120% 90% at 50% 0%,var(--bg),var(--bg2));color:var(--ink);font:17px/1.4 "Jua","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;user-select:none;-webkit-user-select:none;touch-action:none}
-.floor{position:fixed;left:0;right:0;bottom:0;height:34%;background:repeating-linear-gradient(90deg,transparent 0 60px,color-mix(in srgb,var(--edge) 35%,transparent) 60px 62px);opacity:.6;pointer-events:none}
-.hud{position:fixed;top:12px;left:12px;z-index:20;background:var(--card);border:2px solid var(--edge);border-radius:22px;padding:12px 16px;min-width:210px;box-shadow:0 4px 0 var(--edge)}
+body{background:radial-gradient(circle,#ffe3e8 1.5px,transparent 2px) 0 0/34px 34px,var(--paper);color:var(--ink);font:17px/1.4 "Jua","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;user-select:none;-webkit-user-select:none;touch-action:none}
+.hud{position:fixed;top:12px;left:12px;z-index:20;background:#fff;border:2.5px solid var(--ink);border-radius:22px 26px 20px 24px;padding:12px 16px;min-width:210px;transform:rotate(-1deg)}
 .name{font-size:24px;display:flex;align-items:center;gap:8px}
 .name button{font:inherit;font-size:14px;border:0;background:none;color:var(--ink);opacity:.6;cursor:pointer;padding:4px 6px;border-radius:10px}
-.name button:hover{opacity:1;background:var(--edge)}
+.name button:hover{opacity:1;background:#ffe3e8}
 .row{display:flex;align-items:center;gap:8px;font-size:15px;margin-top:6px}
 .row span:first-child{width:50px}
-.meter{flex:1;height:12px;border-radius:8px;background:color-mix(in srgb,var(--edge) 55%,transparent);overflow:hidden}
-.meter i{display:block;height:100%;width:30%;border-radius:8px;transition:width .3s}
-#loveBar{background:linear-gradient(90deg,#ffb3c1,#ff6f91)}
-#heatBar{background:linear-gradient(90deg,#7fd3ff,#ffd84a,#ff6a3d)}
+.meter{flex:1;height:12px;border-radius:8px;border:2px solid var(--ink);overflow:hidden;background:#fff}
+.meter i{display:block;height:100%;width:30%;transition:width .3s}
+#loveBar{background:#ff9fb2}
+#heatBar{background:linear-gradient(90deg,#9fdcff,#ffe27a,#ff9a7a)}
 .mood{font-size:14px;opacity:.75;margin-top:6px}
-.toys{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:20;display:flex;flex-wrap:wrap;justify-content:center;gap:8px;width:min(96vw,640px)}
-.toys button{font:inherit;font-size:16px;min-height:46px;padding:0 16px;border-radius:24px;border:2px solid var(--edge);background:var(--card);color:var(--ink);cursor:pointer;box-shadow:0 4px 0 var(--edge);transition:transform .1s}
-.toys button:hover{transform:translateY(-2px)}
-.toys button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--edge)}
-.toys button:focus-visible,.name button:focus-visible{outline:3px solid #ff6f91;outline-offset:2px}
-#pet{position:absolute;left:0;top:0;width:150px;height:150px;z-index:10;cursor:pointer;will-change:transform;--limb:var(--brown)}
-#pet.naked{--limb:var(--orange)}
-.flip{width:100%;height:100%;transition:transform .18s}
-#pet.left .flip{transform:scaleX(-1)}
-.bob{width:100%;height:100%;transform-origin:50% 100%}
-#pet.walk .bob{animation:hop .34s infinite ease-in-out}
-#pet.run .bob{animation:hop .22s infinite ease-in-out}
-#pet.idle .bob,#pet.sleep .bob{animation:breathe 2.4s infinite ease-in-out}
-#pet.jump .bob{animation:jump .65s ease-out}
-#pet.spin .bob{animation:spin .9s ease-in-out}
-#pet.wiggle .bob{animation:wiggle .25s 5 ease-in-out}
-#pet.eat .bob{animation:chew .3s infinite}
-@keyframes hop{0%,100%{transform:translateY(0) scale(1.03,.97)}50%{transform:translateY(-12px) scale(.97,1.03)}}
-@keyframes breathe{50%{transform:scale(1.03,.97)}}
-@keyframes jump{0%{transform:scale(1.15,.85)}35%{transform:translateY(-70px) scale(.93,1.07)}65%{transform:translateY(-60px)}90%{transform:translateY(0) scale(1.1,.9)}100%{transform:none}}
-@keyframes spin{0%{transform:none}50%{transform:translateY(-40px) rotate(180deg)}100%{transform:rotate(360deg)}}
-@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
-@keyframes chew{50%{transform:scale(1.04,.96)}}
-svg{overflow:visible;width:100%;height:100%}
-.tail{transform-box:view-box;transform-origin:134px 166px;animation:wag 1.1s infinite ease-in-out}
-#pet.happy .tail,#pet.eat .tail,#pet.walk .tail,#pet.run .tail{animation-duration:.28s}
-#pet.sleep .tail{animation-duration:3s}
-@keyframes wag{0%,100%{transform:rotate(-14deg)}50%{transform:rotate(16deg)}}
-#pet.naked .onesie{display:none}
-#pet:not(.naked) .tigeronly{display:none}
-.eh,.ec,.mo{display:none}
-#pet.happy .en,#pet.sleep .en,#pet.blink .en{display:none}
-#pet.happy .eh{display:inline}
-#pet.sleep .ec,#pet.blink:not(.happy) .ec{display:inline}
-#pet.eat .ms,#pet.talk .ms{display:none}
-#pet.eat .mo,#pet.talk .mo{display:inline}
-.paw{transition:transform .25s}
-#pet.peek .pawL{transform:translate(18px,-60px)}
-#pet.peek .pawR{transform:translate(-18px,-60px)}
-#pet.wave .pawR{animation:wave .3s 5 ease-in-out;transform:translate(6px,-48px)}
-@keyframes wave{50%{transform:translate(12px,-56px)}}
-.sweat{display:none}
-#pet.hot:not(.naked) .sweat{display:inline;animation:drip 1s infinite}
-#pet.hot .cheek{opacity:1}
-@keyframes drip{0%{transform:translateY(0);opacity:1}100%{transform:translateY(10px);opacity:0}}
-.shadow{position:absolute;left:0;top:0;width:110px;height:18px;border-radius:50%;background:rgba(90,58,42,.18);z-index:9;pointer-events:none}
-.bubble{position:absolute;left:0;top:0;z-index:15;background:var(--card);color:var(--ink);border:2px solid var(--edge);border-radius:18px;padding:6px 14px;font-size:17px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s}
-.bubble.show{opacity:1}
-.bubble::after{content:"";position:absolute;left:50%;bottom:-9px;margin-left:-8px;border:8px solid transparent;border-top-color:var(--edge);border-bottom:0}
-.fx{position:absolute;z-index:16;pointer-events:none;font-size:24px;animation:float 1.3s ease-out forwards}
-@keyframes float{0%{opacity:0;transform:translate(-50%,0) scale(.5)}20%{opacity:1;transform:translate(-50%,-10px) scale(1.1)}100%{opacity:0;transform:translate(calc(-50% + var(--dx,0px)),-70px) scale(.9)}}
-.banana{position:absolute;z-index:8;font-size:40px;transform:translate(-50%,-50%);transition:top .7s cubic-bezier(.5,0,.8,1.4);pointer-events:none}
-.banana.held{z-index:12;transition:none}
-.sun{position:fixed;top:14px;right:18px;font-size:60px;z-index:5;opacity:0;transition:opacity .6s;pointer-events:none}
-.sun.on{opacity:1;animation:sunspin 6s linear infinite}
-@keyframes sunspin{to{transform:rotate(360deg)}}
-.dlg{position:fixed;inset:0;z-index:40;display:none;place-items:center;background:rgba(40,20,20,.35)}
-.dlg.open{display:grid}
-.dlg form{background:var(--card);border:2px solid var(--edge);border-radius:22px;padding:20px;width:min(90vw,320px);display:grid;gap:12px}
-.dlg input{font:inherit;font-size:18px;padding:10px 12px;border-radius:14px;border:2px solid var(--edge);background:var(--bg);color:var(--ink)}
-.dlg button{font:inherit;font-size:16px;min-height:44px;border-radius:14px;border:0;background:#ff8fab;color:#fff;cursor:pointer}
+.toys{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);z-index:20;display:flex;flex-wrap:wrap;justify-content:center;gap:8px;width:min(96vw,680px)}
+.toys button{font:inherit;font-size:16px;min-height:46px;padding:0 16px;border-radius:24px;border:2.5px solid var(--ink);background:#fff;color:var(--ink);cursor:pointer;box-shadow:0 3px 0 var(--ink);transition:transform .1s}
+.toys button:hover{background:#fff0f3;transform:translateY(-2px)}
+.toys button:active{transform:translateY(3px);box-shadow:none}
+.toys button:focus-visible,.name button:focus-visible{outline:3px solid #ff8fa3;outline-offset:2px}
 .hint{position:fixed;right:14px;bottom:80px;font-size:14px;opacity:.6;z-index:19;text-align:right;pointer-events:none}
 @media(max-width:600px){.hud{min-width:0;width:calc(100vw - 24px);padding:10px 14px}.name{font-size:20px}.hint{display:none}.toys button{font-size:15px;padding:0 12px}}
-@media(prefers-reduced-motion:reduce){.bob,.tail,.sun.on{animation:none!important}}
 </style>
 </head>
 <body>
-<div class="floor"></div>
-<div class="sun" id="sun">☀️</div>
-
 <section class="hud" aria-label="펫 상태">
   <div class="name"><span id="petName">꼬미</span><button id="renameBtn" aria-label="이름 바꾸기">✏️ 이름</button></div>
   <div class="row"><span>좋아해</span><div class="meter"><i id="loveBar"></i></div></div>
   <div class="row"><span>더워</span><div class="meter"><i id="heatBar"></i></div></div>
   <div class="mood" id="mood">너를 따라다니는 중</div>
 </section>
-
-<div class="shadow" id="shadow"></div>
-<div class="bubble" id="bubble"></div>
-
-<div id="pet" class="idle" role="img" aria-label="원숭이 잠옷을 입은 아기 호랑이">
- <div class="flip"><div class="bob">
- <svg viewBox="0 0 200 200">
-  <!-- tails -->
-  <g class="tail onesie"><path d="M134 166 C168 172 182 142 168 126 C156 114 140 126 150 138" fill="none" stroke="#8b5a3c" stroke-width="10" stroke-linecap="round"/></g>
-  <g class="tail tigeronly"><path d="M134 166 C166 170 180 146 172 126" fill="none" stroke="#ffa640" stroke-width="11" stroke-linecap="round"/><path d="M134 166 C166 170 180 146 172 126" fill="none" stroke="#3b2a20" stroke-width="11" stroke-dasharray="4 12" stroke-dashoffset="-10"/></g>
-  <!-- body -->
-  <g class="onesie"><ellipse cx="100" cy="152" rx="43" ry="36" fill="#8b5a3c"/><ellipse cx="100" cy="158" rx="25" ry="21" fill="#f5d2a8"/><circle cx="100" cy="140" r="2.5" fill="#6d4329"/><circle cx="100" cy="150" r="2.5" fill="#c99b70"/></g>
-  <g class="tigeronly"><ellipse cx="100" cy="152" rx="41" ry="35" fill="#ffa640"/><ellipse cx="100" cy="158" rx="23" ry="19" fill="#fff4e4"/><path d="M62 138q9 4 5 12M60 154q9 3 6 10M138 138q-9 4-5 12M140 154q-9 3-6 10" stroke="#3b2a20" stroke-width="4" fill="none" stroke-linecap="round"/></g>
-  <!-- feet -->
-  <ellipse cx="78" cy="184" rx="16" ry="10" style="fill:var(--limb)"/><ellipse cx="122" cy="184" rx="16" ry="10" style="fill:var(--limb)"/>
-  <ellipse cx="78" cy="186" rx="8" ry="5" fill="#f5d2a8" opacity=".9"/><ellipse cx="122" cy="186" rx="8" ry="5" fill="#f5d2a8" opacity=".9"/>
-  <!-- tiger ears -->
-  <circle cx="62" cy="44" r="15" fill="#ffa640"/><circle cx="62" cy="45" r="8" fill="#ffd0b0"/><circle cx="138" cy="44" r="15" fill="#ffa640"/><circle cx="138" cy="45" r="8" fill="#ffd0b0"/>
-  <!-- monkey hood ears -->
-  <g class="onesie"><circle cx="38" cy="88" r="19" fill="#8b5a3c"/><circle cx="38" cy="88" r="10" fill="#f5d2a8"/><circle cx="162" cy="88" r="19" fill="#8b5a3c"/><circle cx="162" cy="88" r="10" fill="#f5d2a8"/></g>
-  <!-- head -->
-  <circle cx="100" cy="84" r="52" fill="#ffa640"/>
-  <path d="M100 36v12M86 40l4 10M114 40l-4 10M60 92h10M58 100h10M140 92h-10M142 100h-10" stroke="#3b2a20" stroke-width="4" stroke-linecap="round"/>
-  <!-- hood -->
-  <g class="onesie"><path fill-rule="evenodd" fill="#8b5a3c" d="M38 82a62 62 0 1 0 124 0a62 62 0 1 0-124 0ZM56 92a44 40 0 1 0 88 0a44 40 0 1 0-88 0Z"/><ellipse cx="100" cy="92" rx="44" ry="40" fill="none" stroke="#c99b70" stroke-width="4"/><path d="M78 30q22-12 44 0" stroke="#a87150" stroke-width="4" fill="none" stroke-linecap="round"/></g>
-  <!-- face -->
-  <ellipse cx="100" cy="106" rx="21" ry="14" fill="#fff4e4"/>
-  <ellipse class="cheek" cx="67" cy="106" rx="9" ry="5.5" fill="#ff9aa8" opacity=".7"/><ellipse class="cheek" cx="133" cy="106" rx="9" ry="5.5" fill="#ff9aa8" opacity=".7"/>
-  <g id="eyes">
-   <g class="en"><ellipse cx="80" cy="84" rx="8.5" ry="10" fill="#2b1a12"/><circle cx="77" cy="80" r="3.4" fill="#fff"/><circle cx="83" cy="88" r="1.6" fill="#fff"/><ellipse cx="120" cy="84" rx="8.5" ry="10" fill="#2b1a12"/><circle cx="117" cy="80" r="3.4" fill="#fff"/><circle cx="123" cy="88" r="1.6" fill="#fff"/></g>
-  </g>
-  <path class="eh" d="M71 87q9-11 18 0M111 87q9-11 18 0" stroke="#2b1a12" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path class="ec" d="M71 84q9 7 18 0M111 84q9 7 18 0" stroke="#2b1a12" stroke-width="4" fill="none" stroke-linecap="round"/>
-  <path d="M94 98q6-3 12 0q-3 6-6 6t-6-6z" fill="#ff7f96"/>
-  <path class="ms" d="M91 107q4.5 6 9 0q4.5 6 9 0" stroke="#5a3a2a" stroke-width="2.6" fill="none" stroke-linecap="round"/>
-  <g class="mo"><ellipse cx="100" cy="111" rx="7" ry="6" fill="#c0475a"/><ellipse cx="100" cy="114" rx="4" ry="2.5" fill="#ff9aa8"/></g>
-  <!-- paws -->
-  <g class="paw pawL"><circle cx="62" cy="148" r="12.5" style="fill:var(--limb)"/><circle cx="62" cy="151" r="5" fill="#f5d2a8" opacity=".85"/></g>
-  <g class="paw pawR"><circle cx="138" cy="148" r="12.5" style="fill:var(--limb)"/><circle cx="138" cy="151" r="5" fill="#f5d2a8" opacity=".85"/></g>
-  <path class="sweat" d="M156 50q6 9 0 13q-6-4 0-13z" fill="#7fd3ff"/>
- </svg>
- </div></div>
-</div>
-
 <nav class="toys" aria-label="놀아주기">
   <button id="bananaBtn">🍌 바나나 주기</button>
   <button id="sunBtn">☀️ 덥게</button>
   <button id="iceBtn">🧊 시원하게</button>
   <button id="onesieBtn">🐒 잠옷 벗기기</button>
+  <button id="roarBtn">🐯 어흥 해봐</button>
 </nav>
-<div class="hint">마우스를 움직이면 따라와요<br>클릭하면 좋아하고, 문지르면 쓰다듬기</div>
-
-<div class="dlg" id="dlg"><form id="nameForm"><label for="nameInput">아기 호랑이 이름</label><input id="nameInput" maxlength="12" autocomplete="off"><button type="submit">이걸로 할래!</button></form></div>
-
+<div class="hint">마우스를 움직이면 따라와요 · 끌어서 옮길 수 있어요<br>클릭하면 좋아하고, 문지르면 쓰다듬기 (너무 콕콕 찌르면 울어요)</div>
+<script src="desktop/core/pet.js"></script>
 <script>
 {
-const $=id=>document.getElementById(id);
-const pet=$('pet'),shadow=$('shadow'),bubble=$('bubble'),eyes=$('eyes');
-const S=150,R=(a,b)=>a+Math.random()*(b-a),pick=a=>a[Math.floor(Math.random()*a.length)];
-let store={};try{store=JSON.parse(localStorage.getItem('tigerPet')||'{}')}catch(e){}
-const st={name:store.name||'꼬미',love:store.love??30,heat:10,naked:false};
-let x=innerWidth/2-S/2,y=innerHeight*0.55-S/2,mx=x+S/2,my=y+S/2;
-let mode='idle',until=0,lastPointer=performance.now(),nextBored=performance.now()+R(2500,5000);
-let facing=1,bananas=[],eating=null,zoomA=0,rubs=0,bubbleT=0,blinkT=performance.now()+3000,hotSaid=0;
-
-const L={
- hello:['안녕! 나랑 놀자!','헤헤 보고 싶었어!'],
- follow:['기다려~ 같이 가!','어디 가? 나도 갈래!','따라간다~!','헥헥 같이 가!'],
- click:['꺄르르!','헤헤 간지러워!','좋아좋아!','나 불렀어?','사랑해 ❤','또 해줘!'],
- rub:['골골~ 좋아!','더 쓰다듬어줘~','헤헤 기분 좋아'],
- bored:['뭐하고 놀까?','이거 해볼래!','나 봐봐!','심심해~ 놀아줘!'],
- banana:['바나나다!!','내 거야~!','냠냠 먹을래!'],
- yum:['맛있다~!!','냠냠 최고!','하나 더 줘!'],
- hot:['으아 더워!','덥다 더워~','땀 나...'],
- off:['더워! 잠깐 벗을래~','휴~ 시원하다!'],
- on:['다시 원숭이 할래!','이제 시원해! 다시 입을래','짜잔! 원숭이 변신!'],
- sleep:['쿨쿨...','음냐음냐...'],wake:['앗! 왔다!','헤헤 깼어!']
-};
-function save(){try{localStorage.setItem('tigerPet',JSON.stringify({name:st.name,love:st.love}))}catch(e){}}
-function say(t,ms=1800){bubble.textContent=t;bubble.classList.add('show');bubbleT=performance.now()+ms}
-function fx(ch,n=1,ox=0,oy=0){for(let i=0;i<n;i++){const d=document.createElement('div');d.className='fx';d.textContent=ch;d.style.left=(x+S/2+ox+R(-30,30))+'px';d.style.top=(y+oy+R(10,40))+'px';d.style.setProperty('--dx',R(-30,30)+'px');d.style.animationDelay=(i*0.12)+'s';document.body.appendChild(d);setTimeout(()=>d.remove(),1600+i*120)}}
-function setClass(c){pet.classList.remove('idle','walk','run','jump','spin','wiggle','eat','sleep','peek','wave');if(c)c.split(' ').forEach(k=>pet.classList.add(k))}
-function act(name,ms,line){mode='act';until=performance.now()+ms;setClass(name);if(line)say(line)}
-function addLove(n){st.love=Math.min(100,st.love+n);save()}
-function happy(ms=1500){pet.classList.add('happy');clearTimeout(happy.t);happy.t=setTimeout(()=>pet.classList.remove('happy'),ms)}
-
-function setNaked(v,line){
- st.naked=v;st.offAt=performance.now();pet.classList.toggle('naked',v);
- fx('💨',3,0,30);fx('✨',3,0,20);
- $('onesieBtn').textContent=v?'🐒 잠옷 입히기':'🐒 잠옷 벗기기';
- act('spin',900,line);
-}
-
-const tricks=[
- ()=>act('jump',650,pick(['폴짝!','나 높이 뛴다!'])),
- ()=>act('spin',900,'빙글빙글~'),
- ()=>{act('wave',1600,'안녕안녕~');happy(1600)},
- ()=>{act('peek',1400,'안 보이지~?');setTimeout(()=>{if(mode==='act'){setClass('jump');say('까꿍!!');happy(1000);fx('✨',3)}},1100)},
- ()=>{mode='zoom';until=performance.now()+2600;zoomA=Math.atan2(y+S/2-my,x+S/2-mx);setClass('run');say('너 주위를 뱅글뱅글~')},
- ()=>{act('wiggle',1300,'꼬리 흔들흔들~');happy(1300)},
- ()=>{mode='pounce';until=performance.now()+900;setClass('jump');say('잡았다!!')},
-];
-
-addEventListener('pointermove',e=>{mx=e.clientX;my=e.clientY;const now=performance.now();if(mode==='sleep'){mode='idle';setClass('jump');mode='act';until=now+650;say(pick(L.wake));happy()}lastPointer=now});
-addEventListener('pointerdown',e=>{if(e.target.closest('button,form,#pet'))return;mx=e.clientX;my=e.clientY;lastPointer=performance.now()});
-pet.addEventListener('pointerdown',e=>{e.stopPropagation();if(eating)return;if(mode==='sleep')say(pick(L.wake));act(pick(['jump','wiggle','spin']),700,pick(L.click));happy();fx('💖',3);addLove(2)});
-pet.addEventListener('pointermove',e=>{if(eating||mode!=='idle')return;if(++rubs>22){rubs=0;happy(1800);say(pick(L.rub));fx('💕',2);addLove(1)}});
-
-$('bananaBtn').onclick=()=>{
- const b=document.createElement('div');b.className='banana';b.textContent='🍌';
- const bx=R(60,innerWidth-60),by=R(innerHeight*0.45,innerHeight-120);
- b.style.left=bx+'px';b.style.top='-40px';document.body.appendChild(b);
- requestAnimationFrame(()=>requestAnimationFrame(()=>b.style.top=by+'px'));
- bananas.push({el:b,x:bx,y:by});
- if(mode==='sleep')mode='idle';
- if(!eating)say(pick(L.banana));
-};
-$('sunBtn').onclick=()=>{st.heat=Math.min(110,st.heat+40);$('sun').classList.add('on');clearTimeout($('sun').t);$('sun').t=setTimeout(()=>$('sun').classList.remove('on'),5000)};
-$('iceBtn').onclick=()=>{st.heat=Math.max(0,st.heat-45);fx('❄️',4);say(st.naked?'시원하다~':'으 차가워! 헤헤')};
-$('onesieBtn').onclick=()=>{if(st.naked){st.heat=Math.min(st.heat,40);setNaked(false,pick(L.on))}else setNaked(true,'후~ 잠깐 벗을래!')};
-$('renameBtn').onclick=()=>{$('nameInput').value=st.name;$('dlg').classList.add('open');$('nameInput').focus()};
-$('dlg').addEventListener('pointerdown',e=>{if(e.target.id==='dlg')$('dlg').classList.remove('open')});
-$('nameForm').onsubmit=e=>{e.preventDefault();const v=$('nameInput').value.trim();if(v){st.name=v;$('petName').textContent=v;save();say(`내 이름은 ${v}! 좋아!`);happy();fx('💖',3)}$('dlg').classList.remove('open')};
-
-function moveTo(tx,ty,speed,dt){
- const cx=x+S/2,cy=y+S/2,dx=tx-cx,dy=ty-cy,d=Math.hypot(dx,dy);
- if(d<4)return d;const s=Math.min(d,speed*dt);x+=dx/d*s;y+=dy/d*s;
- if(Math.abs(dx)>3)facing=dx<0?-1:1;return d;
-}
-let prev=performance.now();
-function loop(now){
- const dt=Math.min(.05,(now-prev)/1000);prev=now;
- const cx=x+S/2,cy=y+S/2;
- if(now>blinkT){pet.classList.add('blink');setTimeout(()=>pet.classList.remove('blink'),140);blinkT=now+R(2500,5000)}
- if(mode==='act'&&now>until){mode='idle'}
- if(mode==='pounce'){moveTo(mx,my-20,700,dt);if(now>until){mode='idle';happy();fx('💖',2);addLove(1)}}
- if(mode==='zoom'){zoomA+=dt*4.2;const r=110;moveTo(mx+Math.cos(zoomA)*r,my+Math.sin(zoomA)*r*.6,600,dt);facing=-Math.sin(zoomA)>0?1:-1;st.heat+=10*dt;if(now>until){mode='idle';happy()}}
- if(eating){
-  eating.el.style.left=(x+S/2)+'px';eating.el.style.top=(y+S*0.66)+'px';
-  if(now>eating.end){eating.el.remove();eating=null;mode='act';until=now+650;setClass('jump');say(pick(L.yum));happy(1500);fx('💖',4);addLove(5)}
-  else{const p=(eating.end-now)/2600;eating.el.style.fontSize=(16+24*p)+'px';if(Math.random()<dt*2)fx('✨',1,0,60)}
- }
- else if(mode==='idle'||mode==='walk'||mode==='sleep'){
-  let tx,ty,target=null;
-  if(bananas.length&&mode!=='sleep'){target=bananas.reduce((a,b)=>Math.hypot(b.x-cx,b.y-cy)<Math.hypot(a.x-cx,a.y-cy)?b:a);tx=target.x;ty=target.y-S*0.16}
-  else{tx=mx+(cx<mx?-95:95);ty=my}
-  tx=Math.max(S/2,Math.min(innerWidth-S/2,tx));ty=Math.max(S/2+110,Math.min(innerHeight-S/2-60,ty));
-  const d=Math.hypot(tx-cx,ty-cy),far=d>380;
-  if(mode==='sleep'){}
-  else if(target&&d<18){
-   bananas.splice(bananas.indexOf(target),1);target.el.classList.add('held');
-   eating={el:target.el,end:now+2600};setClass('eat');say('냠냠냠~',2400);mode='eat';
-  }
-  else if(d>(target?10:40)){
-   if(mode!=='walk'&&Math.random()<.5&&!target)say(pick(L.follow),1200);
-   mode='walk';setClass(far?'run':'walk');moveTo(tx,ty,far?520:260,dt);
-   st.heat+=(far?9:5)*dt;nextBored=now+R(2500,5500);
-  } else {
-   if(mode==='walk'){mode='idle';setClass('idle')}
-   if(Math.abs(mx-cx)>10)facing=mx<cx?-1:1;
-   st.heat-=1.5*dt;
-   if(now-lastPointer>22000){mode='sleep';setClass('sleep');say(pick(L.sleep),3000)}
-   else if(now>nextBored){nextBored=now+R(3500,7000);pick(tricks)();if(Math.random()<.3)setTimeout(()=>{if(mode==='idle')say(pick(L.bored))},1500)}
-  }
- }
- if(mode==='eat'&&!eating)mode='idle';
- if(mode==='sleep'){st.heat-=3*dt;if(Math.random()<dt*0.9)fx('💤',1,30,0)}
- if(mode==='act')st.heat+=3*dt;
- if(st.naked)st.heat-=5*dt;
- st.heat=Math.max(0,Math.min(110,st.heat));
- if(!st.naked&&st.heat>=100&&mode!=='eat'&&!eating){setNaked(true,pick(L.off))}
- else if(st.naked&&st.heat<=18&&mode==='idle'&&now-st.offAt>9000){setNaked(false,pick(L.on))}
- const hot=st.heat>65&&!st.naked;pet.classList.toggle('hot',hot);
- if(hot&&now>hotSaid&&mode==='idle'){say(pick(L.hot));hotSaid=now+6000}
- pet.classList.toggle('talk',bubble.classList.contains('show')&&mode!=='sleep'&&!eating&&now%600<300);
- pet.classList.toggle('left',facing<0);
- // eyes follow cursor
- if(mode!=='sleep'){let ex=(mx-cx)/180,ey=(my-(y+S*0.42))/180;const m=Math.hypot(ex,ey);if(m>1){ex/=m;ey/=m}eyes.setAttribute('transform',`translate(${(facing<0?-ex:ex)*3.5} ${ey*3})`)}
- pet.style.transform=`translate(${x}px,${y}px)`;
- shadow.style.transform=`translate(${x+S/2-55}px,${y+S-14}px)`;
- bubble.style.transform=`translate(calc(${x+S/2}px - 50%),calc(${y-6}px - 100%))`;
- if(now>bubbleT)bubble.classList.remove('show');
- $('loveBar').style.width=st.love+'%';$('heatBar').style.width=Math.min(100,st.heat)+'%';
- $('mood').textContent=eating?'바나나 냠냠 중 🍌':mode==='sleep'?'쿨쿨 자는 중':st.naked?'잠옷 벗고 시원해지는 중':hot?'땀 뻘뻘… 더워!':bananas.length?'바나나한테 달려가는 중':mode==='walk'?`${st.name}가 너를 따라가는 중`:'너랑 노는 중 ❤';
- requestAnimationFrame(loop);
-}
-$('petName').textContent=st.name;
-setTimeout(()=>{say(pick(L.hello));act('wave',1600);happy(1600)},400);
-requestAnimationFrame(loop);
+const a=TigerPet({margins:{top:120,bottom:70}});
+const on=(id,f)=>document.getElementById(id).onclick=f;
+on('bananaBtn',a.banana);on('sunBtn',a.sun);on('iceBtn',a.ice);on('onesieBtn',a.onesie);on('renameBtn',a.rename);on('roarBtn',a.roar);
 }
 </script>
 </body>
