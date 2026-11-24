@@ -11,10 +11,12 @@ html,body{margin:0;height:100%;overflow:hidden;background:transparent;user-selec
 <body>
 <script src="core/pet.js"></script>
 <script src="core/nyang.js"></script>
+<script src="core/angel.js"></script>
 <script>
 {
-let ch='nyang';try{ch=localStorage.getItem('petChar')||'nyang'}catch(e){}
-TigerPet(Object.assign({desktop:true,bridge:window.petBridge,margins:{top:60,bottom:0}},ch==='tiger'?{}:NyangChar,{onSwitch(){try{localStorage.setItem('petChar',ch==='tiger'?'nyang':'tiger')}catch(e){}location.reload()}}));
+const CH={nyang:NyangChar,angel:AngelChar,tiger:{}},ORDER=['nyang','angel','tiger'];
+let ch='nyang';try{ch=localStorage.getItem('petChar')||'nyang'}catch(e){}if(!CH[ch])ch='nyang';
+TigerPet(Object.assign({desktop:true,bridge:window.petBridge,margins:{top:60,bottom:0}},CH[ch],{onSwitch(){try{localStorage.setItem('petChar',ORDER[(ORDER.indexOf(ch)+1)%ORDER.length])}catch(e){}location.reload()}}));
 }
 </script>
 </body>

@@ -24,7 +24,7 @@ function menu(){
     {type:'separator'},
     {label:'졸졸 따라다니기',type:'checkbox',checked:state.follow,click:()=>send('follow')},
     {label:'✏️ 이름 바꾸기',click:()=>{win.focus();send('rename')}},
-    {label:'🔄 캐릭터 바꾸기 (냥이 ↔ 꼬미)',click:()=>send('switch')},
+    {label:'🔄 다음 캐릭터로 바꾸기 (냥이 → 천사 → 꼬미)',click:()=>send('switch')},
     ...(login?[{label:'컴퓨터 켜면 같이 시작',type:'checkbox',checked:app.getLoginItemSettings().openAtLogin,click:i=>app.setLoginItemSettings({openAtLogin:i.checked})}]:[]),
     {type:'separator'},
     {label:'잘 자~ (종료)',click:()=>app.quit()}
