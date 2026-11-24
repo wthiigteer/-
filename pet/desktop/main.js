@@ -4,7 +4,7 @@ const path=require('path');
 if(process.platform==='linux'){app.commandLine.appendSwitch('enable-transparent-visuals');app.disableHardwareAcceleration()}
 if(!app.requestSingleInstanceLock())app.quit();
 
-let win,tray,timer,state={naked:false,follow:true,name:'냥이',clothes:{on:'🎀 후드 입히기',off:'🎀 후드 벗기기'},roar:'🐱 냐앙 해봐'};
+let win,tray,timer,state={naked:false,follow:true,name:'냥이',clothes:{on:'🎀 후드 입히기',off:'🎀 후드 벗기기'},roar:'🐱 냐앙 해봐',noClothes:true};
 
 function fit(){
   const {x,y,width,height}=screen.getPrimaryDisplay().workArea;
@@ -18,7 +18,7 @@ function menu(){
     {type:'separator'},
     {label:'🍌 바나나 주기',click:()=>send('banana')},
     {label:state.roar,click:()=>send('roar')},
-    {label:state.naked?state.clothes.on:state.clothes.off,click:()=>send('onesie')},
+    ...(state.noClothes?[]:[{label:state.naked?state.clothes.on:state.clothes.off,click:()=>send('onesie')}]),
     {label:'☀️ 덥게',click:()=>send('sun')},
     {label:'🧊 시원하게',click:()=>send('ice')},
     {type:'separator'},

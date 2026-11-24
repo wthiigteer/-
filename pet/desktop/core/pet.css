@@ -79,3 +79,4 @@
 #pet.nyang.roar .pawR{transform:translate(10px,-34px)}
 #pet.nyang.peek .pawL{transform:translate(14px,-46px)}
 #pet.nyang.peek .pawR{transform:translate(-14px,-46px)}
+#pet.nyang .tears path:first-child{opacity:.9}

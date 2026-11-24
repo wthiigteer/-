@@ -69,7 +69,7 @@ window.TigerPet=function(opt){
  };
  Object.assign(L,opt.lines||{});
  function save(){try{localStorage.setItem(KEY,JSON.stringify({name:s.name,love:s.love,follow:s.follow}))}catch(e){}}
- function report(){bridge&&bridge.state&&bridge.state({naked:s.naked,follow:s.follow,name:s.name,clothes:CL,roar:opt.roarMenu||'🐯 어흥 해봐'})}
+ function report(){bridge&&bridge.state&&bridge.state({naked:s.naked,follow:s.follow,name:s.name,clothes:CL,noClothes:!!opt.noClothes,roar:opt.roarMenu||'🐯 어흥 해봐'})}
  function say(t,ms=1800){bubble.textContent=t;bubble.classList.add('show');bubbleT=performance.now()+ms}
  function fx(ch,n=1,ox=0,oy=0){for(let i=0;i<n;i++){const d=mk('div','p-fx');d.textContent=ch;d.style.left=(x+S/2+ox+R(-30,30))+'px';d.style.top=(y+oy+R(10,40))+'px';d.style.setProperty('--dx',R(-30,30)+'px');d.style.animationDelay=(i*.12)+'s';setTimeout(()=>d.remove(),1600+i*120)}}
  const ACTS=['idle','walk','run','jump','spin','wiggle','eat','sleep','peek','wave','roar','cry','drag'];
@@ -102,7 +102,7 @@ window.TigerPet=function(opt){
   },
   sun(){s.heat=Math.min(110,s.heat+40);fx('☀️',2,40,-10);if(!s.naked)say(pick(L.hot))},
   ice(){s.heat=Math.max(0,s.heat-45);fx('❄️',4);say(s.naked?'시원하다~':'으 차가워! 헤헤')},
-  onesie(){if(s.naked){s.heat=Math.min(s.heat,40);setNaked(false,pick(L.on))}else setNaked(true,'후~ 잠깐 벗을래!')},
+  onesie(){if(opt.noClothes)return;if(s.naked){s.heat=Math.min(s.heat,40);setNaked(false,pick(L.on))}else setNaked(true,'후~ 잠깐 벗을래!')},
   rename(){dlg.querySelector('input').value=s.name;dlg.classList.add('open');setTimeout(()=>dlg.querySelector('input').focus(),30)},
   follow(){s.follow=!s.follow;save();report();say(s.follow?'졸졸 따라갈게!':'혼자 산책할래~')},
   roar,
@@ -173,7 +173,7 @@ window.TigerPet=function(opt){
   if(mode==='act')s.heat+=3*dt;
   if(s.naked)s.heat-=5*dt;
   s.heat=Math.max(0,Math.min(110,s.heat));
-  if(!s.naked&&s.heat>=100&&!eating&&mode!=='drag')setNaked(true,pick(L.off));
+  if(!opt.noClothes&&!s.naked&&s.heat>=100&&!eating&&mode!=='drag')setNaked(true,pick(L.off));
   else if(s.naked&&s.heat<=18&&mode==='idle'&&now-s.offAt>9000)setNaked(false,pick(L.on));
   const hot=s.heat>65&&!s.naked;pet.classList.toggle('hot',hot);
   if(hot&&now>hotSaid&&mode==='idle'){say(pick(L.hot));hotSaid=now+6000}
@@ -190,7 +190,7 @@ window.TigerPet=function(opt){
   if(md)md.textContent=eating?'바나나 냠냠 중 🍌':mode==='sleep'?'쿨쿨 자는 중':pet.classList.contains('cry')?'훌쩍훌쩍 우는 중':s.naked?(opt.offMood||'잠옷 벗고 시원해지는 중'):hot?'땀 뻘뻘… 더워!':bananas.length?'바나나한테 달려가는 중':mode==='walk'?(s.follow?`${s.name}가 너를 따라가는 중`:'혼자 산책 중'):'너랑 노는 중 ❤';
   requestAnimationFrame(loop);
  }
- const n=$('petName');if(n)n.textContent=s.name;const ob=$('onesieBtn');if(ob)ob.textContent=CL.off;
+ const n=$('petName');if(n)n.textContent=s.name;const ob=$('onesieBtn');if(ob){ob.textContent=CL.off;ob.hidden=!!opt.noClothes}
  report();
  setTimeout(()=>{say(pick(L.hello));act('wave',1600);happy(1600)},400);
  requestAnimationFrame(loop);
