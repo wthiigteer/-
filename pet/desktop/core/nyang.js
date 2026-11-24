@@ -12,57 +12,65 @@ const g=(Ly,cls,extra='')=>{const rows={};Ly.m.forEach((c,k)=>{const [x,y]=k.spl
  for(const y in rows){const r=rows[y].sort((a,b)=>a[0]-b[0]);let i=0;while(i<r.length){let j=i;while(j+1<r.length&&r[j+1][0]===r[j][0]+1&&r[j+1][1]===r[i][1])j++;const c=r[i][1];o+=`<rect x="${r[i][0]*5}" y="${y*5}" width="${(j-i+1)*5}" height="5" ${c==='V'?'style="fill:var(--limb)"':`fill="${C[c]}"`}/>`;i=j+1}}
  return `<g${cls?` class="${cls}"`:''}${extra}>${o}</g>`};
 
-// tail (cat tail, wags)
-const tail=mk();[[27,31],[29,31],[30,30],[31,29],[32,28],[32,26],[33,25],[33,23],[32,22]].forEach(([x,y])=>rect(tail,x,y,x+1,y+1,'H'));outline(tail);
-// long hair behind
-const hb=mk();ell(hb,20,14,13,12,'H');rect(hb,8,14,32,30,(x,y)=>(x===10||x===29)&&y>20?'h':'H');[[8,30],[32,30],[8,29],[32,29],[12,30],[28,30]].forEach(([x,y])=>hb.m.delete(x+','+y));outline(hb);
-// legs: thigh, over-knee socks, shoes
-const legs=mk();[[16,18],[22,24]].forEach(([a,b])=>{rect(legs,a,31,b,33,'S');rect(legs,a,34,b,34,'W');rect(legs,a,35,b,37,'L');rect(legs,a-1,38,b,38,'B')});outline(legs);
-// torso without hoodie: pink tank top
-const tank=mk();rect(tank,15,24,25,30,'T');px(tank,[[19,26],[21,26],[19,27],[20,27],[21,27],[20,28]],'k');outline(tank);
-// hoodie
-const hood=mk();rect(hood,14,24,26,30,'P');rect(hood,18,25,22,29,'T');px(hood,[[19,26],[21,26],[19,27],[20,27],[21,27],[20,28]],'k');rect(hood,17,24,17,30,'p');rect(hood,23,24,23,30,'p');px(hood,[[16,26],[16,27],[24,26],[24,27]],'p');outline(hood);
-// skirt with belt + heart buckle
-const sk=mk();rect(sk,14,29,26,29,'B');px(sk,[[19,29],[21,29]],'Y');for(let y=30;y<=33;y++){const d=y-30;for(let x=13-d;x<=27+d;x++)sk.set(x,y,(x%3===0||y===32)?'r':'R')}outline(sk);
-// arms: sleeve colour follows --limb, fur cuffs only with hoodie
-const arm=(x0)=>{const a=mk();rect(a,x0,25,x0+2,28,'V');rect(a,x0,29,x0+2,30,'S');outline(a);const cuff=mk();rect(cuff,x0-1,29,x0+3,29,'F');return g(a)+g(cuff,'onesie')};
+// palette tuned to the user's reference: cream hair, pink ears & clips, green-black eyes
+Object.assign(C,{K:'#1a1416',H:'#f7e8c8',h:'#e6cc9f',S:'#fff0e4',P:'#ff6fb0',p:'#e0488f',T:'#ffc9df',R:'#d92a43',r:'#2a1a24',k:'#ff9cc2',q:'#ff4f9a',e:'#ffd5e6',G:'#2fbf5a',j:'#8be3a0'});
+const wv=[0,1,1,0,-1,-1];
+// pink cat tail
+const tail=mk();[[27,32],[29,32],[30,31],[31,30],[32,28],[32,26],[31,24]].forEach(([x,y])=>rect(tail,x,y,x+1,y+1,'k'));rect(tail,31,23,32,24,'e');outline(tail);
+// big wavy hair behind
+const hb=mk();ell(hb,20,15,14.5,12.5,'H');
+for(let y=12;y<=35;y++){const o=4+(y>22?-1:0)+wv[y%6];for(let x=o;x<=14;x++)if(!(y>31&&(x+y)%3===0))hb.set(x,y,(x===o+2&&y%3)?'h':'H');for(let x=o;x<=14;x++)if(!(y>31&&(x+y)%3===0))hb.set(39-x,y,(x===o+2&&y%3)?'h':'H')}
+outline(hb);
+// legs: skin, white socks, black shoes
+const legs=mk();[[17,18],[21,22]].forEach(([a,b])=>{rect(legs,a,34,b,34,'S');rect(legs,a,35,b,37,'W');rect(legs,a,38,b,38,'B')});px(legs,[[18,36]],'k');outline(legs);
+// torso without cardigan: pink top with a little cat face
+const catface=[[19,27,'W'],[20,27,'W'],[21,27,'W'],[19,28,'W'],[20,28,'W'],[21,28,'W'],[19,26,'W'],[21,26,'W'],[19,27,'K'],[21,27,'K']];
+const tank=mk();rect(tank,15,25,25,30,'T');catface.forEach(([x,y,c])=>tank.set(x,y,c));outline(tank);
+// cardigan over the top
+const hood=mk();rect(hood,14,25,26,30,'P');rect(hood,17,25,23,30,'T');rect(hood,16,25,16,30,'p');rect(hood,24,25,24,30,'p');catface.forEach(([x,y,c])=>hood.set(x,y,c));outline(hood);
+// belt + heart buckle, red/black plaid skirt
+const sk=mk();rect(sk,14,30,26,30,'B');px(sk,[[19,30],[21,30],[20,31]],'W');for(let y=31;y<=33;y++){const d=y-31;for(let x=13-d;x<=27+d;x++)if(!(y===31&&x===20))sk.set(x,y,(x%2===0||y===32)?'r':'R')}outline(sk);
+const arm=(x0)=>{const a=mk();rect(a,x0,25,x0+2,28,'V');rect(a,x0,29,x0+2,30,'S');outline(a);const cuff=mk();rect(cuff,x0-1,29,x0+3,29,'W');px(cuff,[[x0,30],[x0+2,30]],'W');return g(a)+g(cuff,'onesie')};
 // face
-const face=mk();ell(face,20,15.5,11.5,10,'S');outline(face);
-// front hair: cap, blunt bangs, side locks
-const hf=mk();ell(hf,20,12,12.5,10.5,'H',(x,y)=>y<=8);rect(hf,9,7,31,10,'H');for(let x=10;x<=30;x++)if(x%3)hf.set(x,11,'H');
-for(let y=9;y<=29;y++){const w=y>16?1:(y>12?1:2);rect(hf,8,y,8+w,y,'H');rect(hf,31-w,y,31,y,'H')}px(hf,[[14,4],[15,5],[24,4],[25,5]],'h');outline(hf);
-// wire cat-ear headband
-const ears=mk();line(ears,9,5,9,0,'E');line(ears,9,0,14,3,'E');line(ears,30,5,30,0,'E');line(ears,30,0,25,3,'E');
-// eyes
-const eye=mk();ell(eye,14.5,16.5,3.6,4.1,'W');ell(eye,15.3,17.2,2.6,3.2,'G',(x,y)=>eye.has(x,y));rect(eye,15,16,16,18,'D');px(eye,[[17,16],[14,19],[15,19]],'g');px(eye,[[15,15],[14,16],[16,19]],'W');outline(eye);px(eye,[[11,12],[10,13],[12,11]],'K');mirror(eye);
-const eh=mirror(px(mk(),[[12,17],[13,16],[14,15],[15,15],[16,16],[17,17],[12,18],[17,18]],'K'));
-const ec=mirror(px(mk(),[[11,16],[12,17],[13,17],[14,17],[15,17],[16,17],[17,16]],'K'));
-const cheek=mirror(px(mk(),[[11,21],[12,21],[13,21]],'k'));
-const ms=px(mk(),[[18,22],[19,23],[20,23],[21,22]],'K');
-const mo=outline(px(mk(),[[19,22],[20,22],[19,23],[20,23]],'R'));px(mo,[[19,23],[20,23]],'k');
-const tears=mirror(px(mk(),[[13,20],[13,21],[13,22],[13,23],[12,24]],'b'));
-const drop=mirror(px(mk(),[[11,21],[11,22]],'b'));
-const angry=line(line(line(mk(),33,4,35,2,'K'),35,2,35,5,'K'),35,5,37,3,'K');
-const sweat=px(mk(),[[31,7],[30,8],[31,8],[32,8],[31,9]],'b');
+const face=mk();ell(face,20,17,10.5,9.5,'S');outline(face);
+// front hair: crown, side-swept bangs, framing locks
+const hf=mk();ell(hf,20,13,13,11,'H',(x,y)=>y<=9);rect(hf,9,8,31,10,'H');
+[[10,11],[11,11],[12,11],[13,11],[14,12],[15,11],[16,11],[19,11],[20,11],[20,12],[24,11],[25,11],[26,11],[27,12],[28,11],[29,11],[30,11]].forEach(([x,y])=>hf.set(x,y,'H'));
+px(hf,[[15,5],[16,6],[24,5],[23,6],[20,9],[19,10]],'h');outline(hf);
+// pink cat ears with fur
+const ears=mk();[[9,2],[10,2],[9,3],[10,3],[11,3],[9,4],[10,4],[11,4],[12,4],[9,5],[10,5],[11,5],[12,5],[13,5]].forEach(([x,y])=>ears.set(x,y,'e'));px(ears,[[10,3],[10,4],[11,4],[10,5],[11,5],[12,5]],'k');mirror(ears);outline(ears);
+// star hair clips
+const clips=mk();[[10,9],[9,9],[11,9],[10,8],[10,10],[7,13],[6,13],[8,13],[7,12],[7,14]].forEach(([x,y])=>clips.set(x,y,'q'));px(clips,[[10,9],[7,13]],'e');mirror(clips);outline(clips);
+// huge eyes: black with a green crescent and a big shine
+const eye=mk();ell(eye,14.5,18.5,3.7,4.5,'D');ell(eye,14.5,18.5,3.7,4.5,'G',(x,y)=>x<14&&y>17&&((x+.5-14.5)/3.7)**2+((y+.5-18.5)/4.5)**2>.3);px(eye,[[12,21]],'j');rect(eye,15,16,16,17,'W');px(eye,[[13,20]],'W');outline(eye);mirror(eye);
+const eh=mirror(px(mk(),[[11,20],[12,19],[13,18],[14,18],[15,18],[16,19],[17,20]],'K'));
+const ec=mirror(px(mk(),[[11,19],[12,20],[13,21],[14,21],[15,21],[16,20],[17,19]],'K'));
+const cheek=mirror(px(mk(),[[11,23],[12,23],[13,23]],'k'));
+const ms=outline(px(mk(),[[19,23],[20,23],[19,24],[20,24]],'R'));px(ms,[[19,24],[20,24]],'k');
+const mo=outline(px(mk(),[[18,23],[19,23],[20,23],[21,23],[18,24],[19,24],[20,24],[21,24],[19,25],[20,25]],'R'));px(mo,[[19,25],[20,25],[19,24],[20,24]],'k');
+const tears=mirror(px(mk(),[[12,24],[12,25],[12,26],[11,27]],'b'));
+const drop=mirror(px(mk(),[[10,25],[10,26]],'b'));
+const angry=line(line(line(mk(),34,3,36,1,'K'),36,1,36,4,'K'),36,4,38,2,'K');
+const sweat=px(mk(),[[33,8],[32,9],[33,9],[34,9],[33,10]],'b');
 
 const SVG=`<svg viewBox="0 0 200 200" shape-rendering="crispEdges" aria-hidden="true">
 ${g(tail,'tail')}${g(hb)}${g(legs)}${g(tank,'tigeronly')}${g(hood,'onesie')}${g(sk)}
-${g(face)}${g(hf)}${g(ears)}
+${g(face)}${g(hf)}${g(ears)}${g(clips)}
 <g id="pEyes">${g(eye,'en')}</g>${g(eh,'eh')}${g(ec,'ec')}${g(cheek,'cheek',' opacity=".8"')}${g(ms,'ms')}${g(mo,'mo')}
 <g class="tears">${g(tears)}${g(drop,'drop')}</g>${g(angry,'angry')}
 <g class="paw pawL">${arm(11)}</g><g class="paw pawR">${arm(27)}</g>${g(sweat,'sweat')}
 </svg>`;
 
 window.NyangChar={
- svg:SVG,key:'nyangPet',name:'냥이',cls:'nyang',label:'고양이 귀 머리띠를 한 도트 여자아이',
- clothes:{on:'🎀 후드 입히기',off:'🎀 후드 벗기기'},roarMenu:'🐱 냐앙 해봐',offMood:'후드 벗고 시원해지는 중',
+ svg:SVG,key:'nyangPet',name:'냥이',cls:'nyang',label:'분홍 고양이 귀와 크림색 머리의 도트 여자아이',
+ clothes:{on:'🎀 가디건 입히기',off:'🎀 가디건 벗기기'},roarMenu:'🐱 냐앙 해봐',offMood:'가디건 벗고 시원해지는 중',
  lines:{
   hello:['안냥! 나랑 놀자냥!','헤헤 보고 싶었다냥!'],
   follow:['기다려냥~ 같이 가!','어디 가? 나도 갈래냥!','따라간다냥~!'],
   click:['꺄르르!','헤헤 간지러워냥!','좋아좋아!','나 불렀냥?','사랑해 ❤','또 해줘냥!'],
   rub:['그릉그릉~ 좋아!','더 쓰다듬어줘냥~','헤헤 기분 좋아'],
-  off:['더워! 후드 잠깐 벗을래~','휴~ 시원하다냥!'],
-  on:['다시 핑크 후드 입을래!','짜잔! 후드 장착이다냥!'],
+  off:['더워! 가디건 잠깐 벗을래~','휴~ 시원하다냥!'],
+  on:['다시 핑크 가디건 입을래!','짜잔! 가디건 장착이다냥!'],
   roar:['냐앙!!','캬옹!!'],
   yum:['맛있다냥~!!','냠냠 최고!','하나 더 줘냥!']
  }
