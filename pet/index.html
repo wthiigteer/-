@@ -34,7 +34,18 @@ body{background:radial-gradient(circle,#ffe3e8 1.5px,transparent 2px) 0 0/34px 3
 .toys button:hover{background:#fff0f3;transform:translateY(-2px)}
 .toys button:active{transform:translateY(3px);box-shadow:none}
 .toys button:focus-visible,.name button:focus-visible{outline:3px solid #ff8fa3;outline-offset:2px}
-.hint{position:fixed;right:14px;bottom:80px;font-size:14px;opacity:.6;z-index:19;text-align:right;pointer-events:none}
+.hint{position:fixed;right:14px;bottom:140px;font-size:14px;opacity:.6;z-index:19;text-align:right;pointer-events:none}
+.pip{position:fixed;inset:0;z-index:45;display:none;place-items:center;background:rgba(74,59,54,.3);padding:16px}
+.pip.open{display:grid}
+.pip>div{background:#fff;border:2.5px solid var(--ink);border-radius:22px;padding:18px;width:min(100%,560px);display:grid;gap:12px}
+.pip h2{margin:0;font-size:22px;font-weight:400}
+.pip p{margin:0;font-size:15px;line-height:1.5}
+.pip video{width:100%;border-radius:14px;border:2px solid var(--ink);background:#fff8f5}
+.pip .row2{display:flex;flex-wrap:wrap;gap:8px}
+.pip button{font:inherit;font-size:16px;min-height:44px;padding:0 14px;border-radius:22px;border:2.5px solid var(--ink);background:#fff;color:var(--ink);cursor:pointer}
+.pip button.on{background:#ffc2cc}
+.pip .go{background:#ff8fab;color:#fff;border-color:#4a3b36}
+.pip .msg{font-size:14px;opacity:.75;min-height:1.4em}
 @media(max-width:600px){.hud{min-width:0;width:calc(100vw - 24px);padding:10px 14px}.name{font-size:20px}.hint{display:none}.toys button{font-size:15px;padding:0 12px}}
 </style>
 </head>
@@ -52,8 +63,17 @@ body{background:radial-gradient(circle,#ffe3e8 1.5px,transparent 2px) 0 0/34px 3
   <button id="onesieBtn">🐒 잠옷 벗기기</button>
   <button id="roarBtn">🐱 냐앙 해봐</button>
   <button id="switchBtn">🔄 캐릭터 바꾸기</button>
+  <button id="pipBtn">📺 다른 앱 위에 띄우기</button>
 </nav>
-<div class="hint">마우스를 움직이면 따라와요 · 끌어서 옮길 수 있어요<br>클릭하면 좋아하고, 문지르면 쓰다듬기 (너무 콕콕 찌르면 울어요)</div>
+<div class="hint">마우스를 움직이거나 화면을 누르면 따라와요 · 끌어서 옮길 수 있어요<br>누르면 좋아하고, 문지르면 쓰다듬기 (너무 콕콕 찌르면 울어요)</div>
+<div class="pip" id="pip"><div>
+  <h2>다른 앱 위에 띄우기</h2>
+  <p>펫이 노는 영상을 작은 창(화면 속 화면)으로 띄워요. 띄운 다음 홈으로 나가도 다른 앱 위에 계속 떠 있어요. 창은 손가락으로 옮기고 크기도 바꿀 수 있어요.</p>
+  <div class="row2" id="pipPick"><button data-v="angel">😇 천사</button><button data-v="nyang">🐱 냥이</button><button data-v="tiger">🐯 꼬미</button></div>
+  <video id="pipVid" src="pip/angel.mp4" playsinline muted loop autoplay controls autopictureinpicture></video>
+  <div class="row2"><button class="go" id="pipGo">📺 띄우기</button><button id="pipClose">닫기</button></div>
+  <div class="msg" id="pipMsg">버튼이 안 되면 영상 아래 컨트롤의 화면 속 화면 버튼을 눌러보세요.</div>
+</div></div>
 <script src="desktop/core/pet.js"></script>
 <script src="desktop/core/nyang.js"></script>
 <script src="desktop/core/angel.js"></script>
@@ -65,6 +85,17 @@ const a=TigerPet(Object.assign({margins:{top:120,bottom:70}},CH[ch],{onSwitch(){
 document.getElementById('roarBtn').textContent=CH[ch].roarMenu||'🐯 어흥 해봐';
 const on=(id,f)=>document.getElementById(id).onclick=f;
 on('bananaBtn',a.banana);on('sunBtn',a.sun);on('iceBtn',a.ice);on('onesieBtn',a.onesie);on('renameBtn',a.rename);on('roarBtn',a.roar);on('switchBtn',a.switch);
+on('pipBtn',()=>{pip.classList.add('open');vid.play().catch(()=>{})});
+const pip=document.getElementById('pip'),vid=document.getElementById('pipVid'),msg=document.getElementById('pipMsg');
+const pick=v=>{vid.src='pip/'+v+'.mp4';vid.play().catch(()=>{});document.querySelectorAll('#pipPick button').forEach(b=>b.classList.toggle('on',b.dataset.v===v))};
+document.querySelectorAll('#pipPick button').forEach(b=>b.onclick=()=>pick(b.dataset.v));
+pick(ch);
+on('pipClose',()=>pip.classList.remove('open'));
+on('pipGo',async()=>{try{await vid.play()}catch(e){}
+ try{if(vid.webkitSupportsPresentationMode&&vid.webkitSupportsPresentationMode('picture-in-picture')){vid.webkitSetPresentationMode('picture-in-picture');msg.textContent='떴어요! 이제 홈으로 나가도 계속 떠 있어요.';return}
+  if(document.pictureInPictureEnabled){await vid.requestPictureInPicture();msg.textContent='떴어요! 이제 다른 앱으로 가도 계속 떠 있어요.';return}
+  msg.textContent='여기서는 바로 띄울 수 없어요. 영상 컨트롤의 화면 속 화면 버튼을 눌러보세요.'}
+ catch(e){msg.textContent='여기서는 바로 띄울 수 없어요. 영상 컨트롤의 화면 속 화면 버튼을 눌러보세요.'}});
 }
 </script>
 </body>
