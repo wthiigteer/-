@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="desktop/core/pet.css">
 <style>
 /* VOICE  tender, doodle-sticker playful
-   IDEA   a sheet of hand-drawn stickers where a baby white tiger lives
+   IDEA   a sheet of hand-drawn stickers where an angel and a cat-ear girl live
    PICTURE the pet itself, line-drawn, roaming the whole sheet
    COLOUR paper white-pink ground, ink brown line, blush pink, banana yellow
    TYPE   Jua
@@ -77,7 +77,7 @@ body.compact .menuBtn{display:block}
 <div class="pip" id="pip"><div>
   <h2>다른 앱 위에 띄우기</h2>
   <p>펫이 노는 영상을 작은 창(화면 속 화면)으로 띄워요. 띄운 다음 홈으로 나가도 다른 앱 위에 계속 떠 있어요. 창은 손가락으로 옮기고 크기도 바꿀 수 있어요.</p>
-  <div class="row2" id="pipPick"><button data-v="angel">😇 천사</button><button data-v="nyang">🐱 냥이</button><button data-v="tiger">🐯 꼬미</button></div>
+  <div class="row2" id="pipPick"><button data-v="angel">😇 천사</button><button data-v="nyang">🐱 냥이</button></div>
   <video id="pipVid" src="pip/angel.mp4" playsinline muted loop autoplay controls autopictureinpicture></video>
   <div class="row2"><button class="go" id="pipGo">📺 띄우기</button><button id="pipClose">닫기</button></div>
   <div class="msg" id="pipMsg">버튼이 안 되면 영상 아래 컨트롤의 화면 속 화면 버튼을 눌러보세요.</div>
@@ -87,8 +87,8 @@ body.compact .menuBtn{display:block}
 <script src="desktop/core/angel.js"></script>
 <script>
 {
-const CH={nyang:NyangChar,angel:AngelChar,tiger:{}},ORDER=['nyang','angel','tiger'];
-let ch='nyang';try{ch=localStorage.getItem('petChar')||'nyang'}catch(e){}if(!CH[ch])ch='nyang';
+const CH={angel:AngelChar,nyang:NyangChar},ORDER=['angel','nyang'];
+let ch='angel';try{ch=localStorage.getItem('petChar')||'angel'}catch(e){}if(!CH[ch])ch='angel';
 const a=TigerPet(Object.assign({margins:{top:120,bottom:70}},CH[ch],{onSwitch(){try{localStorage.setItem('petChar',ORDER[(ORDER.indexOf(ch)+1)%ORDER.length])}catch(e){}location.reload()}}));
 document.getElementById('roarBtn').textContent=CH[ch].roarMenu||'🐯 어흥 해봐';
 const on=(id,f)=>document.getElementById(id).onclick=f;
