@@ -11,6 +11,7 @@ const SVG=`<svg viewBox="0 0 200 200" aria-hidden="true">
 </svg>`;
 window.AngelChar={
  svg:SVG,key:'angelPet',name:'천사',cls:'angel',label:'분홍 토끼 후드를 쓴 보라 머리 천사 도트 여자아이',noClothes:true,
+ phrases:['그래도 해야지 어떡해.','둥근 해 미친 거 또 떴네.','나만 잘 되게 해주세요.','집에 가지마~베이비~','꿈에서 깨워주지마.','집 가고 싶다.'],
  roarMenu:'😇 천사 파워!',
  lines:{
   hello:['안녕! 천사가 왔어 😇','헤헤 너 지켜주러 왔지!'],

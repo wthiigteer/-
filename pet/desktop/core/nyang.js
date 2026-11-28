@@ -11,6 +11,7 @@ const SVG=`<svg viewBox="0 0 200 200" aria-hidden="true">
 </svg>`;
 window.NyangChar={
  svg:SVG,key:'nyangPet',name:'냥이',cls:'nyang',label:'분홍 고양이 귀와 크림색 머리의 도트 여자아이',noClothes:true,
+ phrases:['그래도 해야지 어떡해.','둥근 해 미친 거 또 떴네.','나만 잘 되게 해주세요.','집에 가지마~베이비~','꿈에서 깨워주지마.','집 가고 싶다.'],
  roarMenu:'🐱 냐앙 해봐',
  lines:{
   hello:['안냥! 나랑 놀자냥!','헤헤 보고 싶었다냥!'],
