@@ -95,3 +95,5 @@
 @keyframes p-flapL{0%,100%{transform:rotate(0)}50%{transform:rotate(14deg)}}
 @keyframes p-flapR{0%,100%{transform:scaleX(-1) rotate(0)}50%{transform:scaleX(-1) rotate(14deg)}}
 @media(prefers-reduced-motion:reduce){.p-wing{animation:none}}
+.p-fly{position:absolute;left:0;top:0;z-index:11;font-size:28px;margin:-14px 0 0 -14px;pointer-events:none;animation:p-flutter .3s infinite alternate}
+@keyframes p-flutter{to{margin-top:-20px}}
