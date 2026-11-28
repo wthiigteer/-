@@ -67,6 +67,7 @@ body.compact .menuBtn{display:block}
   <button id="onesieBtn">🐒 잠옷 벗기기</button>
   <button id="roarBtn">🐱 냐앙 해봐</button>
   <button id="switchBtn">🔄 캐릭터 바꾸기</button>
+  <button id="duoBtn">👯 둘이 같이 나오기</button>
   <button id="pipBtn">📺 다른 앱 위에 띄우기</button>
   <button id="wallBtn">🖼️ 내 배경화면 넣기</button>
   <button id="miniBtn">🙈 메뉴 숨기기</button>
@@ -85,21 +86,20 @@ body.compact .menuBtn{display:block}
 <script src="desktop/core/pet.js"></script>
 <script src="desktop/core/nyang.js"></script>
 <script src="desktop/core/angel.js"></script>
+<script src="desktop/core/boot.js"></script>
 <script>
 {
-const CH={angel:AngelChar,nyang:NyangChar},ORDER=['angel','nyang'];
-let ch='angel';try{ch=localStorage.getItem('petChar')||'angel'}catch(e){}if(!CH[ch])ch='angel';
-const a=TigerPet(Object.assign({margins:{top:120,bottom:70}},CH[ch],{onSwitch(){try{localStorage.setItem('petChar',ORDER[(ORDER.indexOf(ch)+1)%ORDER.length])}catch(e){}location.reload()}}));
+const P=bootPets({margins:{top:120,bottom:70}}),a=P.main,ch=P.ch,CH=P.CH;
 document.getElementById('roarBtn').textContent=CH[ch].roarMenu||'🐯 어흥 해봐';
 const on=(id,f)=>document.getElementById(id).onclick=f;
-on('bananaBtn',a.banana);on('sunBtn',a.sun);on('iceBtn',a.ice);on('onesieBtn',a.onesie);on('renameBtn',a.rename);on('roarBtn',a.roar);on('switchBtn',a.switch);
+on('bananaBtn',()=>P.all('banana'));on('sunBtn',()=>P.all('sun'));on('iceBtn',()=>P.all('ice'));on('onesieBtn',a.onesie);on('renameBtn',a.rename);on('roarBtn',()=>P.all('roar'));on('duoBtn',()=>P.setDuo(!P.duo));document.getElementById('duoBtn').textContent=P.duo?'🙋 한 명만 나오기':'👯 둘이 같이 나오기';on('switchBtn',a.switch);
 on('pipBtn',()=>{pip.classList.add('open');vid.play().catch(()=>{})});
 const pip=document.getElementById('pip'),vid=document.getElementById('pipVid'),msg=document.getElementById('pipMsg');
 const pick=v=>{vid.src='pip/'+v+'.mp4';vid.play().catch(()=>{});document.querySelectorAll('#pipPick button').forEach(b=>b.classList.toggle('on',b.dataset.v===v))};
 document.querySelectorAll('#pipPick button').forEach(b=>b.onclick=()=>pick(b.dataset.v));
 pick(ch);
 on('pipClose',()=>pip.classList.remove('open'));
-const setMini=v=>{document.body.classList.toggle('compact',v);a.margins(v?{top:10,bottom:10}:{top:120,bottom:70})};
+const setMini=v=>{document.body.classList.toggle('compact',v);P.pets.forEach(p=>p.margins(v?{top:10,bottom:10}:{top:120,bottom:70}))};
 if(innerWidth<520||innerHeight<520)setMini(true);
 on('miniBtn',()=>setMini(true));on('menuBtn',()=>setMini(false));
 const applyWall=u=>{if(!u)return;document.body.style.background=`url("${u}")`;document.body.classList.add('wall')};

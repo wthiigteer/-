@@ -39,16 +39,16 @@ window.TigerPet=function(opt){
  const desktop=!!opt.desktop,KEY=opt.key||'tigerPet2',CL=opt.clothes||{on:'🐒 잠옷 입히기',off:'🐒 잠옷 벗기기'},bridge=opt.bridge,M=Object.assign({top:20,bottom:20},opt.margins||{});
  const $=id=>document.getElementById(id);
  const mk=(t,c)=>{const e=document.createElement(t);if(c)e.className=c;document.body.appendChild(e);return e};
- const shadow=mk('div','p-shadow'),bubble=mk('div','p-bubble'),pet=mk('div','idle');
+ const shadow=mk('div','p-shadow'),bubble=mk('div','p-bubble'),pet=mk('div','p-pet idle');
  bubble.innerHTML='<i class="p-wing l"></i><span class="p-text"></span><i class="p-wing r"></i>';const btext=bubble.querySelector('.p-text');let lastPhrase='';
- pet.id='pet';pet.setAttribute('role','img');pet.setAttribute('aria-label','원숭이 잠옷을 입은 하얀 아기 호랑이');
+ if(!document.getElementById('pet'))pet.id='pet';pet.setAttribute('role','img');pet.setAttribute('aria-label','원숭이 잠옷을 입은 하얀 아기 호랑이');
  pet.innerHTML=`<div class="flip"><div class="bob">${opt.svg||SVG}</div></div>`;if(opt.cls)pet.classList.add(opt.cls);if(opt.label)pet.setAttribute('aria-label',opt.label);
  const dlg=mk('div','p-dlg');dlg.innerHTML='<form><label for="pNameInput">아기 호랑이 이름</label><input id="pNameInput" maxlength="12" autocomplete="off"><button type="submit">이걸로 할래!</button></form>';
  const eyes=pet.querySelector('#pEyes');
  const S=150,R=(a,b)=>a+Math.random()*(b-a),pick=a=>a[Math.floor(Math.random()*a.length)];
  let store={};try{store=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){}
  const s={name:store.name||opt.name||'꼬미',love:store.love??30,heat:10,naked:false,follow:store.follow??true,offAt:0};
- let x=innerWidth/2-S/2,y=innerHeight*0.55-S/2,mx=x+S/2,my=y+S/2;
+ let x=innerWidth*(opt.startX??.5)-S/2,y=innerHeight*0.55-S/2,mx=x+S/2,my=y+S/2;
  let mode='idle',until=0,lastPointer=performance.now(),nextBored=performance.now()+R(2500,5000);
  let facing=1,bananas=[],eating=null,zoomA=0,rubs=0,bubbleT=0,blinkT=performance.now()+3000,hotSaid=0,pokes=[];
  let wander=null,wanderT=0,press=null,ignoring=null;
@@ -111,7 +111,7 @@ window.TigerPet=function(opt){
   margins(m){Object.assign(M,m)},
  };
  dlg.addEventListener('pointerdown',e=>{if(e.target===dlg)dlg.classList.remove('open')});
- dlg.querySelector('form').onsubmit=e=>{e.preventDefault();const v=dlg.querySelector('input').value.trim();if(v){s.name=v;const n=$('petName');if(n)n.textContent=v;save();report();say(`내 이름은 ${v}! 좋아!`,1800,true);happy();fx('💖',3)}dlg.classList.remove('open')};
+ dlg.querySelector('form').onsubmit=e=>{e.preventDefault();const v=dlg.querySelector('input').value.trim();if(v){s.name=v;const n=opt.hud!==false&&$('petName');if(n)n.textContent=v;save();report();say(`내 이름은 ${v}! 좋아!`,1800,true);happy();fx('💖',3)}dlg.classList.remove('open')};
 
  function pointerAt(px,py){const now=performance.now();if(Math.abs(px-mx)+Math.abs(py-my)<1)return;mx=px;my=py;
   if(mode==='sleep'&&!(task&&task.kind==='nap'&&Math.hypot(px-(x+S/2),py-(y+S/2))>160)){mode='act';until=now+650;setClass('jump');say(pick(L.wake));happy();if(task&&task.kind==='nap')task=null}lastPointer=now}
@@ -137,7 +137,7 @@ window.TigerPet=function(opt){
  function endTask(now){if(!task)return;if(task.fly)task.fly.el.remove();if(task.kind==='nap'&&mode==='sleep'){mode='act';until=now+650;setClass('jump');happy();say(pick(L.wake))}task=null}
  function newTask(now){
   endTask(now);const cx=x+S/2,cy=y+S/2,o=[],add=(k,w)=>{for(let i=0;i<w;i++)o.push(k)};
-  if(s.follow)add('follow',4);add('wander',2);add('butterfly',2);add('dance',2);add('nap',1);add('home',1);add('peek',1);add('sit',1);if(opt.cls==='angel')add('fly',2);
+  if(s.follow)add('follow',4);add('wander',2);add('butterfly',2);add('dance',2);add('nap',1);add('home',1);add('peek',1);add('sit',1);if(opt.cls==='angel')add('fly',2);if(opt.friend&&opt.friend())add('friend',3);
   const k=pick(o);task={kind:k,end:now+R(6000,11000)};
   if(k==='wander'){task.tx=R(S,innerWidth-S);task.ty=R(S+M.top,innerHeight-S-M.bottom);say(pick(L.walk),1600)}
   if(k==='butterfly'){const el=mk('div','p-fly');el.textContent=pick(['🦋','⭐','🫧','🌸']);task.fly={el,x:clampX(cx+R(-250,250)),y:clampY(cy-R(40,140)),a:R(0,6.28)};task.end=now+R(7000,10000);say('저거 잡을래!')}
@@ -147,6 +147,7 @@ window.TigerPet=function(opt){
   if(k==='peek'){task.left=cx<innerWidth/2;task.end=now+R(6000,8000);say('여기 숨어야지~')}
   if(k==='fly'){task.end=now+R(5000,7000);say('하늘 높이 날아볼까~')}
   if(k==='sit'){task.end=now+R(4000,6000)}
+  if(k==='friend'){task.end=now+R(6000,9000);say('같이 놀자~')}
  }
  function clampX(v){return Math.max(S/2,Math.min(innerWidth-S/2,v))}
  function clampY(v){return Math.max(S/2+M.top,Math.min(innerHeight-S/2-M.bottom,v))}
@@ -170,7 +171,7 @@ window.TigerPet=function(opt){
    else{
     if(!task||now>task.end)newTask(now);
     const k=task.kind;let free=false;tx=cx;ty=cy;
-    if(k==='follow'){tx=mx+(cx<mx?-95:95);ty=my}
+    if(k==='follow'){const g=opt.followGap||95;tx=mx+(cx<mx?-g:g);ty=my}
     else if(k==='wander'){tx=task.tx;ty=task.ty}
     else if(k==='butterfly'){const f=task.fly;f.a+=(Math.random()-.5)*dt*6;f.x+=Math.cos(f.a)*110*dt;f.y+=Math.sin(f.a)*70*dt;
      if(f.x<60||f.x>innerWidth-60)f.a=Math.PI-f.a;if(f.y<M.top+40||f.y>innerHeight-M.bottom-60)f.a=-f.a;f.x=Math.max(60,Math.min(innerWidth-60,f.x));f.y=Math.max(M.top+40,Math.min(innerHeight-M.bottom-60,f.y));
@@ -182,6 +183,8 @@ window.TigerPet=function(opt){
      else{tx=task.tx;if(Math.abs(tx-cx)<45)task.end=now}}
     else if(k==='peek'){free=true;tx=task.left?S*.08:innerWidth-S*.08;ty=cy}
     else if(k==='fly'){tx=cx;ty=M.top+S/2+10}
+    else if(k==='friend'){const f=opt.friend&&opt.friend();if(!f)task.end=now;else{tx=f.x+(cx<f.x?-110:110);ty=f.y;
+     if(Math.hypot(tx-cx,ty-cy)<45){facing=f.x<cx?-1:1;if(now>(task.hit||0)){task.hit=now+1800;act(pick(['jump','wiggle','spin']),700);fx(pick(['💖','💜','✨']),2,facing*50,0)}}}}
     if(!free){tx=clampX(tx);ty=clampY(ty)}
    }
    const d=Math.hypot(tx-cx,ty-cy),far=d>380;
@@ -218,15 +221,16 @@ window.TigerPet=function(opt){
   bubble.style.transform=`translate(calc(${x+S/2}px - 50%),calc(${y-6}px - 100%))`;
   if(now>bubbleT)bubble.classList.remove('show');
   if(desktop&&bridge){const over=(mx>x+10&&mx<x+S-10&&my>y+10&&my<y+S-5)||!!press||dlg.classList.contains('open');if(over!==!ignoring){ignoring=!over;bridge.setIgnore(ignoring)}}
-  const lb=$('loveBar'),hb=$('heatBar'),md=$('mood');
+  const HUD=opt.hud!==false,lb=HUD&&$('loveBar'),hb=HUD&&$('heatBar'),md=HUD&&$('mood');
   if(lb)lb.style.width=s.love+'%';if(hb)hb.style.width=Math.min(100,s.heat)+'%';
-  if(md)md.textContent=eating?'바나나 냠냠 중 🍌':mode==='sleep'?'쿨쿨 자는 중':pet.classList.contains('cry')?'훌쩍훌쩍 우는 중':s.naked?(opt.offMood||'잠옷 벗고 시원해지는 중'):hot?'땀 뻘뻘… 더워!':bananas.length?'바나나한테 달려가는 중':task?({follow:'너를 따라다니는 중',wander:'혼자 산책 중',butterfly:'뭔가 쫓아가는 중',dance:'춤추는 중 🎵',nap:'낮잠 자는 중',home:'집에 다녀오는 중',peek:'구석에 숨는 중',fly:'하늘 높이 나는 중',sit:'멍때리는 중'}[task.kind]||'너랑 노는 중 ❤'):'너랑 노는 중 ❤';
+  if(md)md.textContent=eating?'바나나 냠냠 중 🍌':mode==='sleep'?'쿨쿨 자는 중':pet.classList.contains('cry')?'훌쩍훌쩍 우는 중':s.naked?(opt.offMood||'잠옷 벗고 시원해지는 중'):hot?'땀 뻘뻘… 더워!':bananas.length?'바나나한테 달려가는 중':task?({follow:'너를 따라다니는 중',wander:'혼자 산책 중',butterfly:'뭔가 쫓아가는 중',dance:'춤추는 중 🎵',nap:'낮잠 자는 중',home:'집에 다녀오는 중',peek:'구석에 숨는 중',fly:'하늘 높이 나는 중',sit:'멍때리는 중',friend:'친구랑 노는 중 👯'}[task.kind]||'너랑 노는 중 ❤'):'너랑 노는 중 ❤';
   requestAnimationFrame(loop);
  }
- const n=$('petName');if(n)n.textContent=s.name;const ob=$('onesieBtn');if(ob){ob.textContent=CL.off;ob.hidden=!!opt.noClothes}
+ const n=opt.hud!==false&&$('petName');if(n)n.textContent=s.name;const ob=$('onesieBtn');if(ob){ob.textContent=CL.off;ob.hidden=!!opt.noClothes}
  report();
  setTimeout(()=>{say(pick(L.hello));act('wave',1600);happy(1600)},400);
  requestAnimationFrame(loop);
+ actions.pos=()=>({x:x+S/2,y:y+S/2});
  return actions;
 };
 })();

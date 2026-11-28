@@ -1,21 +1,21 @@
 /* 꼬미: shared pet styles (web + desktop) */
-#pet{position:absolute;left:0;top:0;width:150px;height:150px;z-index:10;cursor:grab;will-change:transform;--limb:#e8c39e;--line:#4a3b36;touch-action:none}
-#pet.naked{--limb:#fffdfb}
-#pet.drag{cursor:grabbing}
-#pet .flip{width:100%;height:100%;transition:transform .18s}
-#pet.left .flip{transform:scaleX(-1)}
-#pet .bob{width:100%;height:100%;transform-origin:50% 100%}
-#pet svg{overflow:visible;width:100%;height:100%;display:block}
-#pet.walk .bob{animation:p-hop .36s infinite ease-in-out}
-#pet.run .bob{animation:p-hop .22s infinite ease-in-out}
-#pet.idle .bob,#pet.sleep .bob{animation:p-breathe 2.4s infinite ease-in-out}
-#pet.jump .bob{animation:p-jump .65s ease-out}
-#pet.spin .bob{animation:p-spin .9s ease-in-out}
-#pet.wiggle .bob{animation:p-wiggle .25s 5 ease-in-out}
-#pet.eat .bob{animation:p-chew .3s infinite}
-#pet.roar .bob{animation:p-shake .12s 10}
-#pet.cry .bob{animation:p-sob .5s infinite}
-#pet.drag .bob{animation:p-dangle 1s infinite ease-in-out;transform-origin:50% 10%}
+.p-pet{position:absolute;left:0;top:0;width:150px;height:150px;z-index:10;cursor:grab;will-change:transform;--limb:#e8c39e;--line:#4a3b36;touch-action:none}
+.p-pet.naked{--limb:#fffdfb}
+.p-pet.drag{cursor:grabbing}
+.p-pet .flip{width:100%;height:100%;transition:transform .18s}
+.p-pet.left .flip{transform:scaleX(-1)}
+.p-pet .bob{width:100%;height:100%;transform-origin:50% 100%}
+.p-pet svg{overflow:visible;width:100%;height:100%;display:block}
+.p-pet.walk .bob{animation:p-hop .36s infinite ease-in-out}
+.p-pet.run .bob{animation:p-hop .22s infinite ease-in-out}
+.p-pet.idle .bob,.p-pet.sleep .bob{animation:p-breathe 2.4s infinite ease-in-out}
+.p-pet.jump .bob{animation:p-jump .65s ease-out}
+.p-pet.spin .bob{animation:p-spin .9s ease-in-out}
+.p-pet.wiggle .bob{animation:p-wiggle .25s 5 ease-in-out}
+.p-pet.eat .bob{animation:p-chew .3s infinite}
+.p-pet.roar .bob{animation:p-shake .12s 10}
+.p-pet.cry .bob{animation:p-sob .5s infinite}
+.p-pet.drag .bob{animation:p-dangle 1s infinite ease-in-out;transform-origin:50% 10%}
 @keyframes p-hop{0%,100%{transform:translateY(0) scale(1.04,.96)}50%{transform:translateY(-12px) scale(.97,1.03)}}
 @keyframes p-breathe{50%{transform:scale(1.03,.97)}}
 @keyframes p-jump{0%{transform:scale(1.15,.85)}35%{transform:translateY(-70px) scale(.93,1.07)}65%{transform:translateY(-60px)}90%{transform:translateY(0) scale(1.1,.9)}100%{transform:none}}
@@ -25,37 +25,37 @@
 @keyframes p-shake{0%,100%{transform:translateX(0) scale(1.05,.95)}50%{transform:translateX(-3px) scale(1.05,.95)}}
 @keyframes p-sob{0%,100%{transform:scale(1,1)}50%{transform:scale(1.03,.95) translateY(2px)}}
 @keyframes p-dangle{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
-#pet .tail{transform-box:view-box;transform-origin:134px 166px;animation:p-wag 1.1s infinite ease-in-out}
-#pet.happy .tail,#pet.eat .tail,#pet.walk .tail,#pet.run .tail{animation-duration:.28s}
-#pet.sleep .tail,#pet.cry .tail{animation-duration:3s}
+.p-pet .tail{transform-box:view-box;transform-origin:134px 166px;animation:p-wag 1.1s infinite ease-in-out}
+.p-pet.happy .tail,.p-pet.eat .tail,.p-pet.walk .tail,.p-pet.run .tail{animation-duration:.28s}
+.p-pet.sleep .tail,.p-pet.cry .tail{animation-duration:3s}
 @keyframes p-wag{0%,100%{transform:rotate(-14deg)}50%{transform:rotate(16deg)}}
-#pet.naked .onesie{display:none}
-#pet:not(.naked) .tigeronly{display:none}
-#pet .eh,#pet .ec,#pet .mo,#pet .tears,#pet .angry,#pet .sweat{display:none}
-#pet.happy .en,#pet.sleep .en,#pet.blink .en,#pet.cry .en{display:none}
-#pet.happy:not(.cry):not(.sleep) .eh{display:inline}
-#pet.sleep .ec,#pet.cry .ec,#pet.blink:not(.happy) .ec{display:inline}
-#pet.eat .ms,#pet.talk .ms,#pet.roar .ms,#pet.cry .ms{display:none}
-#pet.eat .mo,#pet.talk .mo,#pet.roar .mo,#pet.cry .mo{display:inline}
-#pet.cry .tears{display:inline}
-#pet.roar .angry{display:inline;animation:p-blinkfx .25s infinite}
+.p-pet.naked .onesie{display:none}
+.p-pet:not(.naked) .tigeronly{display:none}
+.p-pet .eh,.p-pet .ec,.p-pet .mo,.p-pet .tears,.p-pet .angry,.p-pet .sweat{display:none}
+.p-pet.happy .en,.p-pet.sleep .en,.p-pet.blink .en,.p-pet.cry .en{display:none}
+.p-pet.happy:not(.cry):not(.sleep) .eh{display:inline}
+.p-pet.sleep .ec,.p-pet.cry .ec,.p-pet.blink:not(.happy) .ec{display:inline}
+.p-pet.eat .ms,.p-pet.talk .ms,.p-pet.roar .ms,.p-pet.cry .ms{display:none}
+.p-pet.eat .mo,.p-pet.talk .mo,.p-pet.roar .mo,.p-pet.cry .mo{display:inline}
+.p-pet.cry .tears{display:inline}
+.p-pet.roar .angry{display:inline;animation:p-blinkfx .25s infinite}
 @keyframes p-blinkfx{50%{opacity:.3}}
-#pet .drop{animation:p-drip .7s infinite linear}
-#pet .drop2{animation-delay:.35s}
+.p-pet .drop{animation:p-drip .7s infinite linear}
+.p-pet .drop2{animation-delay:.35s}
 @keyframes p-drip{0%{transform:translateY(0);opacity:1}100%{transform:translateY(22px);opacity:0}}
-#pet .paw{transition:transform .25s}
-#pet.peek .pawL{transform:translate(18px,-58px)}
-#pet.peek .pawR{transform:translate(-18px,-58px)}
-#pet.cry .pawL{transform:translate(4px,-28px)}
-#pet.cry .pawR{transform:translate(-4px,-28px)}
-#pet.roar .pawL{transform:translate(-8px,-46px)}
-#pet.roar .pawR{transform:translate(8px,-46px)}
-#pet.drag .pawL{transform:translate(-6px,-30px)}
-#pet.drag .pawR{transform:translate(6px,-30px)}
-#pet.wave .pawR{animation:p-wave .3s 5 ease-in-out;transform:translate(6px,-48px)}
+.p-pet .paw{transition:transform .25s}
+.p-pet.peek .pawL{transform:translate(18px,-58px)}
+.p-pet.peek .pawR{transform:translate(-18px,-58px)}
+.p-pet.cry .pawL{transform:translate(4px,-28px)}
+.p-pet.cry .pawR{transform:translate(-4px,-28px)}
+.p-pet.roar .pawL{transform:translate(-8px,-46px)}
+.p-pet.roar .pawR{transform:translate(8px,-46px)}
+.p-pet.drag .pawL{transform:translate(-6px,-30px)}
+.p-pet.drag .pawR{transform:translate(6px,-30px)}
+.p-pet.wave .pawR{animation:p-wave .3s 5 ease-in-out;transform:translate(6px,-48px)}
 @keyframes p-wave{50%{transform:translate(12px,-56px)}}
-#pet.hot:not(.naked) .sweat{display:inline;animation:p-drip 1s infinite}
-#pet.hot .cheek{opacity:1}
+.p-pet.hot:not(.naked) .sweat{display:inline;animation:p-drip 1s infinite}
+.p-pet.hot .cheek{opacity:1}
 .p-shadow{position:absolute;left:0;top:0;width:100px;height:16px;border-radius:50%;background:rgba(74,59,54,.16);z-index:9;pointer-events:none}
 .p-bubble{position:absolute;left:0;top:0;z-index:15;background:#fffdfb;color:#4a3b36;border:2.5px solid #4a3b36;border-radius:18px;padding:5px 14px;font:17px/1.4 "Jua","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .2s}
 .p-bubble.show{opacity:1}
@@ -69,20 +69,20 @@
 .p-dlg form{background:#fffdfb;color:#4a3b36;border:2.5px solid #4a3b36;border-radius:22px;padding:20px;width:min(90vw,320px);display:grid;gap:12px;font:17px "Jua","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif}
 .p-dlg input{font:inherit;font-size:18px;padding:10px 12px;border-radius:14px;border:2px solid #4a3b36;background:#fff;color:#4a3b36}
 .p-dlg button{font:inherit;font-size:16px;min-height:44px;border-radius:14px;border:2px solid #4a3b36;background:#ffc2cc;color:#4a3b36;cursor:pointer}
-@media(prefers-reduced-motion:reduce){#pet .bob,#pet .tail{animation:none!important}}
-#pet.nyang{--limb:#ff6fb0}
-#pet.nyang.naked{--limb:#fff0e4}
-#pet.nyang .tail{transform-origin:138px 160px}
-#pet.nyang.cry .pawL{transform:translate(2px,-14px)}
-#pet.nyang.cry .pawR{transform:translate(-2px,-14px)}
-#pet.nyang.roar .pawL{transform:translate(-10px,-34px)}
-#pet.nyang.roar .pawR{transform:translate(10px,-34px)}
-#pet.nyang.peek .pawL{transform:translate(14px,-46px)}
-#pet.nyang.peek .pawR{transform:translate(-14px,-46px)}
-#pet.nyang .tears path:first-child{opacity:.9}
-#pet.angel.idle .bob,#pet.angel.sleep .bob{animation:p-hover 2.2s infinite ease-in-out}
-#pet.angel.walk .bob{animation:p-glide .9s infinite ease-in-out}
-#pet.angel.run .bob{animation:p-glide .5s infinite ease-in-out}
+@media(prefers-reduced-motion:reduce){.p-pet .bob,.p-pet .tail{animation:none!important}}
+.p-pet.nyang{--limb:#ff6fb0}
+.p-pet.nyang.naked{--limb:#fff0e4}
+.p-pet.nyang .tail{transform-origin:138px 160px}
+.p-pet.nyang.cry .pawL{transform:translate(2px,-14px)}
+.p-pet.nyang.cry .pawR{transform:translate(-2px,-14px)}
+.p-pet.nyang.roar .pawL{transform:translate(-10px,-34px)}
+.p-pet.nyang.roar .pawR{transform:translate(10px,-34px)}
+.p-pet.nyang.peek .pawL{transform:translate(14px,-46px)}
+.p-pet.nyang.peek .pawR{transform:translate(-14px,-46px)}
+.p-pet.nyang .tears path:first-child{opacity:.9}
+.p-pet.angel.idle .bob,.p-pet.angel.sleep .bob{animation:p-hover 2.2s infinite ease-in-out}
+.p-pet.angel.walk .bob{animation:p-glide .9s infinite ease-in-out}
+.p-pet.angel.run .bob{animation:p-glide .5s infinite ease-in-out}
 @keyframes p-hover{0%,100%{transform:translateY(-6px)}50%{transform:translateY(-18px)}}
 @keyframes p-glide{0%,100%{transform:translateY(-10px) rotate(-4deg)}50%{transform:translateY(-20px) rotate(4deg)}}
 

@@ -12,12 +12,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:transparent;user-selec
 <script src="core/pet.js"></script>
 <script src="core/nyang.js"></script>
 <script src="core/angel.js"></script>
-<script>
-{
-const CH={angel:AngelChar,nyang:NyangChar},ORDER=['angel','nyang'];
-let ch='angel';try{ch=localStorage.getItem('petChar')||'angel'}catch(e){}if(!CH[ch])ch='angel';
-TigerPet(Object.assign({desktop:true,bridge:window.petBridge,margins:{top:60,bottom:0}},CH[ch],{onSwitch(){try{localStorage.setItem('petChar',ORDER[(ORDER.indexOf(ch)+1)%ORDER.length])}catch(e){}location.reload()}}));
-}
-</script>
+<script src="core/boot.js"></script>
+<script>bootPets({desktop:true,bridge:window.petBridge,margins:{top:60,bottom:0}});</script>
 </body>
 </html>

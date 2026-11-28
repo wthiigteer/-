@@ -4,7 +4,7 @@ const path=require('path');
 if(process.platform==='linux'){app.commandLine.appendSwitch('enable-transparent-visuals');app.disableHardwareAcceleration()}
 if(!app.requestSingleInstanceLock())app.quit();
 
-let win,tray,timer,state={naked:false,follow:true,name:'천사',clothes:{on:'🎀 후드 입히기',off:'🎀 후드 벗기기'},roar:'😇 천사 파워!',noClothes:true};
+let win,tray,timer,state={naked:false,follow:true,name:'천사',clothes:{on:'🎀 후드 입히기',off:'🎀 후드 벗기기'},roar:'😇 천사 파워!',noClothes:true,duo:true};
 
 function fit(){
   const {x,y,width,height}=screen.getPrimaryDisplay().workArea;
@@ -24,7 +24,9 @@ function menu(){
     {type:'separator'},
     {label:'졸졸 따라다니기',type:'checkbox',checked:state.follow,click:()=>send('follow')},
     {label:'✏️ 이름 바꾸기',click:()=>{win.focus();send('rename')}},
-    {label:'🔄 다음 캐릭터로 바꾸기 (천사 ↔ 냥이)',click:()=>send('switch')},
+    {label:'👯 둘이 같이 나오기',type:'checkbox',checked:!!state.duo,click:()=>send('duo')},
+    ...(state.duo?[{label:'✏️ 두 번째 친구 이름 바꾸기',click:()=>{win.focus();send('rename2')}}]:[]),
+    {label:state.duo?'🔄 앞뒤 순서 바꾸기':'🔄 다음 캐릭터로 바꾸기 (천사 ↔ 냥이)',click:()=>send('switch')},
     ...(login?[{label:'컴퓨터 켜면 같이 시작',type:'checkbox',checked:app.getLoginItemSettings().openAtLogin,click:i=>app.setLoginItemSettings({openAtLogin:i.checked})}]:[]),
     {type:'separator'},
     {label:'잘 자~ (종료)',click:()=>app.quit()}
